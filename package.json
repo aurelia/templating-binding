@@ -1,6 +1,6 @@
 {
   "name": "aurelia-templating-binding",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "An implementation of the templating engine's Binding Language abstraction which uses a pluggable command syntax.",
   "keywords": [
     "aurelia",
@@ -17,7 +17,7 @@
   "main": "dist/commonjs/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/aurelia/templating-binding"
+    "url": "http://github.com/aurelia/templating-binding"
   },
   "jspm": {
     "main": "amd/index",
@@ -25,8 +25,8 @@
       "lib": "dist"
     },
     "dependencies": {
-      "aurelia-binding": "github:aurelia/binding@^0.0.1",
-      "aurelia-templating": "github:aurelia/templating@^0.0.1"
+      "aurelia-binding": "^0.1.0",
+      "aurelia-templating": "^0.1.0"
     }
   },
   "devDependencies": {
