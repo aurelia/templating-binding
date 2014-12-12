@@ -117,7 +117,9 @@ export class SyntaxInterpreter {
 		return new ListenerExpression(
       this.eventManager,
       attrName,
-      this.parser.parse(attrValue)
+      this.parser.parse(attrValue),
+      false,
+      true
     );
 	}
 
@@ -126,6 +128,7 @@ export class SyntaxInterpreter {
       this.eventManager,
       attrName,
       this.parser.parse(attrValue),
+      true,
       true
     );
 	}

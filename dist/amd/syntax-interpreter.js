@@ -87,11 +87,11 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
     };
 
     SyntaxInterpreter.prototype.trigger = function (resources, element, attrName, attrValue) {
-      return new ListenerExpression(this.eventManager, attrName, this.parser.parse(attrValue));
+      return new ListenerExpression(this.eventManager, attrName, this.parser.parse(attrValue), false, true);
     };
 
     SyntaxInterpreter.prototype.delegate = function (resources, element, attrName, attrValue) {
-      return new ListenerExpression(this.eventManager, attrName, this.parser.parse(attrValue), true);
+      return new ListenerExpression(this.eventManager, attrName, this.parser.parse(attrValue), true, true);
     };
 
     SyntaxInterpreter.prototype.ref = function (resources, element, attrName, attrValue) {
