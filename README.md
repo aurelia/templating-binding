@@ -9,6 +9,10 @@ This library is part of the [Aurelia](http://www.aurelia.io/) platform and conta
 * [aurelia-templating](https://github.com/aurelia/templating)
 * [aurelia-binding](https://github.com/aurelia/binding)
 
+## Used By
+
+* [aurelia-bootstrapper](https://github.com/aurelia/bootstrapper)
+
 ## Platform Support
 
 This library can be used in the **browser** only.
