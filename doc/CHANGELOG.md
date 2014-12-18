@@ -1,3 +1,11 @@
+### 0.3.1 (2014-12-18)
+
+
+#### Bug Fixes
+
+* **package:** update templating to latest version ([ae5ed8e1](http://github.com/aurelia/templating-binding/commit/ae5ed8e1b249e8edb9fa8a2586898f08b51c13d9))
+
+
 ## 0.3.0 (2014-12-17)
 
 
