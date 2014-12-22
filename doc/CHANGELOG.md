@@ -1,3 +1,11 @@
+## 0.4.0 (2014-12-22)
+
+
+#### Bug Fixes
+
+* **package:** update the templating dependency to latest ([5e12d55a](http://github.com/aurelia/templating-binding/commit/5e12d55a69ae7bf354daa67810abae01aee8a0aa))
+
+
 ### 0.3.2 (2014-12-18)
 
 
