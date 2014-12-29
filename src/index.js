@@ -4,7 +4,9 @@ import {SyntaxInterpreter} from './syntax-interpreter';
 
 function install(aurelia){
   var instance,
-      getInstance = c => instance || instance = c.invoke(TemplatingBindingLanguage);
+      getInstance = function (c){
+        return instance || (instance = c.invoke(TemplatingBindingLanguage));
+      };
 
   if(aurelia.container.hasHandler(TemplatingBindingLanguage)){
     instance = aurelia.container.get(TemplatingBindingLanguage);
