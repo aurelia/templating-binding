@@ -69,7 +69,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       attrName === 'class' ? 'className' : attrName,
       this.parser.parse(expressionText), 
       ONE_WAY,
-      resources.filterLookupFunction
+      resources.valueConverterLookupFunction
     );
 
     expression.attribute = attrName;

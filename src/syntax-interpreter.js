@@ -32,7 +32,7 @@ export class SyntaxInterpreter {
           attrName,
           this.parser.parse(parts[1]),
           ONE_WAY,
-          resources.filterLookupFunction
+          resources.valueConverterLookupFunction
         );
 
 		  return instruction;
@@ -46,7 +46,7 @@ export class SyntaxInterpreter {
 	        attrName,
 	        this.parser.parse(attrValue),
 	        TWO_WAY,
-	        resources.filterLookupFunction		
+	        resources.valueConverterLookupFunction		
 				);
 
 			return instruction;
@@ -60,7 +60,7 @@ export class SyntaxInterpreter {
 	        attrName === 'class' ? 'className' : attrName,
 	        this.parser.parse(attrValue),
 	        ONE_WAY,
-	        resources.filterLookupFunction		
+	        resources.valueConverterLookupFunction		
 				);
 
 			return instruction;
@@ -74,7 +74,7 @@ export class SyntaxInterpreter {
 	        attrName === 'class' ? 'className' : attrName,
 	        this.parser.parse(attrValue),
 	        ONE_TIME,
-	        resources.filterLookupFunction		
+	        resources.valueConverterLookupFunction		
 				);
 
 			return instruction;
@@ -107,7 +107,7 @@ export class SyntaxInterpreter {
         attrName,
         this.parser.parse(attrValue),
         this.determineDefaultBindingMode(element, attrName),
-        resources.filterLookupFunction		
+        resources.valueConverterLookupFunction		
 			);
 
 		return instruction;
