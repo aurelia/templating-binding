@@ -5,6 +5,7 @@ import {
 	ListenerExpression,
 	BindingExpression,
 	NameExpression,
+  CallExpression,
 	ONE_WAY,
 	TWO_WAY,
 	ONE_TIME
@@ -79,6 +80,19 @@ export class SyntaxInterpreter {
 
 			return instruction;
 		};
+
+    this['call'] = function(resources, element, attrName, attrValue, existingInstruction){
+      var instruction = existingInstruction || {attrName:attrName, attributes:{}};
+
+      instruction.attributes[attrName] = new CallExpression(
+          this.observerLocator,
+          attrName,
+          this.parser.parse(attrValue),
+          resources.valueConverterLookupFunction    
+        );
+
+      return instruction;
+    };
   }
 
   interpret(type, resources, element, attrName, attrValue, existingInstruction){
@@ -134,7 +148,7 @@ export class SyntaxInterpreter {
 	}
 
 	ref(resources, element, attrName, attrValue){
-		return new NameExpression(attrName);
+		return new NameExpression(attrName, attrValue);
 	}
 
 	options(resources, element, attrName, attrValue){
