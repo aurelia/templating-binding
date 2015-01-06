@@ -1,15 +1,26 @@
-define(["exports", "./binding-language", "./syntax-interpreter"], function (exports, _bindingLanguage, _syntaxInterpreter) {
+define(["exports", "aurelia-templating", "./binding-language", "./syntax-interpreter"], function (exports, _aureliaTemplating, _bindingLanguage, _syntaxInterpreter) {
   "use strict";
 
-  (function (obj) {
-    for (var i in obj) {
-      exports[i] = obj[i];
-    }
-  })(_bindingLanguage);
+  var BindingLanguage = _aureliaTemplating.BindingLanguage;
+  var TemplatingBindingLanguage = _bindingLanguage.TemplatingBindingLanguage;
+  var SyntaxInterpreter = _syntaxInterpreter.SyntaxInterpreter;
 
-  (function (obj) {
-    for (var i in obj) {
-      exports[i] = obj[i];
+
+  function install(aurelia) {
+    var instance, getInstance = function (c) {
+      return instance || (instance = c.invoke(TemplatingBindingLanguage));
+    };
+
+    if (aurelia.container.hasHandler(TemplatingBindingLanguage)) {
+      instance = aurelia.container.get(TemplatingBindingLanguage);
+    } else {
+      aurelia.container.registerHandler(TemplatingBindingLanguage, getInstance);
     }
-  })(_syntaxInterpreter);
+
+    aurelia.container.registerHandler(BindingLanguage, getInstance);
+  }
+
+  exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
+  exports.SyntaxInterpreter = SyntaxInterpreter;
+  exports.install = install;
 });

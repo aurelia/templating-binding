@@ -5,6 +5,7 @@ import {
 	ListenerExpression,
 	BindingExpression,
 	NameExpression,
+  CallExpression,
 	ONE_WAY,
 	TWO_WAY,
 	ONE_TIME
@@ -32,7 +33,7 @@ export class SyntaxInterpreter {
           attrName,
           this.parser.parse(parts[1]),
           ONE_WAY,
-          resources.filterLookupFunction
+          resources.valueConverterLookupFunction
         );
 
 		  return instruction;
@@ -46,7 +47,7 @@ export class SyntaxInterpreter {
 	        attrName,
 	        this.parser.parse(attrValue),
 	        TWO_WAY,
-	        resources.filterLookupFunction		
+	        resources.valueConverterLookupFunction		
 				);
 
 			return instruction;
@@ -60,7 +61,7 @@ export class SyntaxInterpreter {
 	        attrName === 'class' ? 'className' : attrName,
 	        this.parser.parse(attrValue),
 	        ONE_WAY,
-	        resources.filterLookupFunction		
+	        resources.valueConverterLookupFunction		
 				);
 
 			return instruction;
@@ -74,11 +75,24 @@ export class SyntaxInterpreter {
 	        attrName === 'class' ? 'className' : attrName,
 	        this.parser.parse(attrValue),
 	        ONE_TIME,
-	        resources.filterLookupFunction		
+	        resources.valueConverterLookupFunction		
 				);
 
 			return instruction;
 		};
+
+    this['call'] = function(resources, element, attrName, attrValue, existingInstruction){
+      var instruction = existingInstruction || {attrName:attrName, attributes:{}};
+
+      instruction.attributes[attrName] = new CallExpression(
+          this.observerLocator,
+          attrName,
+          this.parser.parse(attrValue),
+          resources.valueConverterLookupFunction    
+        );
+
+      return instruction;
+    };
   }
 
   interpret(type, resources, element, attrName, attrValue, existingInstruction){
@@ -107,7 +121,7 @@ export class SyntaxInterpreter {
         attrName,
         this.parser.parse(attrValue),
         this.determineDefaultBindingMode(element, attrName),
-        resources.filterLookupFunction		
+        resources.valueConverterLookupFunction		
 			);
 
 		return instruction;
@@ -134,7 +148,7 @@ export class SyntaxInterpreter {
 	}
 
 	ref(resources, element, attrName, attrValue){
-		return new NameExpression(attrName);
+		return new NameExpression(attrName, attrValue);
 	}
 
 	options(resources, element, attrName, attrValue){

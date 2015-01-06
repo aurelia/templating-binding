@@ -1,7 +1,10 @@
 "use strict";
 
-var _extends = function (child, parent) {
-  child.prototype = Object.create(parent.prototype, {
+var _inherits = function (child, parent) {
+  if (typeof parent !== "function" && parent !== null) {
+    throw new TypeError("Super expression must either be null or a function, not " + typeof parent);
+  }
+  child.prototype = Object.create(parent && parent.prototype, {
     constructor: {
       value: child,
       enumerable: false,
@@ -9,16 +12,17 @@ var _extends = function (child, parent) {
       configurable: true
     }
   });
-  child.__proto__ = parent;
+  if (parent) child.__proto__ = parent;
 };
 
-var BindingLanguage = require('aurelia-templating').BindingLanguage;
-var Parser = require('aurelia-binding').Parser;
-var ObserverLocator = require('aurelia-binding').ObserverLocator;
-var BindingExpression = require('aurelia-binding').BindingExpression;
-var ONE_WAY = require('aurelia-binding').ONE_WAY;
-var SyntaxInterpreter = require('./syntax-interpreter').SyntaxInterpreter;
-var TemplatingBindingLanguage = (function (BindingLanguage) {
+var BindingLanguage = require("aurelia-templating").BindingLanguage;
+var Parser = require("aurelia-binding").Parser;
+var ObserverLocator = require("aurelia-binding").ObserverLocator;
+var BindingExpression = require("aurelia-binding").BindingExpression;
+var ONE_WAY = require("aurelia-binding").ONE_WAY;
+var SyntaxInterpreter = require("./syntax-interpreter").SyntaxInterpreter;
+var TemplatingBindingLanguage = (function () {
+  var _BindingLanguage = BindingLanguage;
   var TemplatingBindingLanguage = function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter) {
     this.parser = parser;
     this.observerLocator = observerLocator;
@@ -27,7 +31,7 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
     syntaxInterpreter.language = this;
   };
 
-  _extends(TemplatingBindingLanguage, BindingLanguage);
+  _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
   TemplatingBindingLanguage.inject = function () {
     return [Parser, ObserverLocator, SyntaxInterpreter];
@@ -75,7 +79,7 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
 
     expressionText = parts.join("+");
 
-    expression = new BindingExpression(this.observerLocator, attrName === "class" ? "className" : attrName, this.parser.parse(expressionText), ONE_WAY, resources.filterLookupFunction);
+    expression = new BindingExpression(this.observerLocator, attrName === "class" ? "className" : attrName, this.parser.parse(expressionText), ONE_WAY, resources.valueConverterLookupFunction);
 
     expression.attribute = attrName;
 
@@ -83,6 +87,6 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
   };
 
   return TemplatingBindingLanguage;
-})(BindingLanguage);
+})();
 
 exports.TemplatingBindingLanguage = TemplatingBindingLanguage;

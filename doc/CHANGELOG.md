@@ -1,3 +1,19 @@
+## 0.5.0 (2015-01-06)
+
+
+#### Bug Fixes
+
+* **all:** rename Filter to ValueConverter ([e0753f5c](http://github.com/aurelia/templating-binding/commit/e0753f5c1cdc26b207f951501f8444c10a00195c))
+* **index:** fix compiler error in plugin install function ([7d1de765](http://github.com/aurelia/templating-binding/commit/7d1de765e2aef5ffd688f40bb291a4fa87f0dfc3))
+
+
+#### Features
+
+* **binding-language:** enable usage as plugin ([0900eb76](http://github.com/aurelia/templating-binding/commit/0900eb76519c35c3f7eedeecde6b2db71b9bb972))
+* **build:** update compiler and switch to register module format ([219e215b](http://github.com/aurelia/templating-binding/commit/219e215b8f7b3574f466e3eaa14c0b911981d8c6))
+* **syntax-interpreter:** support call expression and name binding modes ([97b4a83f](http://github.com/aurelia/templating-binding/commit/97b4a83ff5d5a9a36edb278486c58a23ad5a2b94))
+
+
 ## 0.4.0 (2014-12-22)
 
 

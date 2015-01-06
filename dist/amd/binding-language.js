@@ -1,8 +1,11 @@
 define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interpreter"], function (exports, _aureliaTemplating, _aureliaBinding, _syntaxInterpreter) {
   "use strict";
 
-  var _extends = function (child, parent) {
-    child.prototype = Object.create(parent.prototype, {
+  var _inherits = function (child, parent) {
+    if (typeof parent !== "function" && parent !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof parent);
+    }
+    child.prototype = Object.create(parent && parent.prototype, {
       constructor: {
         value: child,
         enumerable: false,
@@ -10,7 +13,7 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
         configurable: true
       }
     });
-    child.__proto__ = parent;
+    if (parent) child.__proto__ = parent;
   };
 
   var BindingLanguage = _aureliaTemplating.BindingLanguage;
@@ -19,7 +22,8 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
   var BindingExpression = _aureliaBinding.BindingExpression;
   var ONE_WAY = _aureliaBinding.ONE_WAY;
   var SyntaxInterpreter = _syntaxInterpreter.SyntaxInterpreter;
-  var TemplatingBindingLanguage = (function (BindingLanguage) {
+  var TemplatingBindingLanguage = (function () {
+    var _BindingLanguage = BindingLanguage;
     var TemplatingBindingLanguage = function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter) {
       this.parser = parser;
       this.observerLocator = observerLocator;
@@ -28,7 +32,7 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
       syntaxInterpreter.language = this;
     };
 
-    _extends(TemplatingBindingLanguage, BindingLanguage);
+    _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
     TemplatingBindingLanguage.inject = function () {
       return [Parser, ObserverLocator, SyntaxInterpreter];
@@ -76,7 +80,7 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
 
       expressionText = parts.join("+");
 
-      expression = new BindingExpression(this.observerLocator, attrName === "class" ? "className" : attrName, this.parser.parse(expressionText), ONE_WAY, resources.filterLookupFunction);
+      expression = new BindingExpression(this.observerLocator, attrName === "class" ? "className" : attrName, this.parser.parse(expressionText), ONE_WAY, resources.valueConverterLookupFunction);
 
       expression.attribute = attrName;
 
@@ -84,7 +88,7 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
     };
 
     return TemplatingBindingLanguage;
-  })(BindingLanguage);
+  })();
 
   exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
 });
