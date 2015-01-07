@@ -19,6 +19,6 @@
   },
   "dependencies": {
     "aurelia-binding": "0.2.0",
-    "aurelia-templating": "0.5.0"
+    "aurelia-templating": "0.6.0"
   }
 }
