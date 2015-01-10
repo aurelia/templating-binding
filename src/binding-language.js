@@ -1,5 +1,5 @@
 import {BindingLanguage} from 'aurelia-templating';
-import {Parser, ObserverLocator, BindingExpression, ONE_WAY} from 'aurelia-binding';
+import {Parser, ObserverLocator, BindingExpression, NameExpression, ONE_WAY} from 'aurelia-binding';
 import {SyntaxInterpreter} from './syntax-interpreter';
 
 export class TemplatingBindingLanguage extends BindingLanguage {
@@ -29,7 +29,9 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       if(!existingInstruction){
         instruction.originalAttrName = attrName;
       }
-		} else {
+		} else if(attrName == 'ref'){
+      return new NameExpression(attrValue, 'element');
+    } else {
 			var expression = this.parseContent(resources, attrName, attrValue);
 			if(expression){
 				instruction = existingInstruction || {attrName:attrName, attributes:{}};

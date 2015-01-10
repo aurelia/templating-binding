@@ -81,6 +81,10 @@ export class SyntaxInterpreter {
 			return instruction;
 		};
 
+    this["view-model"] = function (resources, element, attrName, attrValue) {
+      return new NameExpression(attrValue, 'view-model');
+    };
+
     this['call'] = function(resources, element, attrName, attrValue, existingInstruction){
       var instruction = existingInstruction || {attrName:attrName, attributes:{}};
 
