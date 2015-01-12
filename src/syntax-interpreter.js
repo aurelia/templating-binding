@@ -104,7 +104,7 @@ export class SyntaxInterpreter {
         language.createAttributeInstruction(resources, element, info, instruction);
         
         if(!instruction.attributes[info.attrName]){
-          instruction.attributes[info.attrName] = target;
+          instruction.attributes[info.attrName] = info.attrValue;
         }
 
         target = '';
@@ -122,7 +122,7 @@ export class SyntaxInterpreter {
       language.createAttributeInstruction(resources, element, info, instruction);
 
       if(!instruction.attributes[info.attrName]){
-        instruction.attributes[info.attrName] = target;
+        instruction.attributes[info.attrName] = info.attrValue;
       }
     }
 
