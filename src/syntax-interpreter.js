@@ -92,7 +92,7 @@ export class SyntaxInterpreter {
 
   options(resources, element, info){
     var instruction = {attrName:info.attrName, attributes:{}},
-        attrValue = info.attrValue.
+        attrValue = info.attrValue,
         language = this.language,
         name = null, target = '', current, i , ii;
 

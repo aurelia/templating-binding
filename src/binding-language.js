@@ -24,12 +24,12 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       info.expression = null;
     }else if(attrName == 'ref'){
       info.attrName = attrName;
-      info.attrValue = attrName;
+      info.attrValue = attrValue;
       info.command = null;
       info.expression = new NameExpression(attrValue, 'element');
     }else{
       info.attrName = attrName;
-      info.attrValue = attrName;
+      info.attrValue = attrValue;
       info.command = null;
       info.expression = this.parseContent(resources, attrName, attrValue);
     }
