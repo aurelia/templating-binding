@@ -127,7 +127,7 @@ var SyntaxInterpreter = (function () {
             language.createAttributeInstruction(resources, element, info, instruction);
 
             if (!instruction.attributes[info.attrName]) {
-              instruction.attributes[info.attrName] = target;
+              instruction.attributes[info.attrName] = info.attrValue;
             }
 
             target = "";
@@ -145,7 +145,7 @@ var SyntaxInterpreter = (function () {
           language.createAttributeInstruction(resources, element, info, instruction);
 
           if (!instruction.attributes[info.attrName]) {
-            instruction.attributes[info.attrName] = target;
+            instruction.attributes[info.attrName] = info.attrValue;
           }
         }
 

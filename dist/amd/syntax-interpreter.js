@@ -128,7 +128,7 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
               language.createAttributeInstruction(resources, element, info, instruction);
 
               if (!instruction.attributes[info.attrName]) {
-                instruction.attributes[info.attrName] = target;
+                instruction.attributes[info.attrName] = info.attrValue;
               }
 
               target = "";
@@ -146,7 +146,7 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
             language.createAttributeInstruction(resources, element, info, instruction);
 
             if (!instruction.attributes[info.attrName]) {
-              instruction.attributes[info.attrName] = target;
+              instruction.attributes[info.attrName] = info.attrValue;
             }
           }
 

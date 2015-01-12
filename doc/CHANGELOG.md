@@ -1,3 +1,11 @@
+### 0.7.1 (2015-01-12)
+
+
+#### Bug Fixes
+
+* **syntax-interpreter:** use inspected attribute value for options ([4916ac3f](http://github.com/aurelia/templating-binding/commit/4916ac3f40372d3bd929b7155cd4d2501849f483))
+
+
 ## 0.7.0 (2015-01-12)
 
 
