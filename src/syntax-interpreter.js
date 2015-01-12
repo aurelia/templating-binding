@@ -164,7 +164,11 @@ export class SyntaxInterpreter {
 			current = attrValue[i];
 
 			if(current === ';'){
-				language.parseAttribute(resources, element, name, target, instruction);
+				language.parseAttribute(resources, element, name, target.trim(), instruction);
+        if(!instruction.attributes[name]){
+          instruction.attributes[name] = target;
+        }
+
 				target = '';
 				name = null;
 			} else if(current === ':' && name === null){
