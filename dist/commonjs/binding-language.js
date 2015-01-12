@@ -38,6 +38,10 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
     this.syntaxInterpreter = syntaxInterpreter;
     this.interpolationRegex = /\${(.*?)}/g;
     syntaxInterpreter.language = this;
+    this.attributeMap = syntaxInterpreter.attributeMap = {
+      "class": "className",
+      "for": "htmlFor"
+    };
   };
 
   _inherits(TemplatingBindingLanguage, BindingLanguage);
@@ -127,7 +131,7 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
 
         expressionText = parts.join("+");
 
-        expression = new BindingExpression(this.observerLocator, attrName === "class" ? "className" : attrName, this.parser.parse(expressionText), ONE_WAY, resources.valueConverterLookupFunction);
+        expression = new BindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, this.parser.parse(expressionText), ONE_WAY, resources.valueConverterLookupFunction);
 
         expression.attribute = attrName;
 

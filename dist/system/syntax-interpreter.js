@@ -193,7 +193,7 @@ System.register(["aurelia-binding"], function (_export) {
       SyntaxInterpreter.prototype["one-way"] = function (resources, element, info, existingInstruction) {
         var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName === "class" ? "className" : info.attrName, this.parser.parse(info.attrValue), ONE_WAY, resources.valueConverterLookupFunction);
+        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), ONE_WAY, resources.valueConverterLookupFunction);
 
         return instruction;
       };
@@ -201,7 +201,7 @@ System.register(["aurelia-binding"], function (_export) {
       SyntaxInterpreter.prototype["one-time"] = function (resources, element, info, existingInstruction) {
         var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName === "class" ? "className" : info.attrName, this.parser.parse(info.attrValue), ONE_TIME, resources.valueConverterLookupFunction);
+        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), ONE_TIME, resources.valueConverterLookupFunction);
 
         return instruction;
       };

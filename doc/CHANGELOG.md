@@ -1,3 +1,11 @@
+### 0.7.2 (2015-01-12)
+
+
+#### Bug Fixes
+
+* **all:** use attributeMap to map class and for to property names ([c6671d53](http://github.com/aurelia/templating-binding/commit/c6671d53d67b0d82e21be7a35cf4eb91880f5993))
+
+
 ### 0.7.1 (2015-01-12)
 
 

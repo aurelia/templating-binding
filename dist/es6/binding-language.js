@@ -12,6 +12,10 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.syntaxInterpreter = syntaxInterpreter;
     this.interpolationRegex = /\${(.*?)}/g;
     syntaxInterpreter.language = this;
+    this.attributeMap = syntaxInterpreter.attributeMap = {
+      'class':'className',
+      'for':'htmlFor'
+    };
   }
 
   inspectAttribute(resources, attrName, attrValue){
@@ -85,7 +89,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
 
     expression = new BindingExpression(
       this.observerLocator,
-      attrName === 'class' ? 'className' : attrName,
+      this.attributeMap[attrName] || attrName,
       this.parser.parse(expressionText), 
       ONE_WAY,
       resources.valueConverterLookupFunction
