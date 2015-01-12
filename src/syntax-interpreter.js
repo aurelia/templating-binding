@@ -170,7 +170,7 @@ SyntaxInterpreter.prototype['one-way'] = function(resources, element, info, exis
 
   instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
-      info.attrName === 'class' ? 'className' : info.attrName,
+      this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
       ONE_WAY,
       resources.valueConverterLookupFunction    
@@ -184,7 +184,7 @@ SyntaxInterpreter.prototype['one-time'] = function(resources, element, info, exi
 
   instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
-      info.attrName === 'class' ? 'className' : info.attrName,
+      this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
       ONE_TIME,
       resources.valueConverterLookupFunction    
