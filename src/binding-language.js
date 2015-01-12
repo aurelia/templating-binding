@@ -2,6 +2,8 @@ import {BindingLanguage} from 'aurelia-templating';
 import {Parser, ObserverLocator, BindingExpression, NameExpression, ONE_WAY} from 'aurelia-binding';
 import {SyntaxInterpreter} from './syntax-interpreter';
 
+var info = {};
+
 export class TemplatingBindingLanguage extends BindingLanguage {
   static inject() { return [Parser, ObserverLocator,SyntaxInterpreter]; }
 	constructor(parser, observerLocator, syntaxInterpreter){
@@ -12,32 +14,47 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     syntaxInterpreter.language = this;
   }
 
-	parseAttribute(resources, element, attrName, attrValue, existingInstruction){
-		var parts = attrName.split('.'),
-				instruction;
+  inspectAttribute(resources, attrName, attrValue){
+    var parts = attrName.split('.');
 
-		if(parts.length == 2){
-			instruction = this.syntaxInterpreter.interpret(
-				parts[1].trim(),
-				resources,
-				element,
-				parts[0].trim(),
-				attrValue,
-        existingInstruction
-			);
+    if(parts.length == 2){
+      info.attrName = parts[0].trim();
+      info.attrValue = attrValue;
+      info.command = parts[1].trim();
+      info.expression = null;
+    }else if(attrName == 'ref'){
+      info.attrName = attrName;
+      info.attrValue = attrName;
+      info.command = null;
+      info.expression = new NameExpression(attrValue, 'element');
+    }else{
+      info.attrName = attrName;
+      info.attrValue = attrName;
+      info.command = null;
+      info.expression = this.parseContent(resources, attrName, attrValue);
+    }
 
-      if(!existingInstruction){
-        instruction.originalAttrName = attrName;
+    return info;
+  }
+
+	createAttributeInstruction(resources, element, info, existingInstruction){
+    var instruction;
+
+    if(info.expression){
+      if(info.attrName === 'ref'){
+        return info.expression;
       }
-		} else if(attrName == 'ref'){
-      return new NameExpression(attrValue, 'element');
-    } else {
-			var expression = this.parseContent(resources, attrName, attrValue);
-			if(expression){
-				instruction = existingInstruction || {attrName:attrName, attributes:{}};
-				instruction.attributes[attrName] = expression;
-			}
-		}
+
+      instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
+      instruction.attributes[info.attrName] = info.expression;
+    } else if(info.command){
+      instruction = this.syntaxInterpreter.interpret(
+        resources,
+        element,
+        info,
+        existingInstruction
+      );
+    }
 
 		return instruction;
 	}
