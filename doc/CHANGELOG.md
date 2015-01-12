@@ -1,3 +1,20 @@
+## 0.7.0 (2015-01-12)
+
+
+#### Bug Fixes
+
+* **all:** typos in binding language and options syntax ([17f91fe0](http://github.com/aurelia/templating-binding/commit/17f91fe0860c5bbf6aeb4a9a970139cf6be3b4b0))
+* **package:** update Aurelia dependencies ([b07b1f85](http://github.com/aurelia/templating-binding/commit/b07b1f850309dfbc6ca556a2c57449cf46ee6c0f))
+* **syntax-interpreter:** handle non bound options values ([c13d9dd9](http://github.com/aurelia/templating-binding/commit/c13d9dd92f594510e1585a0afd98178a8fa0e739))
+
+
+#### Features
+
+* **binding-language:**
+  * new binding language interface ([4fae8ad8](http://github.com/aurelia/templating-binding/commit/4fae8ad893d1e3e3a6ea43e9aa9b2d2ea2e944f4))
+  * new syntax for element refs ([a24d5967](http://github.com/aurelia/templating-binding/commit/a24d5967c95e6a322980817dee6a7eae4defc3a3))
+
+
 ## 0.6.0 (2015-01-07)
 
 

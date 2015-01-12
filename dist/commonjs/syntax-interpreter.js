@@ -1,5 +1,10 @@
 "use strict";
 
+var _prototypeProperties = function (child, staticProps, instanceProps) {
+  if (staticProps) Object.defineProperties(child, staticProps);
+  if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
+};
+
 var Parser = require("aurelia-binding").Parser;
 var ObserverLocator = require("aurelia-binding").ObserverLocator;
 var EventManager = require("aurelia-binding").EventManager;
@@ -10,124 +15,193 @@ var CallExpression = require("aurelia-binding").CallExpression;
 var ONE_WAY = require("aurelia-binding").ONE_WAY;
 var TWO_WAY = require("aurelia-binding").TWO_WAY;
 var ONE_TIME = require("aurelia-binding").ONE_TIME;
-var SyntaxInterpreter = function SyntaxInterpreter(parser, observerLocator, eventManager) {
-  this.parser = parser;
-  this.observerLocator = observerLocator;
-  this.eventManager = eventManager;
+var SyntaxInterpreter = (function () {
+  var SyntaxInterpreter = function SyntaxInterpreter(parser, observerLocator, eventManager) {
+    this.parser = parser;
+    this.observerLocator = observerLocator;
+    this.eventManager = eventManager;
+  };
 
-  this["for"] = function (resources, element, attrName, attrValue, existingInstruction) {
-    var parts = attrValue.split(" of ");
-
-    if (parts.length !== 2) {
-      throw new Error("Incorrect syntax for \"for\". The form is: \"$local of $items\".");
+  _prototypeProperties(SyntaxInterpreter, {
+    inject: {
+      value: function () {
+        return [Parser, ObserverLocator, EventManager];
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
     }
+  }, {
+    interpret: {
+      value: function (resources, element, info, existingInstruction) {
+        if (info.command in this) {
+          return this[info.command](resources, element, info, existingInstruction);
+        }
 
-    var instruction = existingInstruction || { attrName: attrName, attributes: {} };
+        return this.handleUnknownCommand(resources, element, info, existingInstruction);
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    handleUnknownCommand: {
+      value: function (resources, element, info, existingInstruction) {
+        throw new Error("Unknown binding command ${info.command} used.");
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    determineDefaultBindingMode: {
+      value: function (element, attrName) {
+        var tagName = element.tagName.toLowerCase();
 
-    instruction.attributes.local = parts[0];
-    instruction.attributes[attrName] = new BindingExpression(this.observerLocator, attrName, this.parser.parse(parts[1]), ONE_WAY, resources.valueConverterLookupFunction);
+        if (tagName === "input") {
+          return attrName === "value" || attrName === "checked" ? TWO_WAY : ONE_WAY;
+        } else if (tagName == "textarea" || tagName == "select") {
+          return attrName == "value" ? TWO_WAY : ONE_WAY;
+        }
 
-    return instruction;
-  };
+        return ONE_WAY;
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    bind: {
+      value: function (resources, element, info, existingInstruction) {
+        var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-  this["two-way"] = function (resources, element, attrName, attrValue, existingInstruction) {
-    var instruction = existingInstruction || { attrName: attrName, attributes: {} };
+        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), this.determineDefaultBindingMode(element, info.attrName), resources.valueConverterLookupFunction);
 
-    instruction.attributes[attrName] = new BindingExpression(this.observerLocator, attrName, this.parser.parse(attrValue), TWO_WAY, resources.valueConverterLookupFunction);
+        return instruction;
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    trigger: {
+      value: function (resources, element, info) {
+        return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true);
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    delegate: {
+      value: function (resources, element, info) {
+        return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true);
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    call: {
+      value: function (resources, element, info, existingInstruction) {
+        var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-    return instruction;
-  };
+        instruction.attributes[info.attrName] = new CallExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), resources.valueConverterLookupFunction);
 
-  this["one-way"] = function (resources, element, attrName, attrValue, existingInstruction) {
-    var instruction = existingInstruction || { attrName: attrName, attributes: {} };
+        return instruction;
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    options: {
+      value: function (resources, element, info) {
+        var instruction = { attrName: info.attrName, attributes: {} },
+            attrValue = info.attrValue,
+            language = this.language,
+            name = null,
+            target = "",
+            current,
+            i,
+            ii;
 
-    instruction.attributes[attrName] = new BindingExpression(this.observerLocator, attrName === "class" ? "className" : attrName, this.parser.parse(attrValue), ONE_WAY, resources.valueConverterLookupFunction);
+        for (i = 0, ii = attrValue.length; i < ii; ++i) {
+          current = attrValue[i];
 
-    return instruction;
-  };
+          if (current === ";") {
+            info = language.inspectAttribute(resources, name, target.trim());
+            language.createAttributeInstruction(resources, element, info, instruction);
 
-  this["one-time"] = function (resources, element, attrName, attrValue, existingInstruction) {
-    var instruction = existingInstruction || { attrName: attrName, attributes: {} };
+            if (!instruction.attributes[info.attrName]) {
+              instruction.attributes[info.attrName] = target;
+            }
 
-    instruction.attributes[attrName] = new BindingExpression(this.observerLocator, attrName === "class" ? "className" : attrName, this.parser.parse(attrValue), ONE_TIME, resources.valueConverterLookupFunction);
+            target = "";
+            name = null;
+          } else if (current === ":" && name === null) {
+            name = target.trim();
+            target = "";
+          } else {
+            target += current;
+          }
+        }
 
-    return instruction;
-  };
+        if (name !== null) {
+          info = language.inspectAttribute(resources, name, target.trim());
+          language.createAttributeInstruction(resources, element, info, instruction);
 
-  this.call = function (resources, element, attrName, attrValue, existingInstruction) {
-    var instruction = existingInstruction || { attrName: attrName, attributes: {} };
+          if (!instruction.attributes[info.attrName]) {
+            instruction.attributes[info.attrName] = target;
+          }
+        }
 
-    instruction.attributes[attrName] = new CallExpression(this.observerLocator, attrName, this.parser.parse(attrValue), resources.valueConverterLookupFunction);
-
-    return instruction;
-  };
-};
-
-SyntaxInterpreter.inject = function () {
-  return [Parser, ObserverLocator, EventManager];
-};
-
-SyntaxInterpreter.prototype.interpret = function (type, resources, element, attrName, attrValue, existingInstruction) {
-  if (type in this) {
-    return this[type](resources, element, attrName, attrValue, existingInstruction);
-  }
-};
-
-SyntaxInterpreter.prototype.determineDefaultBindingMode = function (element, attrName) {
-  var tagName = element.tagName.toLowerCase();
-
-  if (tagName === "input") {
-    return attrName === "value" || attrName === "checked" ? TWO_WAY : ONE_WAY;
-  } else if (tagName == "textarea" || tagName == "select") {
-    return attrName == "value" ? TWO_WAY : ONE_WAY;
-  }
-
-  return ONE_WAY;
-};
-
-SyntaxInterpreter.prototype.bind = function (resources, element, attrName, attrValue, existingInstruction) {
-  var instruction = existingInstruction || { attrName: attrName, attributes: {} };
-
-  instruction.attributes[attrName] = new BindingExpression(this.observerLocator, attrName, this.parser.parse(attrValue), this.determineDefaultBindingMode(element, attrName), resources.valueConverterLookupFunction);
-
-  return instruction;
-};
-
-SyntaxInterpreter.prototype.trigger = function (resources, element, attrName, attrValue) {
-  return new ListenerExpression(this.eventManager, attrName, this.parser.parse(attrValue), false, true);
-};
-
-SyntaxInterpreter.prototype.delegate = function (resources, element, attrName, attrValue) {
-  return new ListenerExpression(this.eventManager, attrName, this.parser.parse(attrValue), true, true);
-};
-
-SyntaxInterpreter.prototype.ref = function (resources, element, attrName, attrValue) {
-  return new NameExpression(attrName, attrValue);
-};
-
-SyntaxInterpreter.prototype.options = function (resources, element, attrName, attrValue) {
-  var instruction = { attrName: attrName, attributes: {} }, language = this.language, name = null, target = "", current, i, ii;
-
-  for (i = 0, ii = attrValue.length; i < ii; ++i) {
-    current = attrValue[i];
-
-    if (current === ";") {
-      language.parseAttribute(resources, element, name, target, instruction);
-      target = "";
-      name = null;
-    } else if (current === ":" && name === null) {
-      name = target.trim();
-      target = "";
-    } else {
-      target += current;
+        return instruction;
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
     }
-  }
+  });
 
-  if (name !== null) {
-    language.parseAttribute(resources, element, name, target, instruction);
-  }
-
-  return instruction;
-};
+  return SyntaxInterpreter;
+})();
 
 exports.SyntaxInterpreter = SyntaxInterpreter;
+
+
+SyntaxInterpreter.prototype["for"] = function (resources, element, info, existingInstruction) {
+  var parts = info.attrValue.split(" of ");
+
+  if (parts.length !== 2) {
+    throw new Error("Incorrect syntax for \"for\". The form is: \"$local of $items\".");
+  }
+
+  var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+
+  instruction.attributes.local = parts[0];
+  instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(parts[1]), ONE_WAY, resources.valueConverterLookupFunction);
+
+  return instruction;
+};
+
+SyntaxInterpreter.prototype["two-way"] = function (resources, element, info, existingInstruction) {
+  var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+
+  instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), TWO_WAY, resources.valueConverterLookupFunction);
+
+  return instruction;
+};
+
+SyntaxInterpreter.prototype["one-way"] = function (resources, element, info, existingInstruction) {
+  var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+
+  instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName === "class" ? "className" : info.attrName, this.parser.parse(info.attrValue), ONE_WAY, resources.valueConverterLookupFunction);
+
+  return instruction;
+};
+
+SyntaxInterpreter.prototype["one-time"] = function (resources, element, info, existingInstruction) {
+  var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+
+  instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName === "class" ? "className" : info.attrName, this.parser.parse(info.attrValue), ONE_TIME, resources.valueConverterLookupFunction);
+
+  return instruction;
+};
+
+SyntaxInterpreter.prototype["view-model"] = function (resources, element, info) {
+  return new NameExpression(info.attrValue, "view-model");
+};
