@@ -28,7 +28,7 @@ export class SyntaxInterpreter {
   }
 
   handleUnknownCommand(resources, element, info, existingInstruction){
-    throw new Error("Unknown binding command ${info.command} used.");
+    throw new Error(`Unknown binding command ${info.command} used.`);
   }
 
   determineDefaultBindingMode(element, attrName){
