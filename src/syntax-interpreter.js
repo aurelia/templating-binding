@@ -50,7 +50,7 @@ export class SyntaxInterpreter {
         this.observerLocator,
         info.attrName,
         this.parser.parse(info.attrValue),
-        this.determineDefaultBindingMode(element, info.attrName),
+        info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName),
         resources.valueConverterLookupFunction    
       );
 
@@ -90,8 +90,8 @@ export class SyntaxInterpreter {
     return instruction;
   };
 
-  options(resources, element, info){
-    var instruction = {attrName:info.attrName, attributes:{}},
+  options(resources, element, info, existingInstruction){
+    var instruction = existingInstruction || {attrName:info.attrName, attributes:{}},
         attrValue = info.attrValue,
         language = this.language,
         name = null, target = '', current, i , ii;
