@@ -21,6 +21,8 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   inspectAttribute(resources, attrName, attrValue){
     var parts = attrName.split('.');
 
+    info.defaultBindingMode = null;
+
     if(parts.length == 2){
       info.attrName = parts[0].trim();
       info.attrValue = attrValue;
