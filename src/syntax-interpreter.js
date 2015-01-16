@@ -28,7 +28,17 @@ export class SyntaxInterpreter {
   }
 
   handleUnknownCommand(resources, element, info, existingInstruction){
-    throw new Error(`Unknown binding command ${info.command} used.`);
+    var attrName = info.attrName,
+        command = info.command;
+
+    var instruction = this.options(resources, element, info, existingInstruction);
+    
+    instruction.alteredAttr = true;
+    instruction.attrName = 'global-behavior';
+    instruction.attributes.aureliaAttrName = attrName;
+    instruction.attributes.aureliaCommand = command;
+
+    return instruction;
   }
 
   determineDefaultBindingMode(element, attrName){
