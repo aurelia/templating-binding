@@ -17,15 +17,15 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
   var TWO_WAY = _aureliaBinding.TWO_WAY;
   var ONE_TIME = _aureliaBinding.ONE_TIME;
   var SyntaxInterpreter = (function () {
-    var SyntaxInterpreter = function SyntaxInterpreter(parser, observerLocator, eventManager) {
+    function SyntaxInterpreter(parser, observerLocator, eventManager) {
       this.parser = parser;
       this.observerLocator = observerLocator;
       this.eventManager = eventManager;
-    };
+    }
 
     _prototypeProperties(SyntaxInterpreter, {
       inject: {
-        value: function () {
+        value: function inject() {
           return [Parser, ObserverLocator, EventManager];
         },
         writable: true,
@@ -34,7 +34,7 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
       }
     }, {
       interpret: {
-        value: function (resources, element, info, existingInstruction) {
+        value: function interpret(resources, element, info, existingInstruction) {
           if (info.command in this) {
             return this[info.command](resources, element, info, existingInstruction);
           }
@@ -46,15 +46,25 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
         configurable: true
       },
       handleUnknownCommand: {
-        value: function (resources, element, info, existingInstruction) {
-          throw new Error("Unknown binding command ${info.command} used.");
+        value: function handleUnknownCommand(resources, element, info, existingInstruction) {
+          var attrName = info.attrName,
+              command = info.command;
+
+          var instruction = this.options(resources, element, info, existingInstruction);
+
+          instruction.alteredAttr = true;
+          instruction.attrName = "global-behavior";
+          instruction.attributes.aureliaAttrName = attrName;
+          instruction.attributes.aureliaCommand = command;
+
+          return instruction;
         },
         writable: true,
         enumerable: true,
         configurable: true
       },
       determineDefaultBindingMode: {
-        value: function (element, attrName) {
+        value: function determineDefaultBindingMode(element, attrName) {
           var tagName = element.tagName.toLowerCase();
 
           if (tagName === "input") {
@@ -70,10 +80,10 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
         configurable: true
       },
       bind: {
-        value: function (resources, element, info, existingInstruction) {
+        value: function bind(resources, element, info, existingInstruction) {
           var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-          instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), this.determineDefaultBindingMode(element, info.attrName), resources.valueConverterLookupFunction);
+          instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName), resources.valueConverterLookupFunction);
 
           return instruction;
         },
@@ -82,7 +92,7 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
         configurable: true
       },
       trigger: {
-        value: function (resources, element, info) {
+        value: function trigger(resources, element, info) {
           return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true);
         },
         writable: true,
@@ -90,7 +100,7 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
         configurable: true
       },
       delegate: {
-        value: function (resources, element, info) {
+        value: function delegate(resources, element, info) {
           return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true);
         },
         writable: true,
@@ -98,7 +108,7 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
         configurable: true
       },
       call: {
-        value: function (resources, element, info, existingInstruction) {
+        value: function call(resources, element, info, existingInstruction) {
           var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
           instruction.attributes[info.attrName] = new CallExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), resources.valueConverterLookupFunction);
@@ -110,8 +120,8 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
         configurable: true
       },
       options: {
-        value: function (resources, element, info) {
-          var instruction = { attrName: info.attrName, attributes: {} },
+        value: function options(resources, element, info, existingInstruction) {
+          var instruction = existingInstruction || { attrName: info.attrName, attributes: {} },
               attrValue = info.attrValue,
               language = this.language,
               name = null,

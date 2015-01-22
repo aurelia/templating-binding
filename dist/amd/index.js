@@ -7,7 +7,8 @@ define(["exports", "aurelia-templating", "./binding-language", "./syntax-interpr
 
 
   function install(aurelia) {
-    var instance, getInstance = function (c) {
+    var instance,
+        getInstance = function (c) {
       return instance || (instance = c.invoke(TemplatingBindingLanguage));
     };
 

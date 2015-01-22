@@ -6,19 +6,19 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
     if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
   };
 
-  var _inherits = function (child, parent) {
-    if (typeof parent !== "function" && parent !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof parent);
+  var _inherits = function (subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
     }
-    child.prototype = Object.create(parent && parent.prototype, {
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
       constructor: {
-        value: child,
+        value: subClass,
         enumerable: false,
         writable: true,
         configurable: true
       }
     });
-    if (parent) child.__proto__ = parent;
+    if (superClass) subClass.__proto__ = superClass;
   };
 
   var BindingLanguage = _aureliaTemplating.BindingLanguage;
@@ -33,7 +33,7 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
   var info = {};
 
   var TemplatingBindingLanguage = (function (BindingLanguage) {
-    var TemplatingBindingLanguage = function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter) {
+    function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter) {
       this.parser = parser;
       this.observerLocator = observerLocator;
       this.syntaxInterpreter = syntaxInterpreter;
@@ -43,13 +43,13 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
         "class": "className",
         "for": "htmlFor"
       };
-    };
+    }
 
     _inherits(TemplatingBindingLanguage, BindingLanguage);
 
     _prototypeProperties(TemplatingBindingLanguage, {
       inject: {
-        value: function () {
+        value: function inject() {
           return [Parser, ObserverLocator, SyntaxInterpreter];
         },
         writable: true,
@@ -58,8 +58,10 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
       }
     }, {
       inspectAttribute: {
-        value: function (resources, attrName, attrValue) {
+        value: function inspectAttribute(resources, attrName, attrValue) {
           var parts = attrName.split(".");
+
+          info.defaultBindingMode = null;
 
           if (parts.length == 2) {
             info.attrName = parts[0].trim();
@@ -85,7 +87,7 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
         configurable: true
       },
       createAttributeInstruction: {
-        value: function (resources, element, info, existingInstruction) {
+        value: function createAttributeInstruction(resources, element, info, existingInstruction) {
           var instruction;
 
           if (info.expression) {
@@ -106,7 +108,7 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
         configurable: true
       },
       parseText: {
-        value: function (resources, value) {
+        value: function parseText(resources, value) {
           return this.parseContent(resources, "textContent", value);
         },
         writable: true,
@@ -114,7 +116,7 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
         configurable: true
       },
       parseContent: {
-        value: function (resources, attrName, attrValue) {
+        value: function parseContent(resources, attrName, attrValue) {
           var expressionText, expression;
 
           var parts = attrValue.split(this.interpolationRegex);

@@ -5,7 +5,8 @@ System.register(["aurelia-templating", "./binding-language", "./syntax-interpret
 
 
   function install(aurelia) {
-    var instance, getInstance = function (c) {
+    var instance,
+        getInstance = function (c) {
       return instance || (instance = c.invoke(TemplatingBindingLanguage));
     };
 

@@ -28,7 +28,17 @@ export class SyntaxInterpreter {
   }
 
   handleUnknownCommand(resources, element, info, existingInstruction){
-    throw new Error("Unknown binding command ${info.command} used.");
+    var attrName = info.attrName,
+        command = info.command;
+
+    var instruction = this.options(resources, element, info, existingInstruction);
+    
+    instruction.alteredAttr = true;
+    instruction.attrName = 'global-behavior';
+    instruction.attributes.aureliaAttrName = attrName;
+    instruction.attributes.aureliaCommand = command;
+
+    return instruction;
   }
 
   determineDefaultBindingMode(element, attrName){
@@ -50,7 +60,7 @@ export class SyntaxInterpreter {
         this.observerLocator,
         info.attrName,
         this.parser.parse(info.attrValue),
-        this.determineDefaultBindingMode(element, info.attrName),
+        info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName),
         resources.valueConverterLookupFunction    
       );
 
@@ -90,8 +100,8 @@ export class SyntaxInterpreter {
     return instruction;
   };
 
-  options(resources, element, info){
-    var instruction = {attrName:info.attrName, attributes:{}},
+  options(resources, element, info, existingInstruction){
+    var instruction = existingInstruction || {attrName:info.attrName, attributes:{}},
         attrValue = info.attrValue,
         language = this.language,
         name = null, target = '', current, i , ii;

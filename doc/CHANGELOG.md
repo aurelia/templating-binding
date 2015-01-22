@@ -1,3 +1,20 @@
+## 0.8.0 (2015-01-22)
+
+
+#### Bug Fixes
+
+* **binding-language:** fix non-default binding mode overwrites ([8b49ae59](http://github.com/aurelia/templating-binding/commit/8b49ae59fcd75f60d329ffafd8b36b5081925162))
+* **package:** update dependencies ([f8927df5](http://github.com/aurelia/templating-binding/commit/f8927df5959800cfbffb3ce90d11ab02aad4be06))
+* **syntax-interpreter:** incorrect string interpolation syntax ([5bf69639](http://github.com/aurelia/templating-binding/commit/5bf69639e6d81be1bb8be61d6a44e854c2306357))
+
+
+#### Features
+
+* **syntax-interpreter:**
+  * enable dynamic commands ([880cc153](http://github.com/aurelia/templating-binding/commit/880cc1531fc09efa0dec9fa88f08d80691580364))
+  * use provided default bindings for .bind ([b59c3f21](http://github.com/aurelia/templating-binding/commit/b59c3f2182926c4e89fed57216b5c4dd42c5a778))
+
+
 ### 0.7.2 (2015-01-12)
 
 
