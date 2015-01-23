@@ -70,35 +70,133 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   }
 
   parseContent(resources, attrName, attrValue){
-    var expressionText, expression;
-
-    var parts = attrValue.split(this.interpolationRegex);
+    var parts = attrValue.split(this.interpolationRegex), i, ii;
     if (parts.length <= 1) { //no expression found
       return null;
     }
 
-    parts.forEach(function(part, index) {
-      if (index % 2 === 0) {
-        //plain text parts
-        parts[index] = "'" + part + "'";
+    for(i = 0, ii = parts.length; i < ii; ++i){
+      if (i % 2 === 0) {
+        //do nothing
       } else {
-        //expression parts
-        parts[index] = "(" + part + ")";
+        parts[i] = this.parser.parse(parts[i]);
       }
-    });
+    }
 
-    expressionText = parts.join('+');
-
-    expression = new BindingExpression(
+    return new InterpolationBindingExpression(
       this.observerLocator,
       this.attributeMap[attrName] || attrName,
-      this.parser.parse(expressionText), 
+      parts, 
       ONE_WAY,
-      resources.valueConverterLookupFunction
+      resources.valueConverterLookupFunction,
+      attrName
     );
+  }
+}
 
-    expression.attribute = attrName;
+export class InterpolationBindingExpression {
+  constructor(observerLocator, targetProperty, parts,
+    mode, valueConverterLookupFunction, attribute){
+    this.observerLocator = observerLocator;
+    this.targetProperty = targetProperty;
+    this.parts = parts;
+    this.mode = mode;
+    this.valueConverterLookupFunction = valueConverterLookupFunction;
+    this.attribute = attribute;
+    this.discrete = false;
+  }
 
-    return expression;
+  createBinding(target){
+    return new InterpolationBinding(
+      this.observerLocator,
+      this.parts,
+      target,
+      this.targetProperty,
+      this.mode,
+      this.valueConverterLookupFunction
+      );
+  }
+}
+
+class InterpolationBinding {
+  constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction){
+    this.observerLocator = observerLocator;
+    this.parts = parts;
+    this.targetProperty = observerLocator.getObserver(target, targetProperty);
+    this.mode = mode;
+    this.valueConverterLookupFunction = valueConverterLookupFunction;
+    this.toDispose = [];
+  }
+
+  getObserver(obj, propertyName){
+    return this.observerLocator.getObserver(obj, propertyName);
+  }
+
+  bind(source){
+    this.source = source;
+
+    if(this.mode == ONE_WAY){
+      this.unbind();
+      this.connect();
+      this.setValue();
+    }else{
+      this.setValue();
+    }
+  }
+
+  setValue(){
+    var value = this.interpolate();
+    this.targetProperty.setValue(value);
+  }
+
+  connect(){
+    var info,
+        parts = this.parts,
+        source = this.source,
+        toDispose = this.toDispose = [],
+        i, ii;
+
+    for(i = 0, ii = parts.length; i < ii; ++i){
+      if (i % 2 === 0) {
+        //do nothing
+      } else {
+        info = parts[i].connect(this, source);
+        if(info.observer){
+          toDispose.push(info.observer.subscribe(newValue =>{
+            this.setValue();
+          }));
+        }
+      }
+    }
+  }
+
+  interpolate(){
+    var value = '',
+        parts = this.parts,
+        source = this.source,
+        valueConverterLookupFunction = this.valueConverterLookupFunction,
+        i, ii;
+
+    for(i = 0, ii = parts.length; i < ii; ++i){
+      if (i % 2 === 0) {
+        value += parts[i];
+      } else {
+        value += parts[i].evaluate(source, valueConverterLookupFunction).toString();
+      }
+    }
+
+    return value;
+  }
+
+  unbind(){
+    var i, ii, toDispose = this.toDispose;
+
+    if(toDispose){
+      for(i = 0, ii = toDispose.length; i < ii; ++i){
+        toDispose[i]();
+      }
+    }
+
+    this.toDispose = null;
   }
 }

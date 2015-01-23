@@ -116,28 +116,20 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
     },
     parseContent: {
       value: function parseContent(resources, attrName, attrValue) {
-        var expressionText, expression;
-
-        var parts = attrValue.split(this.interpolationRegex);
+        var parts = attrValue.split(this.interpolationRegex),
+            i,
+            ii;
         if (parts.length <= 1) {
           return null;
         }
 
-        parts.forEach(function (part, index) {
-          if (index % 2 === 0) {
-            parts[index] = "'" + part + "'";
-          } else {
-            parts[index] = "(" + part + ")";
+        for (i = 0, ii = parts.length; i < ii; ++i) {
+          if (i % 2 === 0) {} else {
+            parts[i] = this.parser.parse(parts[i]);
           }
-        });
+        }
 
-        expressionText = parts.join("+");
-
-        expression = new BindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, this.parser.parse(expressionText), ONE_WAY, resources.valueConverterLookupFunction);
-
-        expression.attribute = attrName;
-
-        return expression;
+        return new InterpolationBindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, parts, ONE_WAY, resources.valueConverterLookupFunction, attrName);
       },
       writable: true,
       enumerable: true,
@@ -149,3 +141,143 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
 })(BindingLanguage);
 
 exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
+var InterpolationBindingExpression = (function () {
+  function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, valueConverterLookupFunction, attribute) {
+    this.observerLocator = observerLocator;
+    this.targetProperty = targetProperty;
+    this.parts = parts;
+    this.mode = mode;
+    this.valueConverterLookupFunction = valueConverterLookupFunction;
+    this.attribute = attribute;
+    this.discrete = false;
+  }
+
+  _prototypeProperties(InterpolationBindingExpression, null, {
+    createBinding: {
+      value: function createBinding(target) {
+        return new InterpolationBinding(this.observerLocator, this.parts, target, this.targetProperty, this.mode, this.valueConverterLookupFunction);
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    }
+  });
+
+  return InterpolationBindingExpression;
+})();
+
+exports.InterpolationBindingExpression = InterpolationBindingExpression;
+var InterpolationBinding = (function () {
+  function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
+    this.observerLocator = observerLocator;
+    this.parts = parts;
+    this.targetProperty = observerLocator.getObserver(target, targetProperty);
+    this.mode = mode;
+    this.valueConverterLookupFunction = valueConverterLookupFunction;
+    this.toDispose = [];
+  }
+
+  _prototypeProperties(InterpolationBinding, null, {
+    getObserver: {
+      value: function getObserver(obj, propertyName) {
+        return this.observerLocator.getObserver(obj, propertyName);
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    bind: {
+      value: function bind(source) {
+        this.source = source;
+
+        if (this.mode == ONE_WAY) {
+          this.unbind();
+          this.connect();
+          this.setValue();
+        } else {
+          this.setValue();
+        }
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    setValue: {
+      value: function setValue() {
+        var value = this.interpolate();
+        this.targetProperty.setValue(value);
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    connect: {
+      value: function connect() {
+        var _this = this;
+        var info,
+            parts = this.parts,
+            source = this.source,
+            toDispose = this.toDispose = [],
+            i,
+            ii;
+
+        for (i = 0, ii = parts.length; i < ii; ++i) {
+          if (i % 2 === 0) {} else {
+            info = parts[i].connect(this, source);
+            if (info.observer) {
+              toDispose.push(info.observer.subscribe(function (newValue) {
+                _this.setValue();
+              }));
+            }
+          }
+        }
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    interpolate: {
+      value: function interpolate() {
+        var value = "",
+            parts = this.parts,
+            source = this.source,
+            valueConverterLookupFunction = this.valueConverterLookupFunction,
+            i,
+            ii;
+
+        for (i = 0, ii = parts.length; i < ii; ++i) {
+          if (i % 2 === 0) {
+            value += parts[i];
+          } else {
+            value += parts[i].evaluate(source, valueConverterLookupFunction).toString();
+          }
+        }
+
+        return value;
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    unbind: {
+      value: function unbind() {
+        var i,
+            ii,
+            toDispose = this.toDispose;
+
+        if (toDispose) {
+          for (i = 0, ii = toDispose.length; i < ii; ++i) {
+            toDispose[i]();
+          }
+        }
+
+        this.toDispose = null;
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    }
+  });
+
+  return InterpolationBinding;
+})();
