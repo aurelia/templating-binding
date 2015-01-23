@@ -1,3 +1,11 @@
+### 0.8.1 (2015-01-23)
+
+
+#### Bug Fixes
+
+* **binding-language:** interpolation bindings should support value converters ([95045ac3](http://github.com/aurelia/templating-binding/commit/95045ac337ae22f97901e71224edc5a67be4a42c))
+
+
 ## 0.8.0 (2015-01-22)
 
 
