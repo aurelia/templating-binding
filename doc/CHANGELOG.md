@@ -1,3 +1,11 @@
+### 0.8.2 (2015-01-24)
+
+
+#### Bug Fixes
+
+* **package:** update deps and fix bower semver ranges ([a9bffa70](http://github.com/aurelia/templating-binding/commit/a9bffa70605ff2e9881669cae574e7b005363e00))
+
+
 ### 0.8.1 (2015-01-23)
 
 
