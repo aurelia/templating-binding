@@ -244,13 +244,15 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
               source = this.source,
               valueConverterLookupFunction = this.valueConverterLookupFunction,
               i,
-              ii;
+              ii,
+              temp;
 
           for (i = 0, ii = parts.length; i < ii; ++i) {
             if (i % 2 === 0) {
               value += parts[i];
             } else {
-              value += parts[i].evaluate(source, valueConverterLookupFunction).toString();
+              temp = parts[i].evaluate(source, valueConverterLookupFunction);
+              value += temp ? temp.toString() : "";
             }
           }
 

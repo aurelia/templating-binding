@@ -1,3 +1,11 @@
+### 0.8.3 (2015-01-25)
+
+
+#### Bug Fixes
+
+* **interpolation-binding:** errors on undefined or null expression eval ([212a13d0](http://github.com/aurelia/templating-binding/commit/212a13d0a13f947e0974e1380af7a3eb82b679eb))
+
+
 ### 0.8.2 (2015-01-24)
 
 
