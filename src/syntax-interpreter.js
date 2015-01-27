@@ -58,7 +58,7 @@ export class SyntaxInterpreter {
 
     instruction.attributes[info.attrName] = new BindingExpression(
         this.observerLocator,
-        info.attrName,
+        this.attributeMap[info.attrName] || info.attrName,
         this.parser.parse(info.attrValue),
         info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName),
         resources.valueConverterLookupFunction    
