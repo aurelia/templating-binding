@@ -1,3 +1,11 @@
+### 0.8.4 (2015-01-29)
+
+
+#### Bug Fixes
+
+* **binding-language:** string interpolation renders empty string for number 0 ([9eff937a](http://github.com/aurelia/templating-binding/commit/9eff937a3e2ff1181825a76bef9025e5c431f3ac), closes [#3](http://github.com/aurelia/templating-binding/issues/3))
+
+
 ### 0.8.3 (2015-01-25)
 
 

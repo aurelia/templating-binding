@@ -82,7 +82,7 @@ var SyntaxInterpreter = (function () {
       value: function bind(resources, element, info, existingInstruction) {
         var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName), resources.valueConverterLookupFunction);
+        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName), resources.valueConverterLookupFunction);
 
         return instruction;
       },

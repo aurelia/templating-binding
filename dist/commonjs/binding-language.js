@@ -251,7 +251,7 @@ var InterpolationBinding = (function () {
             value += parts[i];
           } else {
             temp = parts[i].evaluate(source, valueConverterLookupFunction);
-            value += temp ? temp.toString() : "";
+            value += typeof temp !== "undefined" && temp !== null ? temp.toString() : "";
           }
         }
 
