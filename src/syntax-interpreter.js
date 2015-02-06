@@ -147,13 +147,22 @@ SyntaxInterpreter.prototype['for'] = function(resources, element, info, existing
     throw new Error('Incorrect syntax for "for". The form is: "$local of $items".');
   }
 
+  if(parts[0].match(/[[].+[,]\s.+[\]]/)){ // match: [key, value]
+    var firstPart = parts[0];
+    parts[0] = firstPart.substr(1, firstPart.indexOf(',') - 1);
+    parts.splice(1, 0, firstPart.substring(firstPart.indexOf(', ') + 2, firstPart.length -1));
+  }
+
   var instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
 
   instruction.attributes.local = parts[0];
+  if(parts.length === 3){
+    instruction.attributes.local2 = parts[1];
+  }
   instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
       info.attrName,
-      this.parser.parse(parts[1]),
+      this.parser.parse(parts[parts.length - 1]),
       ONE_WAY,
       resources.valueConverterLookupFunction
     );
