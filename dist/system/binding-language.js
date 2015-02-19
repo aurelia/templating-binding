@@ -15,28 +15,12 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
       SyntaxInterpreter = _syntaxInterpreter.SyntaxInterpreter;
     }],
     execute: function () {
-      _prototypeProperties = function (child, staticProps, instanceProps) {
-        if (staticProps) Object.defineProperties(child, staticProps);
-        if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-      };
+      _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-      _inherits = function (subClass, superClass) {
-        if (typeof superClass !== "function" && superClass !== null) {
-          throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-        }
-        subClass.prototype = Object.create(superClass && superClass.prototype, {
-          constructor: {
-            value: subClass,
-            enumerable: false,
-            writable: true,
-            configurable: true
-          }
-        });
-        if (superClass) subClass.__proto__ = superClass;
-      };
+      _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
       info = {};
-      TemplatingBindingLanguage = (function (BindingLanguage) {
+      TemplatingBindingLanguage = _export("TemplatingBindingLanguage", (function (BindingLanguage) {
         function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter) {
           this.parser = parser;
           this.observerLocator = observerLocator;
@@ -45,7 +29,8 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
           syntaxInterpreter.language = this;
           this.attributeMap = syntaxInterpreter.attributeMap = {
             "class": "className",
-            "for": "htmlFor"
+            "for": "htmlFor",
+            tabindex: "tabIndex"
           };
         }
 
@@ -57,7 +42,6 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               return [Parser, ObserverLocator, SyntaxInterpreter];
             },
             writable: true,
-            enumerable: true,
             configurable: true
           }
         }, {
@@ -87,7 +71,6 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               return info;
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           createAttributeInstruction: {
@@ -108,7 +91,6 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               return instruction;
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           parseText: {
@@ -116,7 +98,6 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               return this.parseContent(resources, "textContent", value);
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           parseContent: {
@@ -137,16 +118,13 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               return new InterpolationBindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, parts, ONE_WAY, resources.valueConverterLookupFunction, attrName);
             },
             writable: true,
-            enumerable: true,
             configurable: true
           }
         });
 
         return TemplatingBindingLanguage;
-      })(BindingLanguage);
-      _export("TemplatingBindingLanguage", TemplatingBindingLanguage);
-
-      InterpolationBindingExpression = (function () {
+      })(BindingLanguage));
+      InterpolationBindingExpression = _export("InterpolationBindingExpression", (function () {
         function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, valueConverterLookupFunction, attribute) {
           this.observerLocator = observerLocator;
           this.targetProperty = targetProperty;
@@ -163,15 +141,12 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               return new InterpolationBinding(this.observerLocator, this.parts, target, this.targetProperty, this.mode, this.valueConverterLookupFunction);
             },
             writable: true,
-            enumerable: true,
             configurable: true
           }
         });
 
         return InterpolationBindingExpression;
-      })();
-      _export("InterpolationBindingExpression", InterpolationBindingExpression);
-
+      })());
       InterpolationBinding = (function () {
         function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
           this.observerLocator = observerLocator;
@@ -188,7 +163,6 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               return this.observerLocator.getObserver(obj, propertyName);
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           bind: {
@@ -204,7 +178,6 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               }
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           setValue: {
@@ -213,7 +186,6 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               this.targetProperty.setValue(value);
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           connect: {
@@ -238,7 +210,6 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               }
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           interpolate: {
@@ -263,7 +234,6 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               return value;
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           unbind: {
@@ -281,7 +251,6 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
               this.toDispose = null;
             },
             writable: true,
-            enumerable: true,
             configurable: true
           }
         });

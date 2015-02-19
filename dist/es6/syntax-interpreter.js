@@ -149,11 +149,20 @@ SyntaxInterpreter.prototype['for'] = function(resources, element, info, existing
 
   var instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
 
-  instruction.attributes.local = parts[0];
+  if(parts[0].match(/[[].+[,]\s.+[\]]/)){
+    var firstPart = parts[0];
+    parts[0] = firstPart.substr(1, firstPart.indexOf(',') - 1);
+    parts.splice(1, 0, firstPart.substring(firstPart.indexOf(', ') + 2, firstPart.length -1));
+    instruction.attributes.key = parts[0];
+    instruction.attributes.value = parts[1];
+  }else{
+    instruction.attributes.local = parts[0];
+  }
+
   instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
       info.attrName,
-      this.parser.parse(parts[1]),
+      this.parser.parse(parts[parts.length - 1]),
       ONE_WAY,
       resources.valueConverterLookupFunction
     );

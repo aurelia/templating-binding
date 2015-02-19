@@ -1,25 +1,9 @@
 define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interpreter"], function (exports, _aureliaTemplating, _aureliaBinding, _syntaxInterpreter) {
   "use strict";
 
-  var _prototypeProperties = function (child, staticProps, instanceProps) {
-    if (staticProps) Object.defineProperties(child, staticProps);
-    if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-  };
+  var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-  var _inherits = function (subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) subClass.__proto__ = superClass;
-  };
+  var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
   var BindingLanguage = _aureliaTemplating.BindingLanguage;
   var Parser = _aureliaBinding.Parser;
@@ -32,7 +16,7 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
 
   var info = {};
 
-  var TemplatingBindingLanguage = (function (BindingLanguage) {
+  var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (function (BindingLanguage) {
     function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter) {
       this.parser = parser;
       this.observerLocator = observerLocator;
@@ -41,7 +25,8 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
       syntaxInterpreter.language = this;
       this.attributeMap = syntaxInterpreter.attributeMap = {
         "class": "className",
-        "for": "htmlFor"
+        "for": "htmlFor",
+        tabindex: "tabIndex"
       };
     }
 
@@ -53,7 +38,6 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           return [Parser, ObserverLocator, SyntaxInterpreter];
         },
         writable: true,
-        enumerable: true,
         configurable: true
       }
     }, {
@@ -83,7 +67,6 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           return info;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       createAttributeInstruction: {
@@ -104,7 +87,6 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           return instruction;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       parseText: {
@@ -112,7 +94,6 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           return this.parseContent(resources, "textContent", value);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       parseContent: {
@@ -133,16 +114,13 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           return new InterpolationBindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, parts, ONE_WAY, resources.valueConverterLookupFunction, attrName);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       }
     });
 
     return TemplatingBindingLanguage;
   })(BindingLanguage);
-
-  exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
-  var InterpolationBindingExpression = (function () {
+  var InterpolationBindingExpression = exports.InterpolationBindingExpression = (function () {
     function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, valueConverterLookupFunction, attribute) {
       this.observerLocator = observerLocator;
       this.targetProperty = targetProperty;
@@ -159,15 +137,12 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           return new InterpolationBinding(this.observerLocator, this.parts, target, this.targetProperty, this.mode, this.valueConverterLookupFunction);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       }
     });
 
     return InterpolationBindingExpression;
   })();
-
-  exports.InterpolationBindingExpression = InterpolationBindingExpression;
   var InterpolationBinding = (function () {
     function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
       this.observerLocator = observerLocator;
@@ -184,7 +159,6 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           return this.observerLocator.getObserver(obj, propertyName);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       bind: {
@@ -200,7 +174,6 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           }
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       setValue: {
@@ -209,7 +182,6 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           this.targetProperty.setValue(value);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       connect: {
@@ -234,7 +206,6 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           }
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       interpolate: {
@@ -259,7 +230,6 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           return value;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       unbind: {
@@ -277,11 +247,12 @@ define(["exports", "aurelia-templating", "aurelia-binding", "./syntax-interprete
           this.toDispose = null;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       }
     });
 
     return InterpolationBinding;
   })();
+
+  exports.__esModule = true;
 });

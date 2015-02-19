@@ -1,37 +1,23 @@
 "use strict";
 
-var _prototypeProperties = function (child, staticProps, instanceProps) {
-  if (staticProps) Object.defineProperties(child, staticProps);
-  if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-};
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-var _inherits = function (subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) subClass.__proto__ = superClass;
-};
+var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
 var BindingLanguage = require("aurelia-templating").BindingLanguage;
-var Parser = require("aurelia-binding").Parser;
-var ObserverLocator = require("aurelia-binding").ObserverLocator;
-var BindingExpression = require("aurelia-binding").BindingExpression;
-var NameExpression = require("aurelia-binding").NameExpression;
-var ONE_WAY = require("aurelia-binding").ONE_WAY;
+var _aureliaBinding = require("aurelia-binding");
+
+var Parser = _aureliaBinding.Parser;
+var ObserverLocator = _aureliaBinding.ObserverLocator;
+var BindingExpression = _aureliaBinding.BindingExpression;
+var NameExpression = _aureliaBinding.NameExpression;
+var ONE_WAY = _aureliaBinding.ONE_WAY;
 var SyntaxInterpreter = require("./syntax-interpreter").SyntaxInterpreter;
 
 
 var info = {};
 
-var TemplatingBindingLanguage = (function (BindingLanguage) {
+var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (function (BindingLanguage) {
   function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter) {
     this.parser = parser;
     this.observerLocator = observerLocator;
@@ -40,7 +26,8 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
       "class": "className",
-      "for": "htmlFor"
+      "for": "htmlFor",
+      tabindex: "tabIndex"
     };
   }
 
@@ -52,7 +39,6 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
         return [Parser, ObserverLocator, SyntaxInterpreter];
       },
       writable: true,
-      enumerable: true,
       configurable: true
     }
   }, {
@@ -82,7 +68,6 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
         return info;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     createAttributeInstruction: {
@@ -103,7 +88,6 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
         return instruction;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     parseText: {
@@ -111,7 +95,6 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
         return this.parseContent(resources, "textContent", value);
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     parseContent: {
@@ -132,16 +115,13 @@ var TemplatingBindingLanguage = (function (BindingLanguage) {
         return new InterpolationBindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, parts, ONE_WAY, resources.valueConverterLookupFunction, attrName);
       },
       writable: true,
-      enumerable: true,
       configurable: true
     }
   });
 
   return TemplatingBindingLanguage;
 })(BindingLanguage);
-
-exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
-var InterpolationBindingExpression = (function () {
+var InterpolationBindingExpression = exports.InterpolationBindingExpression = (function () {
   function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, valueConverterLookupFunction, attribute) {
     this.observerLocator = observerLocator;
     this.targetProperty = targetProperty;
@@ -158,15 +138,12 @@ var InterpolationBindingExpression = (function () {
         return new InterpolationBinding(this.observerLocator, this.parts, target, this.targetProperty, this.mode, this.valueConverterLookupFunction);
       },
       writable: true,
-      enumerable: true,
       configurable: true
     }
   });
 
   return InterpolationBindingExpression;
 })();
-
-exports.InterpolationBindingExpression = InterpolationBindingExpression;
 var InterpolationBinding = (function () {
   function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
     this.observerLocator = observerLocator;
@@ -183,7 +160,6 @@ var InterpolationBinding = (function () {
         return this.observerLocator.getObserver(obj, propertyName);
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     bind: {
@@ -199,7 +175,6 @@ var InterpolationBinding = (function () {
         }
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     setValue: {
@@ -208,7 +183,6 @@ var InterpolationBinding = (function () {
         this.targetProperty.setValue(value);
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     connect: {
@@ -233,7 +207,6 @@ var InterpolationBinding = (function () {
         }
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     interpolate: {
@@ -258,7 +231,6 @@ var InterpolationBinding = (function () {
         return value;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     unbind: {
@@ -276,10 +248,11 @@ var InterpolationBinding = (function () {
         this.toDispose = null;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     }
   });
 
   return InterpolationBinding;
 })();
+
+exports.__esModule = true;

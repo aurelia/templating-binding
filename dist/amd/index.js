@@ -24,4 +24,5 @@ define(["exports", "aurelia-templating", "./binding-language", "./syntax-interpr
   exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
   exports.SyntaxInterpreter = SyntaxInterpreter;
   exports.install = install;
+  exports.__esModule = true;
 });

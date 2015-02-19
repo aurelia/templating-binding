@@ -14,7 +14,8 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
       'class':'className',
-      'for':'htmlFor'
+      'for':'htmlFor',
+      'tabindex':'tabIndex'
     };
   }
 
@@ -86,7 +87,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return new InterpolationBindingExpression(
       this.observerLocator,
       this.attributeMap[attrName] || attrName,
-      parts, 
+      parts,
       ONE_WAY,
       resources.valueConverterLookupFunction,
       attrName

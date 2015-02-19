@@ -1,3 +1,17 @@
+### 0.8.5 (2015-02-19)
+
+
+#### Bug Fixes
+
+* **binding-language:** map tabindex attr to tabIndex prop ([851479bc](http://github.com/aurelia/templating-binding/commit/851479bc3eaf311d69776e852328a03fe66f09ba))
+* **build:** add missing bower bump ([4cb8c02c](http://github.com/aurelia/templating-binding/commit/4cb8c02c9aef319821b997cea15811d1b78fcee9))
+
+
+#### Features
+
+* **syntax-interpreter:** add support for key value iterations in for ([72c8c371](http://github.com/aurelia/templating-binding/commit/72c8c371776e45303ddefa8d1d4bfd08f2a6910f))
+
+
 ### 0.8.4 (2015-01-29)
 
 

@@ -1,10 +1,7 @@
 define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
   "use strict";
 
-  var _prototypeProperties = function (child, staticProps, instanceProps) {
-    if (staticProps) Object.defineProperties(child, staticProps);
-    if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-  };
+  var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
   var Parser = _aureliaBinding.Parser;
   var ObserverLocator = _aureliaBinding.ObserverLocator;
@@ -16,7 +13,7 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
   var ONE_WAY = _aureliaBinding.ONE_WAY;
   var TWO_WAY = _aureliaBinding.TWO_WAY;
   var ONE_TIME = _aureliaBinding.ONE_TIME;
-  var SyntaxInterpreter = (function () {
+  var SyntaxInterpreter = exports.SyntaxInterpreter = (function () {
     function SyntaxInterpreter(parser, observerLocator, eventManager) {
       this.parser = parser;
       this.observerLocator = observerLocator;
@@ -29,7 +26,6 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
           return [Parser, ObserverLocator, EventManager];
         },
         writable: true,
-        enumerable: true,
         configurable: true
       }
     }, {
@@ -42,7 +38,6 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
           return this.handleUnknownCommand(resources, element, info, existingInstruction);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       handleUnknownCommand: {
@@ -60,7 +55,6 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
           return instruction;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       determineDefaultBindingMode: {
@@ -76,7 +70,6 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
           return ONE_WAY;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       bind: {
@@ -88,7 +81,6 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
           return instruction;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       trigger: {
@@ -96,7 +88,6 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
           return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       delegate: {
@@ -104,7 +95,6 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
           return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       call: {
@@ -116,7 +106,6 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
           return instruction;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       options: {
@@ -163,15 +152,12 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
           return instruction;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       }
     });
 
     return SyntaxInterpreter;
   })();
-
-  exports.SyntaxInterpreter = SyntaxInterpreter;
 
 
   SyntaxInterpreter.prototype["for"] = function (resources, element, info, existingInstruction) {
@@ -183,8 +169,17 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
 
     var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-    instruction.attributes.local = parts[0];
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(parts[1]), ONE_WAY, resources.valueConverterLookupFunction);
+    if (parts[0].match(/[[].+[,]\s.+[\]]/)) {
+      var firstPart = parts[0];
+      parts[0] = firstPart.substr(1, firstPart.indexOf(",") - 1);
+      parts.splice(1, 0, firstPart.substring(firstPart.indexOf(", ") + 2, firstPart.length - 1));
+      instruction.attributes.key = parts[0];
+      instruction.attributes.value = parts[1];
+    } else {
+      instruction.attributes.local = parts[0];
+    }
+
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(parts[parts.length - 1]), ONE_WAY, resources.valueConverterLookupFunction);
 
     return instruction;
   };
@@ -216,4 +211,5 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
   SyntaxInterpreter.prototype["view-model"] = function (resources, element, info) {
     return new NameExpression(info.attrValue, "view-model");
   };
+  exports.__esModule = true;
 });

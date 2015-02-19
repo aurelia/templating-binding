@@ -1,21 +1,20 @@
 "use strict";
 
-var _prototypeProperties = function (child, staticProps, instanceProps) {
-  if (staticProps) Object.defineProperties(child, staticProps);
-  if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-};
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-var Parser = require("aurelia-binding").Parser;
-var ObserverLocator = require("aurelia-binding").ObserverLocator;
-var EventManager = require("aurelia-binding").EventManager;
-var ListenerExpression = require("aurelia-binding").ListenerExpression;
-var BindingExpression = require("aurelia-binding").BindingExpression;
-var NameExpression = require("aurelia-binding").NameExpression;
-var CallExpression = require("aurelia-binding").CallExpression;
-var ONE_WAY = require("aurelia-binding").ONE_WAY;
-var TWO_WAY = require("aurelia-binding").TWO_WAY;
-var ONE_TIME = require("aurelia-binding").ONE_TIME;
-var SyntaxInterpreter = (function () {
+var _aureliaBinding = require("aurelia-binding");
+
+var Parser = _aureliaBinding.Parser;
+var ObserverLocator = _aureliaBinding.ObserverLocator;
+var EventManager = _aureliaBinding.EventManager;
+var ListenerExpression = _aureliaBinding.ListenerExpression;
+var BindingExpression = _aureliaBinding.BindingExpression;
+var NameExpression = _aureliaBinding.NameExpression;
+var CallExpression = _aureliaBinding.CallExpression;
+var ONE_WAY = _aureliaBinding.ONE_WAY;
+var TWO_WAY = _aureliaBinding.TWO_WAY;
+var ONE_TIME = _aureliaBinding.ONE_TIME;
+var SyntaxInterpreter = exports.SyntaxInterpreter = (function () {
   function SyntaxInterpreter(parser, observerLocator, eventManager) {
     this.parser = parser;
     this.observerLocator = observerLocator;
@@ -28,7 +27,6 @@ var SyntaxInterpreter = (function () {
         return [Parser, ObserverLocator, EventManager];
       },
       writable: true,
-      enumerable: true,
       configurable: true
     }
   }, {
@@ -41,7 +39,6 @@ var SyntaxInterpreter = (function () {
         return this.handleUnknownCommand(resources, element, info, existingInstruction);
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     handleUnknownCommand: {
@@ -59,7 +56,6 @@ var SyntaxInterpreter = (function () {
         return instruction;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     determineDefaultBindingMode: {
@@ -75,7 +71,6 @@ var SyntaxInterpreter = (function () {
         return ONE_WAY;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     bind: {
@@ -87,7 +82,6 @@ var SyntaxInterpreter = (function () {
         return instruction;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     trigger: {
@@ -95,7 +89,6 @@ var SyntaxInterpreter = (function () {
         return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true);
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     delegate: {
@@ -103,7 +96,6 @@ var SyntaxInterpreter = (function () {
         return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true);
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     call: {
@@ -115,7 +107,6 @@ var SyntaxInterpreter = (function () {
         return instruction;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     options: {
@@ -162,15 +153,12 @@ var SyntaxInterpreter = (function () {
         return instruction;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     }
   });
 
   return SyntaxInterpreter;
 })();
-
-exports.SyntaxInterpreter = SyntaxInterpreter;
 
 
 SyntaxInterpreter.prototype["for"] = function (resources, element, info, existingInstruction) {
@@ -182,8 +170,17 @@ SyntaxInterpreter.prototype["for"] = function (resources, element, info, existin
 
   var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-  instruction.attributes.local = parts[0];
-  instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(parts[1]), ONE_WAY, resources.valueConverterLookupFunction);
+  if (parts[0].match(/[[].+[,]\s.+[\]]/)) {
+    var firstPart = parts[0];
+    parts[0] = firstPart.substr(1, firstPart.indexOf(",") - 1);
+    parts.splice(1, 0, firstPart.substring(firstPart.indexOf(", ") + 2, firstPart.length - 1));
+    instruction.attributes.key = parts[0];
+    instruction.attributes.value = parts[1];
+  } else {
+    instruction.attributes.local = parts[0];
+  }
+
+  instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(parts[parts.length - 1]), ONE_WAY, resources.valueConverterLookupFunction);
 
   return instruction;
 };
@@ -215,3 +212,4 @@ SyntaxInterpreter.prototype["one-time"] = function (resources, element, info, ex
 SyntaxInterpreter.prototype["view-model"] = function (resources, element, info) {
   return new NameExpression(info.attrValue, "view-model");
 };
+exports.__esModule = true;
