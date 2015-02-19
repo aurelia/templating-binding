@@ -26,8 +26,8 @@
       "lib": "dist"
     },
     "dependencies": {
-      "aurelia-binding": "^0.3.2",
-      "aurelia-templating": "^0.8.4"
+      "aurelia-binding": "^0.3.5",
+      "aurelia-templating": "^0.8.12"
     }
   },
   "devDependencies": {
