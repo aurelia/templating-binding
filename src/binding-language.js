@@ -121,6 +121,9 @@ export class InterpolationBindingExpression {
 
 class InterpolationBinding {
   constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction){
+    if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
+      throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use "<textarea value.bind="expression"></textarea>"" instead');
+    }
     this.observerLocator = observerLocator;
     this.parts = parts;
     this.targetProperty = observerLocator.getObserver(target, targetProperty);
