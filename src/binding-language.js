@@ -79,20 +79,11 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   }
 
   parseContent(resources, attrName, attrValue){
-    var string = '', exprs = [];
+    var parts = [];
     parse(attrValue, (type, start, end, extra) => {
-      // TODO: Perf test the way the output is handled.
-      // is it faster to just build up an array?
-      if (type === 'text') {
-        // plain text
-        string += attrValue.substring(start, end) + (extra || '');
-      } else {
-        // expression
-        exprs.push({
-          index: string.length,
-          expr: this.parser.parse(attrValue.substring(start, end))
-        });
-      }
+      var value = attrValue.substring(start, end) + (extra || '');
+      var expr = type === 'expr' ? this.parser.parse(value) : null;
+      parts.push({type, value, expr});
     });
 
     if (exprs.length == 0) { //no expression found
@@ -102,8 +93,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return new InterpolationBindingExpression(
       this.observerLocator,
       this.attributeMap[attrName] || attrName,
-      string,
-      exprs,
+      parts,
       ONE_WAY,
       resources.valueConverterLookupFunction,
       attrName
@@ -112,12 +102,11 @@ export class TemplatingBindingLanguage extends BindingLanguage {
 }
 
 export class InterpolationBindingExpression {
-  constructor(observerLocator, targetProperty, string, exprs,
+  constructor(observerLocator, targetProperty, parts,
     mode, valueConverterLookupFunction, attribute){
     this.observerLocator = observerLocator;
     this.targetProperty = targetProperty;
-    this.string = string;
-    this.exprs = exprs;
+    this.parts = parts;
     this.mode = mode;
     this.valueConverterLookupFunction = valueConverterLookupFunction;
     this.attribute = attribute;
@@ -127,8 +116,7 @@ export class InterpolationBindingExpression {
   createBinding(target){
     return new InterpolationBinding(
       this.observerLocator,
-      this.string,
-      this.exprs,
+      this.parts,
       target,
       this.targetProperty,
       this.mode,
@@ -138,14 +126,13 @@ export class InterpolationBindingExpression {
 }
 
 class InterpolationBinding {
-  constructor(observerLocator, string, exprs, target, targetProperty, mode, valueConverterLookupFunction){
+  constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction){
     if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
       throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use "<textarea value.bind="expression"></textarea>"" instead');
     }
 
     this.observerLocator = observerLocator;
-    this.string = string;
-    this.exprs = exprs;
+    this.parts = parts;
     this.targetProperty = observerLocator.getObserver(target, targetProperty);
     this.mode = mode;
     this.valueConverterLookupFunction = valueConverterLookupFunction;
@@ -192,24 +179,19 @@ class InterpolationBinding {
 
   interpolate(){
     var value = '',
-        string = this.string,
-        exprs = this.exprs,
+        parts = this.parts,
         source = this.source,
         valueConverterLookupFunction = this.valueConverterLookupFunction,
         i, ii, temp, index = 0, expr;
 
-    for (i = 0, ii = exprs.length; i < ii; ++i) {
-      expr = exprs[i];
-      if (expr.index > index) {
-        value += string.substring(index, expr.index);
-        index = expr.index;
+    for (i = 0, ii = parts.length; i < ii; ++i) {
+      if (parts[i].type === 'text') {
+        value += parts[i].value;
+      } else {
+        expr = parts[i].expr;
+        temp = expr.evaluate(source, valueConverterLookupFunction);
+        value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
       }
-      temp = expr.expr.evaluate(source, valueConverterLookupFunction);
-      value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
-    }
-
-    if (string.length > index) {
-      value += string.substring(index, string.length);
     }
 
     return value;
