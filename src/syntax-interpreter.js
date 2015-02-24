@@ -98,7 +98,7 @@ export class SyntaxInterpreter {
       );
 
     return instruction;
-  };
+  }
 
   options(resources, element, info, existingInstruction){
     var instruction = existingInstruction || {attrName:info.attrName, attributes:{}},

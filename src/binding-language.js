@@ -1,6 +1,7 @@
 import {BindingLanguage} from 'aurelia-templating';
 import {Parser, ObserverLocator, BindingExpression, NameExpression, ONE_WAY} from 'aurelia-binding';
 import {SyntaxInterpreter} from './syntax-interpreter';
+import {parse} from './interpolation-parser';
 
 var info = {};
 
@@ -10,7 +11,6 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.syntaxInterpreter = syntaxInterpreter;
-    this.interpolationRegex = /\${(.*?)}/g;
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
       'class':'className',
@@ -79,23 +79,31 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   }
 
   parseContent(resources, attrName, attrValue){
-    var parts = attrValue.split(this.interpolationRegex), i, ii;
-    if (parts.length <= 1) { //no expression found
-      return null;
-    }
-
-    for(i = 0, ii = parts.length; i < ii; ++i){
-      if (i % 2 === 0) {
-        //do nothing
+    var string = '', exprs = [];
+    parse(attrValue, (type, start, end, extra) => {
+      // TODO: Perf test the way the output is handled.
+      // is it faster to just build up an array?
+      if (type === 'text') {
+        // plain text
+        string += attrValue.substring(start, end) + (extra || '');
       } else {
-        parts[i] = this.parser.parse(parts[i]);
+        // expression
+        exprs.push({
+          index: string.length,
+          expr: this.parser.parse(attrValue.substring(start, end))
+        });
       }
+    });
+
+    if (exprs.length == 0) { //no expression found
+      return null;
     }
 
     return new InterpolationBindingExpression(
       this.observerLocator,
       this.attributeMap[attrName] || attrName,
-      parts,
+      string,
+      exprs,
       ONE_WAY,
       resources.valueConverterLookupFunction,
       attrName
@@ -104,11 +112,12 @@ export class TemplatingBindingLanguage extends BindingLanguage {
 }
 
 export class InterpolationBindingExpression {
-  constructor(observerLocator, targetProperty, parts,
+  constructor(observerLocator, targetProperty, string, exprs,
     mode, valueConverterLookupFunction, attribute){
     this.observerLocator = observerLocator;
     this.targetProperty = targetProperty;
-    this.parts = parts;
+    this.string = string;
+    this.exprs = exprs;
     this.mode = mode;
     this.valueConverterLookupFunction = valueConverterLookupFunction;
     this.attribute = attribute;
@@ -118,7 +127,8 @@ export class InterpolationBindingExpression {
   createBinding(target){
     return new InterpolationBinding(
       this.observerLocator,
-      this.parts,
+      this.string,
+      this.exprs,
       target,
       this.targetProperty,
       this.mode,
@@ -128,12 +138,14 @@ export class InterpolationBindingExpression {
 }
 
 class InterpolationBinding {
-  constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction){
+  constructor(observerLocator, string, exprs, target, targetProperty, mode, valueConverterLookupFunction){
     if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
       throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use "<textarea value.bind="expression"></textarea>"" instead');
     }
+
     this.observerLocator = observerLocator;
-    this.parts = parts;
+    this.string = string;
+    this.exprs = exprs;
     this.targetProperty = observerLocator.getObserver(target, targetProperty);
     this.mode = mode;
     this.valueConverterLookupFunction = valueConverterLookupFunction;
@@ -163,39 +175,41 @@ class InterpolationBinding {
 
   connect(){
     var info,
-        parts = this.parts,
+        exprs = this.exprs,
         source = this.source,
         toDispose = this.toDispose = [],
         i, ii;
 
-    for(i = 0, ii = parts.length; i < ii; ++i){
-      if (i % 2 === 0) {
-        //do nothing
-      } else {
-        info = parts[i].connect(this, source);
-        if(info.observer){
-          toDispose.push(info.observer.subscribe(newValue =>{
-            this.setValue();
-          }));
-        }
+    for (i = 0, ii = exprs.length; i < ii; ++i) {
+      info = exprs[i].expr.connect(this, source);
+      if (info.observer) {
+        toDispose.push(info.observer.subscribe(() => {
+          this.setValue();
+        }));
       }
     }
   }
 
   interpolate(){
     var value = '',
-        parts = this.parts,
+        string = this.string,
+        exprs = this.exprs,
         source = this.source,
         valueConverterLookupFunction = this.valueConverterLookupFunction,
-        i, ii, temp;
+        i, ii, temp, index = 0, expr;
 
-    for(i = 0, ii = parts.length; i < ii; ++i){
-      if (i % 2 === 0) {
-        value += parts[i];
-      } else {
-        temp = parts[i].evaluate(source, valueConverterLookupFunction);
-        value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
+    for (i = 0, ii = exprs.length; i < ii; ++i) {
+      expr = exprs[i];
+      if (expr.index > index) {
+        value += string.substring(index, expr.index);
+        index = expr.index;
       }
+      temp = expr.expr.evaluate(source, valueConverterLookupFunction);
+      value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
+    }
+
+    if (string.length > index) {
+      value += string.substring(index, string.length);
     }
 
     return value;

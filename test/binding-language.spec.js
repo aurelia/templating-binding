@@ -2,7 +2,7 @@ import {InterpolationBindingExpression} from '../src/binding-language';
 
 describe('interpolation binding', () => {
   describe('interpolate', () => {
-    var observerLocator, targetProperty, accessScope, parts, myViewModel;
+    var observerLocator, targetProperty, accessScope, string, exprs, myViewModel;
 
     class ObserverLocator{
         getObserver(target, targetPropert){};
@@ -40,7 +40,8 @@ describe('interpolation binding', () => {
       targetProperty = new FooProperty();
       myViewModel = new MyViewModel
       accessScope = new AccessScope('fooCount');
-      parts = ['', accessScope];
+      string = '';
+      exprs = [{index: 0, expr: accessScope}];
 
       spyOn(observerLocator, 'getObserver').and.returnValue(targetProperty);
     });
@@ -51,7 +52,7 @@ describe('interpolation binding', () => {
 
       spyOn(accessScope, 'evaluate').and.returnValue(myViewModel.fooCount);
 
-      var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, parts);
+      var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, string, exprs);
       var interpolationBinding = interpolationBindingExpression.createBinding(createTarget());
       interpolationBinding.bind(myViewModel);
 
@@ -64,7 +65,7 @@ describe('interpolation binding', () => {
 
       spyOn(accessScope, 'evaluate').and.returnValue(myViewModel.fooCount);
 
-      var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, parts);
+      var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, string, exprs);
       var interpolationBinding = interpolationBindingExpression.createBinding(createTarget());
       interpolationBinding.bind(myViewModel);
 
@@ -77,7 +78,7 @@ describe('interpolation binding', () => {
 
       spyOn(accessScope, 'evaluate').and.returnValue(myViewModel.fooCount);
 
-      var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, parts);
+      var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, string, exprs);
       var interpolationBinding = interpolationBindingExpression.createBinding(createTarget());
       interpolationBinding.bind(myViewModel);
 
@@ -90,7 +91,7 @@ describe('interpolation binding', () => {
 
       spyOn(accessScope, 'evaluate').and.returnValue(myViewModel.fooCount);
 
-      var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, parts);
+      var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, string, exprs);
       var interpolationBinding = interpolationBindingExpression.createBinding(createTarget());
       interpolationBinding.bind(myViewModel);
 
