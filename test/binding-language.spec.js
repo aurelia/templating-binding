@@ -1,6 +1,6 @@
 import {InterpolationBindingExpression} from '../src/binding-language';
 
-describe('interpolation binding', () => {  
+describe('interpolation binding', () => {
   describe('interpolate', () => {
     var observerLocator, targetProperty, accessScope, parts, myViewModel;
 
@@ -13,7 +13,7 @@ describe('interpolation binding', () => {
         this.name = name;
       };
 
-      evaluate(){}   
+      evaluate(){}
     }
 
     class FooProperty{
@@ -28,63 +28,70 @@ describe('interpolation binding', () => {
       }
     }
 
+    function createTarget(){
+      var h = document.createElement('div');
+      var t = document.createTextNode('');
+      h.appendChild(t);
+      return t;
+    }
+
     beforeEach(() => {
       observerLocator = new ObserverLocator();
-      targetProperty = new FooProperty();   
-      myViewModel = new MyViewModel    
+      targetProperty = new FooProperty();
+      myViewModel = new MyViewModel
       accessScope = new AccessScope('fooCount');
       parts = ['', accessScope];
 
-      spyOn(observerLocator, 'getObserver').and.returnValue(targetProperty);      
+      spyOn(observerLocator, 'getObserver').and.returnValue(targetProperty);
     });
 
-    it('interpolates undefined to empty string', ()=> {         
+    it('interpolates undefined to empty string', ()=> {
 
-      myViewModel.fooCount = undefined;  
+      myViewModel.fooCount = undefined;
 
       spyOn(accessScope, 'evaluate').and.returnValue(myViewModel.fooCount);
 
       var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, parts);
-      var interpolationBinding = interpolationBindingExpression.createBinding();
+      var interpolationBinding = interpolationBindingExpression.createBinding(createTarget());
       interpolationBinding.bind(myViewModel);
 
       expect(targetProperty.value).toBe('');
     });
 
-    it('interpolates null to empty string', ()=> {         
+    it('interpolates null to empty string', ()=> {
 
-      myViewModel.fooCount = null;  
+      myViewModel.fooCount = null;
 
       spyOn(accessScope, 'evaluate').and.returnValue(myViewModel.fooCount);
 
       var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, parts);
-      var interpolationBinding = interpolationBindingExpression.createBinding();
+      var interpolationBinding = interpolationBindingExpression.createBinding(createTarget());
       interpolationBinding.bind(myViewModel);
 
       expect(targetProperty.value).toBe('');
-    }); 
+    });
 
-    it('interpolates number 0 to string', ()=> {         
+    it('interpolates number 0 to string', ()=> {
 
-      myViewModel.fooCount = 0;  
+      myViewModel.fooCount = 0;
 
       spyOn(accessScope, 'evaluate').and.returnValue(myViewModel.fooCount);
 
       var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, parts);
-      var interpolationBinding = interpolationBindingExpression.createBinding();
+      var interpolationBinding = interpolationBindingExpression.createBinding(createTarget());
       interpolationBinding.bind(myViewModel);
 
       expect(targetProperty.value).toBe('0');
     });
 
-    it('can interpolate string to string', ()=> {         
+    it('can interpolate string to string', ()=> {
 
-      myViewModel.fooCount = "Martin";  
+      myViewModel.fooCount = "Martin";
 
       spyOn(accessScope, 'evaluate').and.returnValue(myViewModel.fooCount);
 
       var interpolationBindingExpression = new InterpolationBindingExpression(observerLocator, targetProperty, parts);
-      var interpolationBinding = interpolationBindingExpression.createBinding();
+      var interpolationBinding = interpolationBindingExpression.createBinding(createTarget());
       interpolationBinding.bind(myViewModel);
 
       expect(targetProperty.value).toBe('Martin');
