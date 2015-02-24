@@ -15,7 +15,15 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.attributeMap = syntaxInterpreter.attributeMap = {
       'class':'className',
       'for':'htmlFor',
-      'tabindex':'tabIndex'
+      'tabindex':'tabIndex',
+      // HTMLInputElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement
+      'maxlength':'maxLength',
+      'minlength':'minLength',
+      'formaction':'formAction',
+      'formenctype':'formEncType',
+      'formmethod':'formMethod',
+      'formnovalidate':'formNoValidate',
+      'formtarget':'formTarget',
     };
   }
 
