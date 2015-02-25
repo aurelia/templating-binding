@@ -79,14 +79,17 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   }
 
   parseContent(resources, attrName, attrValue){
-    var parts = [];
+    var parts = [], exprs = false;
     parse(attrValue, (type, start, end, extra) => {
       var value = attrValue.substring(start, end) + (extra || '');
       var expr = type === 'expr' ? this.parser.parse(value) : null;
+      if (type === 'expr')
+        exprs = true;
+
       parts.push({type, value, expr});
     });
 
-    if (exprs.length == 0) { //no expression found
+    if (!exprs) { //no expression found
       return null;
     }
 
@@ -162,17 +165,19 @@ class InterpolationBinding {
 
   connect(){
     var info,
-        exprs = this.exprs,
+        parts = this.parts,
         source = this.source,
         toDispose = this.toDispose = [],
         i, ii;
 
-    for (i = 0, ii = exprs.length; i < ii; ++i) {
-      info = exprs[i].expr.connect(this, source);
-      if (info.observer) {
-        toDispose.push(info.observer.subscribe(() => {
-          this.setValue();
-        }));
+    for (i = 0, ii = parts.length; i < ii; ++i) {
+      if (parts[i].expr) {
+        info = parts[i].expr.connect(this, source);
+        if (info.observer) {
+          toDispose.push(info.observer.subscribe(() => {
+            this.setValue();
+          }));
+        }
       }
     }
   }
