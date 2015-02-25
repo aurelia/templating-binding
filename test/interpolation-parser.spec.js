@@ -78,7 +78,7 @@ describe('interpolation-parser', () => {
   it('throws on uncompleted interpolations', () => {
     expect(() => {
       parse('${test')
-    }).toThrowError(/^Interpolation expression started at \d+ does not end$/);
+    }).toThrowError(/^Interpolation not closed\./);
   });
 
   it('handles quotes', () => {
@@ -101,12 +101,36 @@ describe('interpolation-parser', () => {
       {type: 'expr', value: ' foo | bar:"baz" '}
     ]);
 
-    checkParse('${ foo | bar: \'{}\' }', [
-      {type: 'expr', value: ' foo | bar: \'{}\' '}
+    checkParse('${ foo | bar: \'{\' }', [
+      {type: 'expr', value: ' foo | bar: \'{\' '}
     ]);
 
-    checkParse('${ foo | bar: "{}" }', [
-      {type: 'expr', value: ' foo | bar: "{}" '}
+    checkParse('${ foo | bar: "{" }', [
+      {type: 'expr', value: ' foo | bar: "{" '}
+    ]);
+
+    checkParse('${ foo | bar: `{` }', [
+      {type: 'expr', value: ' foo | bar: `{` '}
+    ]);
+
+    checkParse('${ foo | bar: \'}\' }', [
+      {type: 'expr', value: ' foo | bar: \'}\' '}
+    ]);
+
+    checkParse('${ foo | bar: "}" }', [
+      {type: 'expr', value: ' foo | bar: "}" '}
+    ]);
+
+    checkParse('${ foo | bar: `}` }', [
+      {type: 'expr', value: ' foo | bar: `}` '}
+    ]);
+
+    checkParse('${ foo | bar: "\\"" }', [
+      {type: 'expr', value: ' foo | bar: "\\"" '}
+    ]);
+
+    checkParse('${ foo | bar: "\\\\" }', [
+      {type: 'expr', value: ' foo | bar: "\\\\" '}
     ]);
   });
 

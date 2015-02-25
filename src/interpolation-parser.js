@@ -1,11 +1,20 @@
+function interpolationError(msg, index, string) {
+  var error = new Error(`${msg}\n\n${string}`);
+  error.index = index;
+  error.string = string;
+  error.name = 'InterpolationError';
+  return error;
+}
+
 export function parse(str, doYield) {
   var index = 0;
   var state = 0;
-  var match, curlies, start, lcurly, rcurly;
+  var match, curlies, start, char, quote, slashes;
 
-  while (true) {
+  _parse: while (true) {
     switch (state) {
       case 0:
+        // normal scanning, not inside interpolation.
         if (index === str.length)
           return;
 
@@ -32,9 +41,9 @@ export function parse(str, doYield) {
               match - 2,
               '\\'
             );
-            index = match + 2;
+            index = match + 1;
             curlies = 1;
-            start = index;
+            start = index + 1;
             state = 1;
             continue;
           }
@@ -58,37 +67,75 @@ export function parse(str, doYield) {
             match
           );
         }
-        index = match + 2;
-        index = match + 2;
+        index = match + 1;
         curlies = 1;
-        start = index;
+        start = index + 1;
         state = 1;
         continue;
 
       case 1:
-        lcurly = str.indexOf('{', index);
-        rcurly = str.indexOf('}', index);
-
-        if (lcurly !== -1 && lcurly < rcurly) {
-          ++curlies;
-          index = lcurly + 1;
-          continue;
-        } else if (rcurly !== -1) {
-          index = rcurly + 1;
-          if (--curlies === 0) {
-            doYield(
-              'expr',
-              start,
-              rcurly
-            );
-            state = 0;
-            continue;
+        // Start interpolation scan
+        // scan char by char
+        while (true) {
+          if (index === str.length) {
+            throw interpolationError('Interpolation not closed.', start - 2, str);
           }
 
-          continue;
-        } else {
-          // alternatively, treat as string
-          throw new Error('Interpolation expression started at ' + (start - 2) + ' does not end');
+          char = str.charCodeAt(++index);
+          switch (char) {
+            case 34: // "
+            case 39: // '
+            case 96: // `
+              quote = char;
+              state = 2;
+              continue _parse;
+
+            case 123: // {
+              ++curlies;
+              continue;
+
+            case 125: // }
+              if (--curlies === 0) {
+                doYield(
+                  'expr',
+                  start,
+                  index
+                );
+                ++index;
+                state = 0;
+                continue _parse;
+              }
+          }
+        }
+
+      case 2:
+        // Scan string inside interpolation
+        slashes = 0;
+        while (true) {
+          if (index === str.length) {
+            throw interpolationError('String not closed.', start - 2, str);
+          }
+
+          char = str.charCodeAt(++index);
+          switch (char) {
+            case 92: // \
+              ++slashes;
+              continue;
+
+            case quote:
+              // not escaped
+              if ((slashes % 2) === 0) {
+                state = 1;
+                continue _parse;
+              } else {
+                slashes = 0;
+              }
+              continue;
+
+            default:
+              slashes = 0;
+              continue;
+          }
         }
     }
   }
