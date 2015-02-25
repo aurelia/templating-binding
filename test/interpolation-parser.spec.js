@@ -132,6 +132,10 @@ describe('interpolation-parser', () => {
     checkParse('${ foo | bar: "\\\\" }', [
       {type: 'expr', value: ' foo | bar: "\\\\" '}
     ]);
+
+    checkParse('${ foo | bar: "\\\\\\"" }', [
+      {type: 'expr', value: ' foo | bar: "\\\\\\"" '}
+    ]);
   });
 
   it('handles long input', () => {
