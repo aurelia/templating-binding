@@ -9,7 +9,7 @@ function interpolationError(msg, index, string) {
 export function parse(str, doYield) {
   var index = 0;
   var state = 0;
-  var match, curlies, start, char, quote, slashes;
+  var match, curlies, start, char, quote;
 
   _parse: while (true) {
     switch (state) {
@@ -110,7 +110,6 @@ export function parse(str, doYield) {
 
       case 2:
         // Scan string inside interpolation
-        slashes = 0;
         while (true) {
           if (index === str.length) {
             throw interpolationError('String not closed.', start - 2, str);
@@ -119,22 +118,12 @@ export function parse(str, doYield) {
           char = str.charCodeAt(++index);
           switch (char) {
             case 92: // \
-              ++slashes;
+              ++index;
               continue;
 
             case quote:
-              // not escaped
-              if ((slashes % 2) === 0) {
-                state = 1;
-                continue _parse;
-              } else {
-                slashes = 0;
-              }
-              continue;
-
-            default:
-              slashes = 0;
-              continue;
+              state = 1;
+              continue _parse;
           }
         }
     }
