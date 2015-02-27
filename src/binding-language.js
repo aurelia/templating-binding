@@ -1,6 +1,7 @@
 import {BindingLanguage} from 'aurelia-templating';
 import {Parser, ObserverLocator, BindingExpression, NameExpression, ONE_WAY} from 'aurelia-binding';
 import {SyntaxInterpreter} from './syntax-interpreter';
+import {parse} from './interpolation-parser';
 
 var info = {};
 
@@ -10,7 +11,6 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.syntaxInterpreter = syntaxInterpreter;
-    this.interpolationRegex = /\${(.*?)}/g;
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
       'class':'className',
@@ -79,17 +79,18 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   }
 
   parseContent(resources, attrName, attrValue){
-    var parts = attrValue.split(this.interpolationRegex), i, ii;
-    if (parts.length <= 1) { //no expression found
-      return null;
-    }
+    var parts = [], exprs = false;
+    parse(attrValue, (type, start, end, extra) => {
+      var value = attrValue.substring(start, end) + (extra || '');
+      var expr = type === 'expr' ? this.parser.parse(value) : null;
+      if (type === 'expr')
+        exprs = true;
 
-    for(i = 0, ii = parts.length; i < ii; ++i){
-      if (i % 2 === 0) {
-        //do nothing
-      } else {
-        parts[i] = this.parser.parse(parts[i]);
-      }
+      parts.push({type, value, expr});
+    });
+
+    if (!exprs) { //no expression found
+      return null;
     }
 
     return new InterpolationBindingExpression(
@@ -132,6 +133,7 @@ class InterpolationBinding {
     if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
       throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use "<textarea value.bind="expression"></textarea>"" instead');
     }
+
     this.observerLocator = observerLocator;
     this.parts = parts;
     this.targetProperty = observerLocator.getObserver(target, targetProperty);
@@ -168,13 +170,11 @@ class InterpolationBinding {
         toDispose = this.toDispose = [],
         i, ii;
 
-    for(i = 0, ii = parts.length; i < ii; ++i){
-      if (i % 2 === 0) {
-        //do nothing
-      } else {
-        info = parts[i].connect(this, source);
-        if(info.observer){
-          toDispose.push(info.observer.subscribe(newValue =>{
+    for (i = 0, ii = parts.length; i < ii; ++i) {
+      if (parts[i].expr) {
+        info = parts[i].expr.connect(this, source);
+        if (info.observer) {
+          toDispose.push(info.observer.subscribe(() => {
             this.setValue();
           }));
         }
@@ -187,13 +187,14 @@ class InterpolationBinding {
         parts = this.parts,
         source = this.source,
         valueConverterLookupFunction = this.valueConverterLookupFunction,
-        i, ii, temp;
+        i, ii, temp, index = 0, expr;
 
-    for(i = 0, ii = parts.length; i < ii; ++i){
-      if (i % 2 === 0) {
-        value += parts[i];
+    for (i = 0, ii = parts.length; i < ii; ++i) {
+      if (parts[i].type === 'text') {
+        value += parts[i].value;
       } else {
-        temp = parts[i].evaluate(source, valueConverterLookupFunction);
+        expr = parts[i].expr;
+        temp = expr.evaluate(source, valueConverterLookupFunction);
         value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
       }
     }

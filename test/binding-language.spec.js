@@ -40,7 +40,7 @@ describe('interpolation binding', () => {
       targetProperty = new FooProperty();
       myViewModel = new MyViewModel
       accessScope = new AccessScope('fooCount');
-      parts = ['', accessScope];
+      parts = [{type: 'expr', value: 'fooCount', expr: accessScope}];
 
       spyOn(observerLocator, 'getObserver').and.returnValue(targetProperty);
     });
