@@ -3,6 +3,8 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
 
   var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
+  var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
   var Parser = _aureliaBinding.Parser;
   var ObserverLocator = _aureliaBinding.ObserverLocator;
   var EventManager = _aureliaBinding.EventManager;
@@ -13,8 +15,11 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
   var ONE_WAY = _aureliaBinding.ONE_WAY;
   var TWO_WAY = _aureliaBinding.TWO_WAY;
   var ONE_TIME = _aureliaBinding.ONE_TIME;
+
   var SyntaxInterpreter = exports.SyntaxInterpreter = (function () {
     function SyntaxInterpreter(parser, observerLocator, eventManager) {
+      _classCallCheck(this, SyntaxInterpreter);
+
       this.parser = parser;
       this.observerLocator = observerLocator;
       this.eventManager = eventManager;
@@ -159,7 +164,6 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
     return SyntaxInterpreter;
   })();
 
-
   SyntaxInterpreter.prototype["for"] = function (resources, element, info, existingInstruction) {
     var parts = info.attrValue.split(" of ");
 
@@ -211,5 +215,7 @@ define(["exports", "aurelia-binding"], function (exports, _aureliaBinding) {
   SyntaxInterpreter.prototype["view-model"] = function (resources, element, info) {
     return new NameExpression(info.attrValue, "view-model");
   };
-  exports.__esModule = true;
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
 });

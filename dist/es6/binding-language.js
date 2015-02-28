@@ -10,12 +10,20 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.syntaxInterpreter = syntaxInterpreter;
-    this.interpolationRegex = /\${(.*?)}/g;
+    this.emptyStringExpression = this.parser.parse('\'\'');
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
       'class':'className',
       'for':'htmlFor',
-      'tabindex':'tabIndex'
+      'tabindex':'tabIndex',
+      // HTMLInputElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement
+      'maxlength':'maxLength',
+      'minlength':'minLength',
+      'formaction':'formAction',
+      'formenctype':'formEncType',
+      'formmethod':'formMethod',
+      'formnovalidate':'formNoValidate',
+      'formtarget':'formTarget',
     };
   }
 
@@ -66,23 +74,77 @@ export class TemplatingBindingLanguage extends BindingLanguage {
 		return instruction;
 	}
 
-	parseText(resources, value){
+  parseText(resources, value){
     return this.parseContent(resources, 'textContent', value);
   }
 
   parseContent(resources, attrName, attrValue){
-    var parts = attrValue.split(this.interpolationRegex), i, ii;
-    if (parts.length <= 1) { //no expression found
+    var i = attrValue.indexOf('${', 0), ii = attrValue.length,
+        char, pos = 0, open = 0, quote = null, interpolationStart,
+        parts, partIndex = 0;
+    while(i >= 0 && i < ii - 2) {
+      open = 1;
+      interpolationStart = i;
+      i += 2;
+
+      do {
+        char = attrValue[i];
+        i++;
+        switch(char) {
+          case "'":
+          case '"':
+            if (quote === null) {
+              quote = char;
+            } else if (quote === char) {
+              quote = null;
+            }
+            continue;
+          case '\\':
+            i++;
+            continue;
+        }
+
+        if (quote !== null) {
+          continue;
+        }
+
+        if (char === '{') {
+          open++;
+        } else if (char === '}') {
+          open--;
+        }
+      } while(open > 0 && i < ii)
+
+      if (open === 0) {
+        // lazy allocate array
+        parts = parts || [];
+        if (attrValue[interpolationStart - 1] === '\\' && attrValue[interpolationStart - 2] !== '\\') {
+          // escaped interpolation
+          parts[partIndex] = attrValue.substring(pos, interpolationStart - 1) + attrValue.substring(interpolationStart, i);
+          partIndex++;
+          parts[partIndex] = this.emptyStringExpression;
+          partIndex++;
+        } else {
+          // standard interpolation
+          parts[partIndex] = attrValue.substring(pos, interpolationStart);
+          partIndex++;
+          parts[partIndex] = this.parser.parse(attrValue.substring(interpolationStart + 2, i - 1));
+          partIndex++;
+        }
+        pos = i;
+        i = attrValue.indexOf('${', i);
+      } else {
+        break;
+      }
+    }
+
+    // no interpolation.
+    if (partIndex === 0) {
       return null;
     }
 
-    for(i = 0, ii = parts.length; i < ii; ++i){
-      if (i % 2 === 0) {
-        //do nothing
-      } else {
-        parts[i] = this.parser.parse(parts[i]);
-      }
-    }
+    // literal.
+    parts[partIndex] = attrValue.substr(pos);
 
     return new InterpolationBindingExpression(
       this.observerLocator,
@@ -121,6 +183,9 @@ export class InterpolationBindingExpression {
 
 class InterpolationBinding {
   constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction){
+    if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
+      throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use "<textarea value.bind="expression"></textarea>"" instead');
+    }
     this.observerLocator = observerLocator;
     this.parts = parts;
     this.targetProperty = observerLocator.getObserver(target, targetProperty);

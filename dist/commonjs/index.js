@@ -1,13 +1,14 @@
 "use strict";
 
 var BindingLanguage = require("aurelia-templating").BindingLanguage;
-var TemplatingBindingLanguage = require("./binding-language").TemplatingBindingLanguage;
-var SyntaxInterpreter = require("./syntax-interpreter").SyntaxInterpreter;
 
+var TemplatingBindingLanguage = require("./binding-language").TemplatingBindingLanguage;
+
+var SyntaxInterpreter = require("./syntax-interpreter").SyntaxInterpreter;
 
 function install(aurelia) {
   var instance,
-      getInstance = function (c) {
+      getInstance = function getInstance(c) {
     return instance || (instance = c.invoke(TemplatingBindingLanguage));
   };
 
@@ -23,4 +24,6 @@ function install(aurelia) {
 exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
 exports.SyntaxInterpreter = SyntaxInterpreter;
 exports.install = install;
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});

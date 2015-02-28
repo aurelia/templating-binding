@@ -1,7 +1,6 @@
 System.register(["aurelia-binding"], function (_export) {
-  "use strict";
+  var Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, ONE_WAY, TWO_WAY, ONE_TIME, _prototypeProperties, _classCallCheck, SyntaxInterpreter;
 
-  var Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, ONE_WAY, TWO_WAY, ONE_TIME, _prototypeProperties, SyntaxInterpreter;
   return {
     setters: [function (_aureliaBinding) {
       Parser = _aureliaBinding.Parser;
@@ -16,10 +15,16 @@ System.register(["aurelia-binding"], function (_export) {
       ONE_TIME = _aureliaBinding.ONE_TIME;
     }],
     execute: function () {
+      "use strict";
+
       _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+
+      _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
       SyntaxInterpreter = _export("SyntaxInterpreter", (function () {
         function SyntaxInterpreter(parser, observerLocator, eventManager) {
+          _classCallCheck(this, SyntaxInterpreter);
+
           this.parser = parser;
           this.observerLocator = observerLocator;
           this.eventManager = eventManager;
@@ -163,7 +168,6 @@ System.register(["aurelia-binding"], function (_export) {
 
         return SyntaxInterpreter;
       })());
-
 
       SyntaxInterpreter.prototype["for"] = function (resources, element, info, existingInstruction) {
         var parts = info.attrValue.split(" of ");

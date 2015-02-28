@@ -2,6 +2,8 @@
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
 var _aureliaBinding = require("aurelia-binding");
 
 var Parser = _aureliaBinding.Parser;
@@ -14,8 +16,11 @@ var CallExpression = _aureliaBinding.CallExpression;
 var ONE_WAY = _aureliaBinding.ONE_WAY;
 var TWO_WAY = _aureliaBinding.TWO_WAY;
 var ONE_TIME = _aureliaBinding.ONE_TIME;
+
 var SyntaxInterpreter = exports.SyntaxInterpreter = (function () {
   function SyntaxInterpreter(parser, observerLocator, eventManager) {
+    _classCallCheck(this, SyntaxInterpreter);
+
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.eventManager = eventManager;
@@ -160,7 +165,6 @@ var SyntaxInterpreter = exports.SyntaxInterpreter = (function () {
   return SyntaxInterpreter;
 })();
 
-
 SyntaxInterpreter.prototype["for"] = function (resources, element, info, existingInstruction) {
   var parts = info.attrValue.split(" of ");
 
@@ -212,4 +216,6 @@ SyntaxInterpreter.prototype["one-time"] = function (resources, element, info, ex
 SyntaxInterpreter.prototype["view-model"] = function (resources, element, info) {
   return new NameExpression(info.attrValue, "view-model");
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});

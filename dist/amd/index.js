@@ -5,10 +5,9 @@ define(["exports", "aurelia-templating", "./binding-language", "./syntax-interpr
   var TemplatingBindingLanguage = _bindingLanguage.TemplatingBindingLanguage;
   var SyntaxInterpreter = _syntaxInterpreter.SyntaxInterpreter;
 
-
   function install(aurelia) {
     var instance,
-        getInstance = function (c) {
+        getInstance = function getInstance(c) {
       return instance || (instance = c.invoke(TemplatingBindingLanguage));
     };
 
@@ -24,5 +23,7 @@ define(["exports", "aurelia-templating", "./binding-language", "./syntax-interpr
   exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
   exports.SyntaxInterpreter = SyntaxInterpreter;
   exports.install = install;
-  exports.__esModule = true;
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
 });
