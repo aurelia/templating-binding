@@ -20,14 +20,14 @@
     "url": "http://github.com/aurelia/templating-binding"
   },
   "jspm": {
-    "main": "system/index",
+    "main": "index",
     "format": "register",
     "directories": {
-      "lib": "dist"
+      "lib": "dist/system"
     },
     "dependencies": {
-      "aurelia-binding": "github:aurelia/binding@^0.3.6",
-      "aurelia-templating": "github:aurelia/templating@^0.8.13"
+      "aurelia-binding": "github:aurelia/binding@^0.3.7",
+      "aurelia-templating": "github:aurelia/templating@^0.8.14"
     }
   },
   "devDependencies": {
