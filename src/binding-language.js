@@ -7,7 +7,7 @@ var info = {},
     logger = LogManager.getLogger('templating-binding');
 
 export class TemplatingBindingLanguage extends BindingLanguage {
-  static inject() { return [Parser, ObserverLocator,SyntaxInterpreter]; }
+  static inject() { return [Parser, ObserverLocator, SyntaxInterpreter]; }
 	constructor(parser, observerLocator, syntaxInterpreter){
     this.parser = parser;
     this.observerLocator = observerLocator;
@@ -187,7 +187,9 @@ export class InterpolationBindingExpression {
 
 class InterpolationBinding {
   constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction){
-    if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
+    if (targetProperty === 'style') {
+      logger.info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
+    } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
       throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
     }
     this.observerLocator = observerLocator;

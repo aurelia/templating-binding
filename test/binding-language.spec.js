@@ -2,6 +2,9 @@ import {
   TemplatingBindingLanguage,
   InterpolationBindingExpression
 } from '../src/binding-language';
+import * as LogManager from 'aurelia-logging';
+
+var logger = LogManager.getLogger('templating-binding');
 
 describe('interpolation binding', () => {
   describe('interpolate', () => {
@@ -107,7 +110,7 @@ describe('TemplatingBindingLanguage', () => {
     var language, resources;
     beforeAll(() => {
       var parser = { parse: expression => '!' + expression },
-          observerLocator = null,
+          observerLocator = { getObserver: () => null },
           syntaxInterpreter = {};
       language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter);
       resources = { valueConverterLookupFunction: () => null };
@@ -158,6 +161,14 @@ describe('TemplatingBindingLanguage', () => {
         }
         expect(language.parseContent(resources, 'textContent', aggregate.attrValue).parts).toEqual(aggregate.parts);
       }
+    });
+
+    it('warns on interpolation in style attribute', () => {
+      var expression = language.parseContent(resources, 'style', "${name}"),
+          binding;
+      spyOn(logger, 'info').and.callThrough();
+      binding = expression.createBinding();
+      expect(logger.info).toHaveBeenCalled();
     });
   });
 });
