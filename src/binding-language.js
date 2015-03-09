@@ -1,8 +1,10 @@
 import {BindingLanguage} from 'aurelia-templating';
 import {Parser, ObserverLocator, BindingExpression, NameExpression, ONE_WAY} from 'aurelia-binding';
 import {SyntaxInterpreter} from './syntax-interpreter';
+import * as LogManager from 'aurelia-logging';
 
-var info = {};
+var info = {},
+    logger = LogManager.getLogger('templating-binding');
 
 export class TemplatingBindingLanguage extends BindingLanguage {
   static inject() { return [Parser, ObserverLocator,SyntaxInterpreter]; }
@@ -16,6 +18,8 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       'class':'className',
       'for':'htmlFor',
       'tabindex':'tabIndex',
+      'textcontent': 'textContent',
+      'innerhtml': 'innerHTML',
       // HTMLInputElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement
       'maxlength':'maxLength',
       'minlength':'minLength',
@@ -184,7 +188,7 @@ export class InterpolationBindingExpression {
 class InterpolationBinding {
   constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction){
     if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
-      throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use "<textarea value.bind="expression"></textarea>"" instead');
+      throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
     }
     this.observerLocator = observerLocator;
     this.parts = parts;

@@ -1,6 +1,6 @@
 import {
-  Parser, 
-  ObserverLocator, 
+  Parser,
+  ObserverLocator,
   EventManager,
   ListenerExpression,
   BindingExpression,
@@ -32,7 +32,7 @@ export class SyntaxInterpreter {
         command = info.command;
 
     var instruction = this.options(resources, element, info, existingInstruction);
-    
+
     instruction.alteredAttr = true;
     instruction.attrName = 'global-behavior';
     instruction.attributes.aureliaAttrName = attrName;
@@ -48,6 +48,8 @@ export class SyntaxInterpreter {
       return attrName === 'value' || attrName === 'checked' ? TWO_WAY : ONE_WAY;
     }else if(tagName == 'textarea' || tagName == 'select'){
       return attrName == 'value' ? TWO_WAY : ONE_WAY;
+    }else if(attrName === 'textcontent' || attrName === 'innerhtml'){
+      return element.contentEditable === 'true' ? TWO_WAY : ONE_WAY;
     }
 
     return ONE_WAY;
@@ -61,7 +63,7 @@ export class SyntaxInterpreter {
         this.attributeMap[info.attrName] || info.attrName,
         this.parser.parse(info.attrValue),
         info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName),
-        resources.valueConverterLookupFunction    
+        resources.valueConverterLookupFunction
       );
 
     return instruction;
@@ -94,7 +96,7 @@ export class SyntaxInterpreter {
         this.observerLocator,
         info.attrName,
         this.parser.parse(info.attrValue),
-        resources.valueConverterLookupFunction    
+        resources.valueConverterLookupFunction
       );
 
     return instruction;
@@ -112,7 +114,7 @@ export class SyntaxInterpreter {
       if(current === ';'){
         info = language.inspectAttribute(resources, name, target.trim());
         language.createAttributeInstruction(resources, element, info, instruction);
-        
+
         if(!instruction.attributes[info.attrName]){
           instruction.attributes[info.attrName] = info.attrValue;
         }
@@ -178,7 +180,7 @@ SyntaxInterpreter.prototype['two-way'] = function(resources, element, info, exis
       info.attrName,
       this.parser.parse(info.attrValue),
       TWO_WAY,
-      resources.valueConverterLookupFunction    
+      resources.valueConverterLookupFunction
     );
 
   return instruction;
@@ -192,7 +194,7 @@ SyntaxInterpreter.prototype['one-way'] = function(resources, element, info, exis
       this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
       ONE_WAY,
-      resources.valueConverterLookupFunction    
+      resources.valueConverterLookupFunction
     );
 
   return instruction;
@@ -206,7 +208,7 @@ SyntaxInterpreter.prototype['one-time'] = function(resources, element, info, exi
       this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
       ONE_TIME,
-      resources.valueConverterLookupFunction    
+      resources.valueConverterLookupFunction
     );
 
   return instruction;

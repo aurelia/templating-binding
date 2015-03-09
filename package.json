@@ -27,6 +27,7 @@
     },
     "dependencies": {
       "aurelia-binding": "github:aurelia/binding@^0.3.7",
+      "aurelia-logging": "github:aurelia/logging@^0.2.5",
       "aurelia-templating": "github:aurelia/templating@^0.8.14"
     }
   },
