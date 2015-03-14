@@ -8,6 +8,7 @@ This library is part of the [Aurelia](http://www.aurelia.io/) platform and conta
 
 * [aurelia-templating](https://github.com/aurelia/templating)
 * [aurelia-binding](https://github.com/aurelia/binding)
+* [aurelia-logging](https://github.com/aurelia/logging)
 
 ## Used By
 

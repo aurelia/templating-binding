@@ -10,6 +10,7 @@ System.config({
 System.config({
   "map": {
     "aurelia-binding": "github:aurelia/binding@0.3.7",
+    "aurelia-logging": "github:aurelia/logging@0.2.5",
     "aurelia-templating": "github:aurelia/templating@0.8.14",
     "github:aurelia/binding@0.3.7": {
       "aurelia-dependency-injection": "github:aurelia/dependency-injection@0.4.5",
