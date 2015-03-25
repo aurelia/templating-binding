@@ -1,3 +1,10 @@
+## 0.9.0 (2015-03-25)
+
+#### Features
+
+* **BindingLanguage:** warn on interpolation in style attribute
+* **SyntaxInterpreter:** enable two-way binding of contenteditable elements
+
 ### 0.8.7 (2015-02-28)
 
 
@@ -181,4 +188,3 @@
 #### Bug Fixes
 
 * **package:** update dependencies to latest versions ([5c07af5b](http://github.com/aurelia/templating-binding/commit/5c07af5bbdee818533c04ef8dccad192eaad846a))
-

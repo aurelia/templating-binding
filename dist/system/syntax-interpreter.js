@@ -75,6 +75,8 @@ System.register(["aurelia-binding"], function (_export) {
                 return attrName === "value" || attrName === "checked" ? TWO_WAY : ONE_WAY;
               } else if (tagName == "textarea" || tagName == "select") {
                 return attrName == "value" ? TWO_WAY : ONE_WAY;
+              } else if (attrName === "textcontent" || attrName === "innerhtml") {
+                return element.contentEditable === "true" ? TWO_WAY : ONE_WAY;
               }
 
               return ONE_WAY;

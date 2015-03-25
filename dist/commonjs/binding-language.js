@@ -1,5 +1,7 @@
 "use strict";
 
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { "default": obj }; };
+
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
 var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
@@ -18,7 +20,10 @@ var ONE_WAY = _aureliaBinding.ONE_WAY;
 
 var SyntaxInterpreter = require("./syntax-interpreter").SyntaxInterpreter;
 
-var info = {};
+var LogManager = _interopRequireWildcard(require("aurelia-logging"));
+
+var info = {},
+    logger = LogManager.getLogger("templating-binding");
 
 var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (function (BindingLanguage) {
   function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter) {
@@ -33,6 +38,8 @@ var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (function (B
       "class": "className",
       "for": "htmlFor",
       tabindex: "tabIndex",
+      textcontent: "textContent",
+      innerhtml: "innerHTML",
       // HTMLInputElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement
       maxlength: "maxLength",
       minlength: "minLength",
@@ -224,8 +231,10 @@ var InterpolationBinding = (function () {
   function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
     _classCallCheck(this, InterpolationBinding);
 
-    if (target.parentElement && target.parentElement.nodeName === "TEXTAREA" && targetProperty === "textContent") {
-      throw new Error("Interpolation binding cannot be used in the content of a textarea element.  Use \"<textarea value.bind=\"expression\"></textarea>\"\" instead");
+    if (targetProperty === "style") {
+      logger.info("Internet Explorer does not support interpolation in \"style\" attributes.  Use the style attribute's alias, \"css\" instead.");
+    } else if (target.parentElement && target.parentElement.nodeName === "TEXTAREA" && targetProperty === "textContent") {
+      throw new Error("Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind=\"expression\"></textarea> instead.");
     }
     this.observerLocator = observerLocator;
     this.parts = parts;

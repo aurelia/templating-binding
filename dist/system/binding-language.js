@@ -1,5 +1,5 @@
-System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"], function (_export) {
-  var BindingLanguage, Parser, ObserverLocator, BindingExpression, NameExpression, ONE_WAY, SyntaxInterpreter, _prototypeProperties, _inherits, _classCallCheck, info, TemplatingBindingLanguage, InterpolationBindingExpression, InterpolationBinding;
+System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter", "aurelia-logging"], function (_export) {
+  var BindingLanguage, Parser, ObserverLocator, BindingExpression, NameExpression, ONE_WAY, SyntaxInterpreter, LogManager, _prototypeProperties, _inherits, _classCallCheck, info, logger, TemplatingBindingLanguage, InterpolationBindingExpression, InterpolationBinding;
 
   return {
     setters: [function (_aureliaTemplating) {
@@ -12,6 +12,8 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
       ONE_WAY = _aureliaBinding.ONE_WAY;
     }, function (_syntaxInterpreter) {
       SyntaxInterpreter = _syntaxInterpreter.SyntaxInterpreter;
+    }, function (_aureliaLogging) {
+      LogManager = _aureliaLogging;
     }],
     execute: function () {
       "use strict";
@@ -23,6 +25,7 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
       _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
       info = {};
+      logger = LogManager.getLogger("templating-binding");
       TemplatingBindingLanguage = _export("TemplatingBindingLanguage", (function (BindingLanguage) {
         function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter) {
           _classCallCheck(this, TemplatingBindingLanguage);
@@ -36,6 +39,8 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
             "class": "className",
             "for": "htmlFor",
             tabindex: "tabIndex",
+            textcontent: "textContent",
+            innerhtml: "innerHTML",
             // HTMLInputElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement
             maxlength: "maxLength",
             minlength: "minLength",
@@ -226,8 +231,10 @@ System.register(["aurelia-templating", "aurelia-binding", "./syntax-interpreter"
         function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
           _classCallCheck(this, InterpolationBinding);
 
-          if (target.parentElement && target.parentElement.nodeName === "TEXTAREA" && targetProperty === "textContent") {
-            throw new Error("Interpolation binding cannot be used in the content of a textarea element.  Use \"<textarea value.bind=\"expression\"></textarea>\"\" instead");
+          if (targetProperty === "style") {
+            logger.info("Internet Explorer does not support interpolation in \"style\" attributes.  Use the style attribute's alias, \"css\" instead.");
+          } else if (target.parentElement && target.parentElement.nodeName === "TEXTAREA" && targetProperty === "textContent") {
+            throw new Error("Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind=\"expression\"></textarea> instead.");
           }
           this.observerLocator = observerLocator;
           this.parts = parts;
