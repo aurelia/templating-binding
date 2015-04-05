@@ -161,9 +161,9 @@ SyntaxInterpreter.prototype['for'] = function(resources, element, info, existing
     instruction.attributes.local = parts[0];
   }
 
-  instruction.attributes[info.attrName] = new BindingExpression(
+  instruction.attributes.items = new BindingExpression(
       this.observerLocator,
-      info.attrName,
+      'items',
       this.parser.parse(parts[parts.length - 1]),
       ONE_WAY,
       resources.valueConverterLookupFunction
