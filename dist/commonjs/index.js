@@ -1,29 +1,30 @@
-"use strict";
+'use strict';
 
-var BindingLanguage = require("aurelia-templating").BindingLanguage;
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-var TemplatingBindingLanguage = require("./binding-language").TemplatingBindingLanguage;
+var _BindingLanguage = require('aurelia-templating');
 
-var SyntaxInterpreter = require("./syntax-interpreter").SyntaxInterpreter;
+var _TemplatingBindingLanguage = require('./binding-language');
+
+var _SyntaxInterpreter = require('./syntax-interpreter');
 
 function install(aurelia) {
   var instance,
       getInstance = function getInstance(c) {
-    return instance || (instance = c.invoke(TemplatingBindingLanguage));
+    return instance || (instance = c.invoke(_TemplatingBindingLanguage.TemplatingBindingLanguage));
   };
 
-  if (aurelia.container.hasHandler(TemplatingBindingLanguage)) {
-    instance = aurelia.container.get(TemplatingBindingLanguage);
+  if (aurelia.container.hasHandler(_TemplatingBindingLanguage.TemplatingBindingLanguage)) {
+    instance = aurelia.container.get(_TemplatingBindingLanguage.TemplatingBindingLanguage);
   } else {
-    aurelia.container.registerHandler(TemplatingBindingLanguage, getInstance);
+    aurelia.container.registerHandler(_TemplatingBindingLanguage.TemplatingBindingLanguage, getInstance);
   }
 
-  aurelia.container.registerHandler(BindingLanguage, getInstance);
+  aurelia.container.registerHandler(_BindingLanguage.BindingLanguage, getInstance);
 }
 
-exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
-exports.SyntaxInterpreter = SyntaxInterpreter;
+exports.TemplatingBindingLanguage = _TemplatingBindingLanguage.TemplatingBindingLanguage;
+exports.SyntaxInterpreter = _SyntaxInterpreter.SyntaxInterpreter;
 exports.install = install;
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});

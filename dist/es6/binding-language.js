@@ -9,6 +9,7 @@ var info = {},
 export class TemplatingBindingLanguage extends BindingLanguage {
   static inject() { return [Parser, ObserverLocator, SyntaxInterpreter]; }
 	constructor(parser, observerLocator, syntaxInterpreter){
+    super();
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.syntaxInterpreter = syntaxInterpreter;

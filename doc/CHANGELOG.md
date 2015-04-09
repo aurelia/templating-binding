@@ -1,3 +1,12 @@
+## 0.10.0 (2015-04-09)
+
+
+#### Bug Fixes
+
+* **all:** upgrade compiler ([9676dd24](http://github.com/aurelia/templating-binding/commit/9676dd2442a3a3ccfa4a0873ee52c2ae7148b1a4))
+* **syntax-interpreter:** make repeater to work with new behavior model ([5e1137e3](http://github.com/aurelia/templating-binding/commit/5e1137e3a8272bd6f9d1e3eb13a535de9346528e))
+
+
 ## 0.9.0 (2015-03-25)
 
 #### Features
