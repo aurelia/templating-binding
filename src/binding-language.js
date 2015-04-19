@@ -222,11 +222,42 @@ class InterpolationBinding {
     this.targetProperty.setValue(value);
   }
 
+  partChanged(newValue, oldValue, connecting){
+    var map, info;
+    if (!connecting) {
+      this.setValue();
+    }
+    if (oldValue instanceof Array) {
+      map = this.arrayPartMap;
+      info = map ? map.get(oldValue) : null;
+      if (info) {
+        info.refs--;
+        if (info.refs === 0) {
+          info.dispose();
+          map.delete(oldValue);
+        }
+      }
+    }
+    if (newValue instanceof Array) {
+      map = this.arrayPartMap || (this.arrayPartMap = new Map());
+      info = map.get(newValue);
+      if (!info) {
+        info = {
+          refs: 0,
+          dispose: this.observerLocator.getArrayObserver(newValue).subscribe(() => this.setValue())
+        }
+        map.set(newValue, info);
+      }
+      info.refs++;
+    }
+  }
+
   connect(){
     var info,
         parts = this.parts,
         source = this.source,
         toDispose = this.toDispose = [],
+        partChanged = this.partChanged.bind(this),
         i, ii;
 
     for(i = 0, ii = parts.length; i < ii; ++i){
@@ -235,9 +266,10 @@ class InterpolationBinding {
       } else {
         info = parts[i].connect(this, source);
         if(info.observer){
-          toDispose.push(info.observer.subscribe(newValue =>{
-            this.setValue();
-          }));
+          toDispose.push(info.observer.subscribe(partChanged));
+        }
+        if (info.value instanceof Array) {
+          partChanged(info.value, undefined, true);
         }
       }
     }
@@ -263,7 +295,7 @@ class InterpolationBinding {
   }
 
   unbind(){
-    var i, ii, toDispose = this.toDispose;
+    var i, ii, toDispose = this.toDispose, map = this.arrayPartMap;
 
     if(toDispose){
       for(i = 0, ii = toDispose.length; i < ii; ++i){
@@ -272,5 +304,14 @@ class InterpolationBinding {
     }
 
     this.toDispose = null;
+
+    if (map) {
+      for(toDispose of map.values()) {
+        toDispose.dispose();
+      }
+      map.clear();
+    }
+
+    this.arrayPartMap = null;
   }
 }
