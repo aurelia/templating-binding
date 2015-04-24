@@ -45,6 +45,7 @@
     "karma": "^0.12.28",
     "karma-babel-preprocessor": "^5.0.1",
     "karma-chrome-launcher": "^0.1.7",
+    "karma-ie-launcher": "^0.1.5",
     "karma-jasmine": "^0.3.2",
     "karma-jspm": "^1.1.4",
     "object.assign": "^1.0.3",
