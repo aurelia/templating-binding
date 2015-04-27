@@ -17,6 +17,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
       'class':'className',
+      'contenteditable':'contentEditable',
       'for':'htmlFor',
       'tabindex':'tabIndex',
       'textcontent': 'textContent',
