@@ -177,7 +177,7 @@ SyntaxInterpreter.prototype['two-way'] = function(resources, element, info, exis
 
   instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
-      info.attrName,
+      this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
       TWO_WAY,
       resources.valueConverterLookupFunction
