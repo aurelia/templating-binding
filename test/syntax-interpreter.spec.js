@@ -7,9 +7,7 @@ import {
   BindingExpression,
   NameExpression,
   CallExpression,
-  ONE_WAY,
-  TWO_WAY,
-  ONE_TIME
+  bindingMode
 } from 'aurelia-binding';
 
 export function createElement(html) {
@@ -28,42 +26,42 @@ describe('SyntaxInterpreter', () => {
 
     it('handles input', () => {
       var el = createElement('<input type="checkbox">');
-      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(TWO_WAY);
-      expect(interpreter.determineDefaultBindingMode(el, 'checked')).toBe(TWO_WAY);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(ONE_WAY);
+      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'checked')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
     });
 
     it('handles textarea', () => {
       var el = createElement('<textarea></textarea>');
-      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(TWO_WAY);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(ONE_WAY);
+      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
     });
 
     it('handles textarea', () => {
       var el = createElement('<select></select>');
-      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(TWO_WAY);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(ONE_WAY);
+      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
     });
 
     it('handles contenteditable="true"', () => {
       var el = createElement('<div contenteditable="true"></div>');
-      expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(TWO_WAY);
-      expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(TWO_WAY);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(ONE_WAY);
+      expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
     });
 
     it('handles contenteditable="false"', () => {
       var el = createElement('<div contenteditable="false"></div>');
-      expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(ONE_WAY);
-      expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(ONE_WAY);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(ONE_WAY);
+      expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
     });
 
     it('handles inherited contenteditable', () => {
       var el = createElement('<div></div>');
-      expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(ONE_WAY);
-      expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(ONE_WAY);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(ONE_WAY);
+      expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
     });
   });
 });

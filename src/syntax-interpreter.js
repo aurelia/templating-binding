@@ -6,9 +6,7 @@ import {
   BindingExpression,
   NameExpression,
   CallExpression,
-  ONE_WAY,
-  TWO_WAY,
-  ONE_TIME
+  bindingMode
 } from 'aurelia-binding';
 
 export class SyntaxInterpreter {
@@ -45,14 +43,14 @@ export class SyntaxInterpreter {
     var tagName = element.tagName.toLowerCase();
 
     if(tagName === 'input'){
-      return attrName === 'value' || attrName === 'checked' ? TWO_WAY : ONE_WAY;
+      return attrName === 'value' || attrName === 'checked' ? bindingMode.twoWay : bindingMode.oneWay;
     }else if(tagName == 'textarea' || tagName == 'select'){
-      return attrName == 'value' ? TWO_WAY : ONE_WAY;
+      return attrName == 'value' ? bindingMode.twoWay : bindingMode.oneWay;
     }else if(attrName === 'textcontent' || attrName === 'innerhtml'){
-      return element.contentEditable === 'true' ? TWO_WAY : ONE_WAY;
+      return element.contentEditable === 'true' ? bindingMode.twoWay : bindingMode.oneWay;
     }
 
-    return ONE_WAY;
+    return bindingMode.oneWay;
   }
 
   bind(resources, element, info, existingInstruction){
@@ -165,7 +163,7 @@ SyntaxInterpreter.prototype['for'] = function(resources, element, info, existing
       this.observerLocator,
       'items',
       this.parser.parse(parts[parts.length - 1]),
-      ONE_WAY,
+      bindingMode.oneWay,
       resources.valueConverterLookupFunction
     );
 
@@ -179,7 +177,7 @@ SyntaxInterpreter.prototype['two-way'] = function(resources, element, info, exis
       this.observerLocator,
       this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
-      TWO_WAY,
+      bindingMode.twoWay,
       resources.valueConverterLookupFunction
     );
 
@@ -193,7 +191,7 @@ SyntaxInterpreter.prototype['one-way'] = function(resources, element, info, exis
       this.observerLocator,
       this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
-      ONE_WAY,
+      bindingMode.oneWay,
       resources.valueConverterLookupFunction
     );
 
@@ -207,7 +205,7 @@ SyntaxInterpreter.prototype['one-time'] = function(resources, element, info, exi
       this.observerLocator,
       this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
-      ONE_TIME,
+      bindingMode.oneTime,
       resources.valueConverterLookupFunction
     );
 
