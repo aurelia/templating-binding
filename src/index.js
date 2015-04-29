@@ -2,7 +2,7 @@ import {BindingLanguage} from 'aurelia-templating';
 import {TemplatingBindingLanguage} from './binding-language';
 import {SyntaxInterpreter} from './syntax-interpreter';
 
-function install(aurelia){
+function configure(aurelia){
   var instance,
       getInstance = function (c){
         return instance || (instance = c.invoke(TemplatingBindingLanguage));
@@ -20,5 +20,5 @@ function install(aurelia){
 export {
   TemplatingBindingLanguage,
   SyntaxInterpreter,
-  install
+  configure
 };
