@@ -1,5 +1,5 @@
 System.register(['aurelia-binding'], function (_export) {
-  var Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, ONE_WAY, TWO_WAY, ONE_TIME, _classCallCheck, _createClass, SyntaxInterpreter;
+  var Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, bindingMode, _classCallCheck, SyntaxInterpreter;
 
   return {
     setters: [function (_aureliaBinding) {
@@ -10,16 +10,12 @@ System.register(['aurelia-binding'], function (_export) {
       BindingExpression = _aureliaBinding.BindingExpression;
       NameExpression = _aureliaBinding.NameExpression;
       CallExpression = _aureliaBinding.CallExpression;
-      ONE_WAY = _aureliaBinding.ONE_WAY;
-      TWO_WAY = _aureliaBinding.TWO_WAY;
-      ONE_TIME = _aureliaBinding.ONE_TIME;
+      bindingMode = _aureliaBinding.bindingMode;
     }],
     execute: function () {
       'use strict';
 
       _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-      _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
       SyntaxInterpreter = (function () {
         function SyntaxInterpreter(parser, observerLocator, eventManager) {
@@ -30,123 +26,112 @@ System.register(['aurelia-binding'], function (_export) {
           this.eventManager = eventManager;
         }
 
-        _createClass(SyntaxInterpreter, [{
-          key: 'interpret',
-          value: function interpret(resources, element, info, existingInstruction) {
-            if (info.command in this) {
-              return this[info.command](resources, element, info, existingInstruction);
-            }
+        SyntaxInterpreter.inject = function inject() {
+          return [Parser, ObserverLocator, EventManager];
+        };
 
-            return this.handleUnknownCommand(resources, element, info, existingInstruction);
+        SyntaxInterpreter.prototype.interpret = function interpret(resources, element, info, existingInstruction) {
+          if (info.command in this) {
+            return this[info.command](resources, element, info, existingInstruction);
           }
-        }, {
-          key: 'handleUnknownCommand',
-          value: function handleUnknownCommand(resources, element, info, existingInstruction) {
-            var attrName = info.attrName,
-                command = info.command;
 
-            var instruction = this.options(resources, element, info, existingInstruction);
+          return this.handleUnknownCommand(resources, element, info, existingInstruction);
+        };
 
-            instruction.alteredAttr = true;
-            instruction.attrName = 'global-behavior';
-            instruction.attributes.aureliaAttrName = attrName;
-            instruction.attributes.aureliaCommand = command;
+        SyntaxInterpreter.prototype.handleUnknownCommand = function handleUnknownCommand(resources, element, info, existingInstruction) {
+          var attrName = info.attrName,
+              command = info.command;
 
-            return instruction;
+          var instruction = this.options(resources, element, info, existingInstruction);
+
+          instruction.alteredAttr = true;
+          instruction.attrName = 'global-behavior';
+          instruction.attributes.aureliaAttrName = attrName;
+          instruction.attributes.aureliaCommand = command;
+
+          return instruction;
+        };
+
+        SyntaxInterpreter.prototype.determineDefaultBindingMode = function determineDefaultBindingMode(element, attrName) {
+          var tagName = element.tagName.toLowerCase();
+
+          if (tagName === 'input') {
+            return attrName === 'value' || attrName === 'checked' ? bindingMode.twoWay : bindingMode.oneWay;
+          } else if (tagName == 'textarea' || tagName == 'select') {
+            return attrName == 'value' ? bindingMode.twoWay : bindingMode.oneWay;
+          } else if (attrName === 'textcontent' || attrName === 'innerhtml') {
+            return element.contentEditable === 'true' ? bindingMode.twoWay : bindingMode.oneWay;
           }
-        }, {
-          key: 'determineDefaultBindingMode',
-          value: function determineDefaultBindingMode(element, attrName) {
-            var tagName = element.tagName.toLowerCase();
 
-            if (tagName === 'input') {
-              return attrName === 'value' || attrName === 'checked' ? TWO_WAY : ONE_WAY;
-            } else if (tagName == 'textarea' || tagName == 'select') {
-              return attrName == 'value' ? TWO_WAY : ONE_WAY;
-            } else if (attrName === 'textcontent' || attrName === 'innerhtml') {
-              return element.contentEditable === 'true' ? TWO_WAY : ONE_WAY;
-            }
+          return bindingMode.oneWay;
+        };
 
-            return ONE_WAY;
-          }
-        }, {
-          key: 'bind',
-          value: function bind(resources, element, info, existingInstruction) {
-            var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+        SyntaxInterpreter.prototype.bind = function bind(resources, element, info, existingInstruction) {
+          var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-            instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName), resources.valueConverterLookupFunction);
+          instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName), resources.valueConverterLookupFunction);
 
-            return instruction;
-          }
-        }, {
-          key: 'trigger',
-          value: function trigger(resources, element, info) {
-            return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true);
-          }
-        }, {
-          key: 'delegate',
-          value: function delegate(resources, element, info) {
-            return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true);
-          }
-        }, {
-          key: 'call',
-          value: function call(resources, element, info, existingInstruction) {
-            var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+          return instruction;
+        };
 
-            instruction.attributes[info.attrName] = new CallExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), resources.valueConverterLookupFunction);
+        SyntaxInterpreter.prototype.trigger = function trigger(resources, element, info) {
+          return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true);
+        };
 
-            return instruction;
-          }
-        }, {
-          key: 'options',
-          value: function options(resources, element, info, existingInstruction) {
-            var instruction = existingInstruction || { attrName: info.attrName, attributes: {} },
-                attrValue = info.attrValue,
-                language = this.language,
-                name = null,
-                target = '',
-                current,
-                i,
-                ii;
+        SyntaxInterpreter.prototype.delegate = function delegate(resources, element, info) {
+          return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true);
+        };
 
-            for (i = 0, ii = attrValue.length; i < ii; ++i) {
-              current = attrValue[i];
+        SyntaxInterpreter.prototype.call = function call(resources, element, info, existingInstruction) {
+          var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-              if (current === ';') {
-                info = language.inspectAttribute(resources, name, target.trim());
-                language.createAttributeInstruction(resources, element, info, instruction);
+          instruction.attributes[info.attrName] = new CallExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), resources.valueConverterLookupFunction);
 
-                if (!instruction.attributes[info.attrName]) {
-                  instruction.attributes[info.attrName] = info.attrValue;
-                }
+          return instruction;
+        };
 
-                target = '';
-                name = null;
-              } else if (current === ':' && name === null) {
-                name = target.trim();
-                target = '';
-              } else {
-                target += current;
-              }
-            }
+        SyntaxInterpreter.prototype.options = function options(resources, element, info, existingInstruction) {
+          var instruction = existingInstruction || { attrName: info.attrName, attributes: {} },
+              attrValue = info.attrValue,
+              language = this.language,
+              name = null,
+              target = '',
+              current,
+              i,
+              ii;
 
-            if (name !== null) {
+          for (i = 0, ii = attrValue.length; i < ii; ++i) {
+            current = attrValue[i];
+
+            if (current === ';') {
               info = language.inspectAttribute(resources, name, target.trim());
               language.createAttributeInstruction(resources, element, info, instruction);
 
               if (!instruction.attributes[info.attrName]) {
                 instruction.attributes[info.attrName] = info.attrValue;
               }
-            }
 
-            return instruction;
+              target = '';
+              name = null;
+            } else if (current === ':' && name === null) {
+              name = target.trim();
+              target = '';
+            } else {
+              target += current;
+            }
           }
-        }], [{
-          key: 'inject',
-          value: function inject() {
-            return [Parser, ObserverLocator, EventManager];
+
+          if (name !== null) {
+            info = language.inspectAttribute(resources, name, target.trim());
+            language.createAttributeInstruction(resources, element, info, instruction);
+
+            if (!instruction.attributes[info.attrName]) {
+              instruction.attributes[info.attrName] = info.attrValue;
+            }
           }
-        }]);
+
+          return instruction;
+        };
 
         return SyntaxInterpreter;
       })();
@@ -172,7 +157,7 @@ System.register(['aurelia-binding'], function (_export) {
           instruction.attributes.local = parts[0];
         }
 
-        instruction.attributes.items = new BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[parts.length - 1]), ONE_WAY, resources.valueConverterLookupFunction);
+        instruction.attributes.items = new BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[parts.length - 1]), bindingMode.oneWay, resources.valueConverterLookupFunction);
 
         return instruction;
       };
@@ -180,7 +165,7 @@ System.register(['aurelia-binding'], function (_export) {
       SyntaxInterpreter.prototype['two-way'] = function (resources, element, info, existingInstruction) {
         var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), TWO_WAY, resources.valueConverterLookupFunction);
+        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.twoWay, resources.valueConverterLookupFunction);
 
         return instruction;
       };
@@ -188,7 +173,7 @@ System.register(['aurelia-binding'], function (_export) {
       SyntaxInterpreter.prototype['one-way'] = function (resources, element, info, existingInstruction) {
         var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), ONE_WAY, resources.valueConverterLookupFunction);
+        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneWay, resources.valueConverterLookupFunction);
 
         return instruction;
       };
@@ -196,7 +181,7 @@ System.register(['aurelia-binding'], function (_export) {
       SyntaxInterpreter.prototype['one-time'] = function (resources, element, info, existingInstruction) {
         var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), ONE_TIME, resources.valueConverterLookupFunction);
+        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneTime, resources.valueConverterLookupFunction);
 
         return instruction;
       };

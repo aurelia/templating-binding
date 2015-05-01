@@ -1,7 +1,7 @@
 System.register(['aurelia-templating', './binding-language', './syntax-interpreter'], function (_export) {
   var BindingLanguage, TemplatingBindingLanguage, SyntaxInterpreter;
 
-  function install(aurelia) {
+  function configure(aurelia) {
     var instance,
         getInstance = function getInstance(c) {
       return instance || (instance = c.invoke(TemplatingBindingLanguage));
@@ -31,7 +31,7 @@ System.register(['aurelia-templating', './binding-language', './syntax-interpret
 
       _export('SyntaxInterpreter', SyntaxInterpreter);
 
-      _export('install', install);
+      _export('configure', configure);
     }
   };
 });

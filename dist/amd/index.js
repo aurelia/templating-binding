@@ -1,11 +1,9 @@
 define(['exports', 'aurelia-templating', './binding-language', './syntax-interpreter'], function (exports, _aureliaTemplating, _bindingLanguage, _syntaxInterpreter) {
   'use strict';
 
-  Object.defineProperty(exports, '__esModule', {
-    value: true
-  });
+  exports.__esModule = true;
 
-  function install(aurelia) {
+  function configure(aurelia) {
     var instance,
         getInstance = function getInstance(c) {
       return instance || (instance = c.invoke(_bindingLanguage.TemplatingBindingLanguage));
@@ -22,5 +20,5 @@ define(['exports', 'aurelia-templating', './binding-language', './syntax-interpr
 
   exports.TemplatingBindingLanguage = _bindingLanguage.TemplatingBindingLanguage;
   exports.SyntaxInterpreter = _syntaxInterpreter.SyntaxInterpreter;
-  exports.install = install;
+  exports.configure = configure;
 });

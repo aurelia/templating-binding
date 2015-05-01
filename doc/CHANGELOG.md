@@ -1,3 +1,16 @@
+## 0.11.0 (2015-04-30)
+
+
+#### Bug Fixes
+
+* **InterpolationBinding:** handle array mutation Fixes aurelia/framework#77 ([70cfdcfc](http://github.com/aurelia/templating-binding/commit/70cfdcfc5be05b7b94ac65d5e164aa6a6d0ccc56))
+* **SyntaxInterpreter:** use attributeMap when two-way binding ([c473d14d](http://github.com/aurelia/templating-binding/commit/c473d14d10a0592e997ddee0c90bc1dea1693707))
+* **TemplatingBindingLanguage:** map contenteditable attribute ([25336a2f](http://github.com/aurelia/templating-binding/commit/25336a2f15c051440eb3018e03014f0a90d94142))
+* **all:**
+  * update to latest plugin api ([5b26230e](http://github.com/aurelia/templating-binding/commit/5b26230e10382e241c8f9ae1c61ec8df42b1598e))
+  * update to new bindingMode API ([9152dc1b](http://github.com/aurelia/templating-binding/commit/9152dc1b92b16b0d200fd6ef8362b24127abe0d1))
+
+
 ## 0.10.0 (2015-04-09)
 
 

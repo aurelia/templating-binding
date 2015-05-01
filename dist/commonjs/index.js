@@ -1,8 +1,6 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
+exports.__esModule = true;
 
 var _BindingLanguage = require('aurelia-templating');
 
@@ -10,7 +8,7 @@ var _TemplatingBindingLanguage = require('./binding-language');
 
 var _SyntaxInterpreter = require('./syntax-interpreter');
 
-function install(aurelia) {
+function configure(aurelia) {
   var instance,
       getInstance = function getInstance(c) {
     return instance || (instance = c.invoke(_TemplatingBindingLanguage.TemplatingBindingLanguage));
@@ -27,4 +25,4 @@ function install(aurelia) {
 
 exports.TemplatingBindingLanguage = _TemplatingBindingLanguage.TemplatingBindingLanguage;
 exports.SyntaxInterpreter = _SyntaxInterpreter.SyntaxInterpreter;
-exports.install = install;
+exports.configure = configure;
