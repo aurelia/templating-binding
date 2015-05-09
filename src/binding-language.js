@@ -30,6 +30,8 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       'formmethod':'formMethod',
       'formnovalidate':'formNoValidate',
       'formtarget':'formTarget',
+      'rowspan':'rowSpan',
+      'colspan':'colSpan'
     };
   }
 
