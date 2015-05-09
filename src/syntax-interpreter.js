@@ -211,7 +211,3 @@ SyntaxInterpreter.prototype['one-time'] = function(resources, element, info, exi
 
   return instruction;
 };
-
-SyntaxInterpreter.prototype["view-model"] = function (resources, element, info) {
-  return new NameExpression(info.attrValue, 'view-model');
-};

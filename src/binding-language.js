@@ -42,7 +42,14 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       info.attrName = parts[0].trim();
       info.attrValue = attrValue;
       info.command = parts[1].trim();
-      info.expression = null;
+
+      if(info.command === 'ref'){
+        info.expression = new NameExpression(attrValue, info.attrName);
+        info.command = null;
+        info.attrName = 'ref';
+      } else{
+        info.expression = null;
+      }
     }else if(attrName == 'ref'){
       info.attrName = attrName;
       info.attrValue = attrValue;
