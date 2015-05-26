@@ -64,4 +64,77 @@ describe('SyntaxInterpreter', () => {
       expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
     });
   });
+  describe('for', () => {
+    var interpreter, info;
+
+    beforeAll(() => {
+      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager());
+      info = {
+        attrName: 'repeat',
+        command: 'for',
+        defaultBindingMode: 1
+      };
+    });
+
+    it('throws on incorrect syntax', () => {
+      info.attrValue = 'foo in items';
+      expect(function(){interpreter.for({}, null, info, null)}).toThrow();
+    });
+
+    it('parses Array syntax', () => {
+      info.attrValue = 'foo of items';
+      var instruction = interpreter.for({}, null, info, null);
+      expect(instruction.attributes.local).toBe('foo');
+    });
+
+    it('parses destructuring syntax', () => {
+      info.attrValue = '[foo, bar] of items';
+      var instruction = interpreter.for({}, null, info, null);
+      expect(instruction.attributes.key).toBe('foo');
+      expect(instruction.attributes.value).toBe('bar');
+    });
+
+    it('parses destructuring syntax without space after comma separator', () => {
+      info.attrValue = '[foo,bar] of items';
+      var instruction = interpreter.for({}, null, info, null);
+      expect(instruction.attributes.key).toBe('foo');
+      expect(instruction.attributes.value).toBe('bar');
+    });
+
+    it('parses destructuring syntax with space inside brackets', () => {
+      info.attrValue = '[ foo, bar ] of items';
+      var instruction = interpreter.for({}, null, info, null);
+      expect(instruction.attributes.key).toBe('foo');
+      expect(instruction.attributes.value).toBe('bar');
+    });
+
+    it('parses destructuring syntax with space before bracket', () => {
+      info.attrValue = ' [foo, bar] of items';
+      var instruction = interpreter.for({}, null, info, null);
+      expect(instruction.attributes.key).toBe('foo');
+      expect(instruction.attributes.value).toBe('bar');
+    });
+
+    it('parses destructuring syntax without comma separator', () => {
+      info.attrValue = '[foo bar] of items';
+      var instruction = interpreter.for({}, null, info, null);
+      expect(instruction.attributes.key).toBe('foo');
+      expect(instruction.attributes.value).toBe('bar');
+    });
+
+    it('parses destructuring syntax without space before of', () => {
+      info.attrValue = '[foo, bar]of items';
+      var instruction = interpreter.for({}, null, info, null);
+      expect(instruction.attributes.key).toBe('foo');
+      expect(instruction.attributes.value).toBe('bar');
+    });
+
+    it('takes first two from destructuring array', () => {
+      info.attrValue = '[foo, bar, baz] of items';
+      var instruction = interpreter.for({}, null, info, null);
+      expect(instruction.attributes.key).toBe('foo');
+      expect(instruction.attributes.value).toBe('bar');
+    });
+
+  });
 });
