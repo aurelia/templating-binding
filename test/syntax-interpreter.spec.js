@@ -63,5 +63,11 @@ describe('SyntaxInterpreter', () => {
       expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(bindingMode.oneWay);
       expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
     });
+
+    it('handles scrolltop/scrollleft', () => {
+      var el = createElement('<div></div>');
+      expect(interpreter.determineDefaultBindingMode(el, 'scrolltop')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'scrollleft')).toBe(bindingMode.twoWay);
+    });
   });
 });

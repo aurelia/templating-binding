@@ -31,7 +31,9 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       'formnovalidate':'formNoValidate',
       'formtarget':'formTarget',
       'rowspan':'rowSpan',
-      'colspan':'colSpan'
+      'colspan':'colSpan',
+      'scrolltop':'scrollTop',
+      'scrollleft':'scrollLeft'
     };
   }
 

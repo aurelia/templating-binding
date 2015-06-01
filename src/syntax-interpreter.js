@@ -48,6 +48,8 @@ export class SyntaxInterpreter {
       return attrName == 'value' ? bindingMode.twoWay : bindingMode.oneWay;
     }else if(attrName === 'textcontent' || attrName === 'innerhtml'){
       return element.contentEditable === 'true' ? bindingMode.twoWay : bindingMode.oneWay;
+    } else if(attrName === 'scrolltop' || attrName === 'scrollleft'){
+      return bindingMode.twoWay;
     }
 
     return bindingMode.oneWay;
