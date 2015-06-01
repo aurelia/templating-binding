@@ -16,7 +16,6 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.emptyStringExpression = this.parser.parse('\'\'');
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
-      'class':'className',
       'contenteditable':'contentEditable',
       'for':'htmlFor',
       'tabindex':'tabIndex',
