@@ -1,3 +1,19 @@
+## 0.12.0 (2015-06-08)
+
+
+#### Bug Fixes
+
+* **attribute-map:** add rowspan and colspan attributes ([eb8667a3](http://github.com/aurelia/templating-binding/commit/eb8667a3e8c420d4f271e4d5f9fee17c2180b489))
+* **attributeMap:** do not remap style ([1813f392](http://github.com/aurelia/templating-binding/commit/1813f392477e5f7588bf164fc4bf6d03ddefdeea))
+* **syntax-interpeter:** destructuring syntax in for parses incorrectly ([87c735aa](http://github.com/aurelia/templating-binding/commit/87c735aa19974a1239c561417536200f2634a63f), closes [#36](http://github.com/aurelia/templating-binding/issues/36))
+
+
+#### Features
+
+* **all:** make ref bindings work with api properties ([9541e397](http://github.com/aurelia/templating-binding/commit/9541e3972dc088607bb59cfcff9c703ebb19a6c4))
+* **attributeMap:** scrollTop/scrollLeft binding ([26220cc9](http://github.com/aurelia/templating-binding/commit/26220cc9c9b179f46b621481cb317a0ab0a9c593))
+
+
 ## 0.11.0 (2015-04-30)
 
 

@@ -1,5 +1,9 @@
 System.register(['aurelia-binding'], function (_export) {
-  var Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, bindingMode, _classCallCheck, SyntaxInterpreter;
+  'use strict';
+
+  var Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, bindingMode, SyntaxInterpreter;
+
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
   return {
     setters: [function (_aureliaBinding) {
@@ -13,10 +17,6 @@ System.register(['aurelia-binding'], function (_export) {
       bindingMode = _aureliaBinding.bindingMode;
     }],
     execute: function () {
-      'use strict';
-
-      _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
       SyntaxInterpreter = (function () {
         function SyntaxInterpreter(parser, observerLocator, eventManager) {
           _classCallCheck(this, SyntaxInterpreter);
@@ -61,6 +61,8 @@ System.register(['aurelia-binding'], function (_export) {
             return attrName == 'value' ? bindingMode.twoWay : bindingMode.oneWay;
           } else if (attrName === 'textcontent' || attrName === 'innerhtml') {
             return element.contentEditable === 'true' ? bindingMode.twoWay : bindingMode.oneWay;
+          } else if (attrName === 'scrolltop' || attrName === 'scrollleft') {
+            return bindingMode.twoWay;
           }
 
           return bindingMode.oneWay;
@@ -139,25 +141,26 @@ System.register(['aurelia-binding'], function (_export) {
       _export('SyntaxInterpreter', SyntaxInterpreter);
 
       SyntaxInterpreter.prototype['for'] = function (resources, element, info, existingInstruction) {
-        var parts = info.attrValue.split(' of ');
+        var parts, keyValue, instruction, attrValue, isDestructuring;
+        attrValue = info.attrValue;
+        isDestructuring = attrValue.match(/[[].+[\]]/);
+        parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
 
         if (parts.length !== 2) {
-          throw new Error('Incorrect syntax for "for". The form is: "$local of $items".');
+          throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
         }
 
-        var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+        instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-        if (parts[0].match(/[[].+[,]\s.+[\]]/)) {
-          var firstPart = parts[0];
-          parts[0] = firstPart.substr(1, firstPart.indexOf(',') - 1);
-          parts.splice(1, 0, firstPart.substring(firstPart.indexOf(', ') + 2, firstPart.length - 1));
-          instruction.attributes.key = parts[0];
-          instruction.attributes.value = parts[1];
+        if (isDestructuring) {
+          keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
+          instruction.attributes.key = keyValue[0];
+          instruction.attributes.value = keyValue[1];
         } else {
           instruction.attributes.local = parts[0];
         }
 
-        instruction.attributes.items = new BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[parts.length - 1]), bindingMode.oneWay, resources.valueConverterLookupFunction);
+        instruction.attributes.items = new BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[1]), bindingMode.oneWay, resources.valueConverterLookupFunction);
 
         return instruction;
       };
@@ -184,10 +187,6 @@ System.register(['aurelia-binding'], function (_export) {
         instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneTime, resources.valueConverterLookupFunction);
 
         return instruction;
-      };
-
-      SyntaxInterpreter.prototype['view-model'] = function (resources, element, info) {
-        return new NameExpression(info.attrValue, 'view-model');
       };
     }
   };

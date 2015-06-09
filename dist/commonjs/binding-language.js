@@ -1,22 +1,22 @@
 'use strict';
 
-var _interopRequireWildcard = function (obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (typeof obj === 'object' && obj !== null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } };
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
-
 exports.__esModule = true;
 
-var _BindingLanguage2 = require('aurelia-templating');
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-var _Parser$ObserverLocator$BindingExpression$NameExpression$bindingMode = require('aurelia-binding');
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var _SyntaxInterpreter = require('./syntax-interpreter');
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
-var _import = require('aurelia-logging');
+var _aureliaTemplating = require('aurelia-templating');
 
-var LogManager = _interopRequireWildcard(_import);
+var _aureliaBinding = require('aurelia-binding');
+
+var _syntaxInterpreter = require('./syntax-interpreter');
+
+var _aureliaLogging = require('aurelia-logging');
+
+var LogManager = _interopRequireWildcard(_aureliaLogging);
 
 var info = {},
     logger = LogManager.getLogger('templating-binding');
@@ -32,25 +32,30 @@ var TemplatingBindingLanguage = (function (_BindingLanguage) {
     this.emptyStringExpression = this.parser.parse('\'\'');
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
-      'class': 'className',
-      contenteditable: 'contentEditable',
+      'contenteditable': 'contentEditable',
       'for': 'htmlFor',
-      tabindex: 'tabIndex',
-      textcontent: 'textContent',
-      innerhtml: 'innerHTML',
-      maxlength: 'maxLength',
-      minlength: 'minLength',
-      formaction: 'formAction',
-      formenctype: 'formEncType',
-      formmethod: 'formMethod',
-      formnovalidate: 'formNoValidate',
-      formtarget: 'formTarget' };
+      'tabindex': 'tabIndex',
+      'textcontent': 'textContent',
+      'innerhtml': 'innerHTML',
+
+      'maxlength': 'maxLength',
+      'minlength': 'minLength',
+      'formaction': 'formAction',
+      'formenctype': 'formEncType',
+      'formmethod': 'formMethod',
+      'formnovalidate': 'formNoValidate',
+      'formtarget': 'formTarget',
+      'rowspan': 'rowSpan',
+      'colspan': 'colSpan',
+      'scrolltop': 'scrollTop',
+      'scrollleft': 'scrollLeft'
+    };
   }
 
   _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
   TemplatingBindingLanguage.inject = function inject() {
-    return [_Parser$ObserverLocator$BindingExpression$NameExpression$bindingMode.Parser, _Parser$ObserverLocator$BindingExpression$NameExpression$bindingMode.ObserverLocator, _SyntaxInterpreter.SyntaxInterpreter];
+    return [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, _syntaxInterpreter.SyntaxInterpreter];
   };
 
   TemplatingBindingLanguage.prototype.inspectAttribute = function inspectAttribute(resources, attrName, attrValue) {
@@ -62,12 +67,19 @@ var TemplatingBindingLanguage = (function (_BindingLanguage) {
       info.attrName = parts[0].trim();
       info.attrValue = attrValue;
       info.command = parts[1].trim();
-      info.expression = null;
+
+      if (info.command === 'ref') {
+        info.expression = new _aureliaBinding.NameExpression(attrValue, info.attrName);
+        info.command = null;
+        info.attrName = 'ref';
+      } else {
+        info.expression = null;
+      }
     } else if (attrName == 'ref') {
       info.attrName = attrName;
       info.attrValue = attrValue;
       info.command = null;
-      info.expression = new _Parser$ObserverLocator$BindingExpression$NameExpression$bindingMode.NameExpression(attrValue, 'element');
+      info.expression = new _aureliaBinding.NameExpression(attrValue, 'element');
     } else {
       info.attrName = attrName;
       info.attrValue = attrValue;
@@ -168,11 +180,11 @@ var TemplatingBindingLanguage = (function (_BindingLanguage) {
 
     parts[partIndex] = attrValue.substr(pos);
 
-    return new InterpolationBindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, parts, _Parser$ObserverLocator$BindingExpression$NameExpression$bindingMode.bindingMode.oneWay, resources.valueConverterLookupFunction, attrName);
+    return new InterpolationBindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, parts, _aureliaBinding.bindingMode.oneWay, resources.valueConverterLookupFunction, attrName);
   };
 
   return TemplatingBindingLanguage;
-})(_BindingLanguage2.BindingLanguage);
+})(_aureliaTemplating.BindingLanguage);
 
 exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
 
@@ -222,7 +234,7 @@ var InterpolationBinding = (function () {
   InterpolationBinding.prototype.bind = function bind(source) {
     this.source = source;
 
-    if (this.mode == _Parser$ObserverLocator$BindingExpression$NameExpression$bindingMode.bindingMode.oneWay) {
+    if (this.mode == _aureliaBinding.bindingMode.oneWay) {
       this.unbind();
       this.connect();
       this.setValue();

@@ -1,9 +1,9 @@
 define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
   'use strict';
 
-  var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
   exports.__esModule = true;
+
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
   var SyntaxInterpreter = (function () {
     function SyntaxInterpreter(parser, observerLocator, eventManager) {
@@ -49,6 +49,8 @@ define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
         return attrName == 'value' ? _aureliaBinding.bindingMode.twoWay : _aureliaBinding.bindingMode.oneWay;
       } else if (attrName === 'textcontent' || attrName === 'innerhtml') {
         return element.contentEditable === 'true' ? _aureliaBinding.bindingMode.twoWay : _aureliaBinding.bindingMode.oneWay;
+      } else if (attrName === 'scrolltop' || attrName === 'scrollleft') {
+        return _aureliaBinding.bindingMode.twoWay;
       }
 
       return _aureliaBinding.bindingMode.oneWay;
@@ -127,25 +129,26 @@ define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
   exports.SyntaxInterpreter = SyntaxInterpreter;
 
   SyntaxInterpreter.prototype['for'] = function (resources, element, info, existingInstruction) {
-    var parts = info.attrValue.split(' of ');
+    var parts, keyValue, instruction, attrValue, isDestructuring;
+    attrValue = info.attrValue;
+    isDestructuring = attrValue.match(/[[].+[\]]/);
+    parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
 
     if (parts.length !== 2) {
-      throw new Error('Incorrect syntax for "for". The form is: "$local of $items".');
+      throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
     }
 
-    var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+    instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
 
-    if (parts[0].match(/[[].+[,]\s.+[\]]/)) {
-      var firstPart = parts[0];
-      parts[0] = firstPart.substr(1, firstPart.indexOf(',') - 1);
-      parts.splice(1, 0, firstPart.substring(firstPart.indexOf(', ') + 2, firstPart.length - 1));
-      instruction.attributes.key = parts[0];
-      instruction.attributes.value = parts[1];
+    if (isDestructuring) {
+      keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
+      instruction.attributes.key = keyValue[0];
+      instruction.attributes.value = keyValue[1];
     } else {
       instruction.attributes.local = parts[0];
     }
 
-    instruction.attributes.items = new _aureliaBinding.BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[parts.length - 1]), _aureliaBinding.bindingMode.oneWay, resources.valueConverterLookupFunction);
+    instruction.attributes.items = new _aureliaBinding.BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[1]), _aureliaBinding.bindingMode.oneWay, resources.valueConverterLookupFunction);
 
     return instruction;
   };
@@ -172,9 +175,5 @@ define(['exports', 'aurelia-binding'], function (exports, _aureliaBinding) {
     instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), _aureliaBinding.bindingMode.oneTime, resources.valueConverterLookupFunction);
 
     return instruction;
-  };
-
-  SyntaxInterpreter.prototype['view-model'] = function (resources, element, info) {
-    return new _aureliaBinding.NameExpression(info.attrValue, 'view-model');
   };
 });

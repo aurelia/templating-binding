@@ -1,11 +1,11 @@
 define(['exports', 'aurelia-templating', 'aurelia-binding', './syntax-interpreter', 'aurelia-logging'], function (exports, _aureliaTemplating, _aureliaBinding, _syntaxInterpreter, _aureliaLogging) {
   'use strict';
 
-  var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-  var _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
-
   exports.__esModule = true;
+
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+  function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
   var info = {},
       logger = _aureliaLogging.getLogger('templating-binding');
@@ -21,19 +21,24 @@ define(['exports', 'aurelia-templating', 'aurelia-binding', './syntax-interprete
       this.emptyStringExpression = this.parser.parse('\'\'');
       syntaxInterpreter.language = this;
       this.attributeMap = syntaxInterpreter.attributeMap = {
-        'class': 'className',
-        contenteditable: 'contentEditable',
+        'contenteditable': 'contentEditable',
         'for': 'htmlFor',
-        tabindex: 'tabIndex',
-        textcontent: 'textContent',
-        innerhtml: 'innerHTML',
-        maxlength: 'maxLength',
-        minlength: 'minLength',
-        formaction: 'formAction',
-        formenctype: 'formEncType',
-        formmethod: 'formMethod',
-        formnovalidate: 'formNoValidate',
-        formtarget: 'formTarget' };
+        'tabindex': 'tabIndex',
+        'textcontent': 'textContent',
+        'innerhtml': 'innerHTML',
+
+        'maxlength': 'maxLength',
+        'minlength': 'minLength',
+        'formaction': 'formAction',
+        'formenctype': 'formEncType',
+        'formmethod': 'formMethod',
+        'formnovalidate': 'formNoValidate',
+        'formtarget': 'formTarget',
+        'rowspan': 'rowSpan',
+        'colspan': 'colSpan',
+        'scrolltop': 'scrollTop',
+        'scrollleft': 'scrollLeft'
+      };
     }
 
     _inherits(TemplatingBindingLanguage, _BindingLanguage);
@@ -51,7 +56,14 @@ define(['exports', 'aurelia-templating', 'aurelia-binding', './syntax-interprete
         info.attrName = parts[0].trim();
         info.attrValue = attrValue;
         info.command = parts[1].trim();
-        info.expression = null;
+
+        if (info.command === 'ref') {
+          info.expression = new _aureliaBinding.NameExpression(attrValue, info.attrName);
+          info.command = null;
+          info.attrName = 'ref';
+        } else {
+          info.expression = null;
+        }
       } else if (attrName == 'ref') {
         info.attrName = attrName;
         info.attrValue = attrValue;

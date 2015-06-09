@@ -16,7 +16,6 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.emptyStringExpression = this.parser.parse('\'\'');
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
-      'class':'className',
       'contenteditable':'contentEditable',
       'for':'htmlFor',
       'tabindex':'tabIndex',
@@ -30,6 +29,10 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       'formmethod':'formMethod',
       'formnovalidate':'formNoValidate',
       'formtarget':'formTarget',
+      'rowspan':'rowSpan',
+      'colspan':'colSpan',
+      'scrolltop':'scrollTop',
+      'scrollleft':'scrollLeft'
     };
   }
 
@@ -42,7 +45,14 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       info.attrName = parts[0].trim();
       info.attrValue = attrValue;
       info.command = parts[1].trim();
-      info.expression = null;
+
+      if(info.command === 'ref'){
+        info.expression = new NameExpression(attrValue, info.attrName);
+        info.command = null;
+        info.attrName = 'ref';
+      } else{
+        info.expression = null;
+      }
     }else if(attrName == 'ref'){
       info.attrName = attrName;
       info.attrValue = attrValue;

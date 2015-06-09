@@ -48,6 +48,8 @@ export class SyntaxInterpreter {
       return attrName == 'value' ? bindingMode.twoWay : bindingMode.oneWay;
     }else if(attrName === 'textcontent' || attrName === 'innerhtml'){
       return element.contentEditable === 'true' ? bindingMode.twoWay : bindingMode.oneWay;
+    } else if(attrName === 'scrolltop' || attrName === 'scrollleft'){
+      return bindingMode.twoWay;
     }
 
     return bindingMode.oneWay;
@@ -141,31 +143,32 @@ export class SyntaxInterpreter {
 }
 
 SyntaxInterpreter.prototype['for'] = function(resources, element, info, existingInstruction){
-  var parts = info.attrValue.split(' of ');
+  var parts, keyValue, instruction, attrValue, isDestructuring;
+  attrValue = info.attrValue;
+  isDestructuring = attrValue.match(/[[].+[\]]/);
+  parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
 
   if(parts.length !== 2){
-    throw new Error('Incorrect syntax for "for". The form is: "$local of $items".');
+    throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
   }
 
-  var instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
+  instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
 
-  if(parts[0].match(/[[].+[,]\s.+[\]]/)){
-    var firstPart = parts[0];
-    parts[0] = firstPart.substr(1, firstPart.indexOf(',') - 1);
-    parts.splice(1, 0, firstPart.substring(firstPart.indexOf(', ') + 2, firstPart.length -1));
-    instruction.attributes.key = parts[0];
-    instruction.attributes.value = parts[1];
+  if(isDestructuring){
+    keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
+    instruction.attributes.key = keyValue[0];
+    instruction.attributes.value = keyValue[1];
   }else{
     instruction.attributes.local = parts[0];
   }
 
   instruction.attributes.items = new BindingExpression(
-      this.observerLocator,
-      'items',
-      this.parser.parse(parts[parts.length - 1]),
-      bindingMode.oneWay,
-      resources.valueConverterLookupFunction
-    );
+    this.observerLocator,
+    'items',
+    this.parser.parse(parts[1]),
+    bindingMode.oneWay,
+    resources.valueConverterLookupFunction
+  );
 
   return instruction;
 };
@@ -210,8 +213,4 @@ SyntaxInterpreter.prototype['one-time'] = function(resources, element, info, exi
     );
 
   return instruction;
-};
-
-SyntaxInterpreter.prototype["view-model"] = function (resources, element, info) {
-  return new NameExpression(info.attrValue, 'view-model');
 };

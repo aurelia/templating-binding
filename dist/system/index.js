@@ -1,4 +1,6 @@
 System.register(['aurelia-templating', './binding-language', './syntax-interpreter'], function (_export) {
+  'use strict';
+
   var BindingLanguage, TemplatingBindingLanguage, SyntaxInterpreter;
 
   function configure(aurelia) {
@@ -25,8 +27,6 @@ System.register(['aurelia-templating', './binding-language', './syntax-interpret
       SyntaxInterpreter = _syntaxInterpreter.SyntaxInterpreter;
     }],
     execute: function () {
-      'use strict';
-
       _export('TemplatingBindingLanguage', TemplatingBindingLanguage);
 
       _export('SyntaxInterpreter', SyntaxInterpreter);

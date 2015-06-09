@@ -1,5 +1,11 @@
 System.register(['aurelia-templating', 'aurelia-binding', './syntax-interpreter', 'aurelia-logging'], function (_export) {
-  var BindingLanguage, Parser, ObserverLocator, BindingExpression, NameExpression, bindingMode, SyntaxInterpreter, LogManager, _classCallCheck, _inherits, info, logger, TemplatingBindingLanguage, InterpolationBindingExpression, InterpolationBinding;
+  'use strict';
+
+  var BindingLanguage, Parser, ObserverLocator, BindingExpression, NameExpression, bindingMode, SyntaxInterpreter, LogManager, info, logger, TemplatingBindingLanguage, InterpolationBindingExpression, InterpolationBinding;
+
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+  function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
   return {
     setters: [function (_aureliaTemplating) {
@@ -16,12 +22,6 @@ System.register(['aurelia-templating', 'aurelia-binding', './syntax-interpreter'
       LogManager = _aureliaLogging;
     }],
     execute: function () {
-      'use strict';
-
-      _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
-      _inherits = function (subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
-
       info = {};
       logger = LogManager.getLogger('templating-binding');
 
@@ -36,19 +36,24 @@ System.register(['aurelia-templating', 'aurelia-binding', './syntax-interpreter'
           this.emptyStringExpression = this.parser.parse('\'\'');
           syntaxInterpreter.language = this;
           this.attributeMap = syntaxInterpreter.attributeMap = {
-            'class': 'className',
-            contenteditable: 'contentEditable',
+            'contenteditable': 'contentEditable',
             'for': 'htmlFor',
-            tabindex: 'tabIndex',
-            textcontent: 'textContent',
-            innerhtml: 'innerHTML',
-            maxlength: 'maxLength',
-            minlength: 'minLength',
-            formaction: 'formAction',
-            formenctype: 'formEncType',
-            formmethod: 'formMethod',
-            formnovalidate: 'formNoValidate',
-            formtarget: 'formTarget' };
+            'tabindex': 'tabIndex',
+            'textcontent': 'textContent',
+            'innerhtml': 'innerHTML',
+
+            'maxlength': 'maxLength',
+            'minlength': 'minLength',
+            'formaction': 'formAction',
+            'formenctype': 'formEncType',
+            'formmethod': 'formMethod',
+            'formnovalidate': 'formNoValidate',
+            'formtarget': 'formTarget',
+            'rowspan': 'rowSpan',
+            'colspan': 'colSpan',
+            'scrolltop': 'scrollTop',
+            'scrollleft': 'scrollLeft'
+          };
         }
 
         _inherits(TemplatingBindingLanguage, _BindingLanguage);
@@ -66,7 +71,14 @@ System.register(['aurelia-templating', 'aurelia-binding', './syntax-interpreter'
             info.attrName = parts[0].trim();
             info.attrValue = attrValue;
             info.command = parts[1].trim();
-            info.expression = null;
+
+            if (info.command === 'ref') {
+              info.expression = new NameExpression(attrValue, info.attrName);
+              info.command = null;
+              info.attrName = 'ref';
+            } else {
+              info.expression = null;
+            }
           } else if (attrName == 'ref') {
             info.attrName = attrName;
             info.attrValue = attrValue;
