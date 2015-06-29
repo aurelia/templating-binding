@@ -181,7 +181,7 @@ export class InterpolationBindingExpression {
     this.parts = parts;
     this.mode = mode;
     this.valueConverterLookupFunction = valueConverterLookupFunction;
-    this.attribute = attribute;
+    this.attribute = this.attrToRemove = attribute;
     this.discrete = false;
   }
 
