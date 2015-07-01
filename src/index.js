@@ -1,8 +1,7 @@
 import {BindingLanguage} from 'aurelia-templating';
 import {TemplatingBindingLanguage} from './binding-language';
-import {SyntaxInterpreter} from './syntax-interpreter';
 
-function configure(aurelia){
+export function configure(aurelia){
   var instance,
       getInstance = function (c){
         return instance || (instance = c.invoke(TemplatingBindingLanguage));
@@ -16,9 +15,3 @@ function configure(aurelia){
 
   aurelia.container.registerHandler(BindingLanguage, getInstance);
 }
-
-export {
-  TemplatingBindingLanguage,
-  SyntaxInterpreter,
-  configure
-};
