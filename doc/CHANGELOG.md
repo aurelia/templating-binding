@@ -1,3 +1,11 @@
+## 0.13.0 (2015-07-02)
+
+
+#### Features
+
+* **binding-language:** enable removing interpolated attributes ([e66f5f42](http://github.com/aurelia/templating-binding/commit/e66f5f42612dd5051ce419535fe718726224a090))
+
+
 ## 0.12.0 (2015-06-08)
 
 
