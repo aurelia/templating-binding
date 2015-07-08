@@ -29,6 +29,9 @@ describe('SyntaxInterpreter', () => {
       expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.twoWay);
       expect(interpreter.determineDefaultBindingMode(el, 'checked')).toBe(bindingMode.twoWay);
       expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+
+      var el = createElement('<input type="file">');
+      expect(interpreter.determineDefaultBindingMode(el, 'files')).toBe(bindingMode.twoWay);
     });
 
     it('handles textarea', () => {
