@@ -11,13 +11,12 @@ import {
   ObserverLocator,
   EventManager,
   DirtyChecker,
-  Parser,
-  EventManager
+  Parser
 } from 'aurelia-binding';
 
 import {ResourceRegistry} from 'aurelia-templating';
 
-import {TaskQueue} from 'jspm_packages/github/aurelia/task-queue@0.5.0/index';
+import {TaskQueue} from 'jspm_packages/github/aurelia/task-queue@0.6.0/index';
 
 function createElement(html) {
   var div = document.createElement('div');
