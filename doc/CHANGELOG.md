@@ -1,3 +1,11 @@
+### 0.13.1 (2015-07-13)
+
+
+#### Features
+
+* **input:** Adds default binding mode for input type file ([a6b34b67](http://github.com/aurelia/templating-binding/commit/a6b34b6738588471d7fc86f452b7ef3ea72c2d9c))
+
+
 ## 0.13.0 (2015-07-02)
 
 

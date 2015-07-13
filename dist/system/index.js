@@ -79,7 +79,7 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
           var tagName = element.tagName.toLowerCase();
 
           if (tagName === 'input') {
-            return attrName === 'value' || attrName === 'checked' ? bindingMode.twoWay : bindingMode.oneWay;
+            return attrName === 'value' || attrName === 'checked' || attrName === 'files' ? bindingMode.twoWay : bindingMode.oneWay;
           } else if (tagName == 'textarea' || tagName == 'select') {
             return attrName == 'value' ? bindingMode.twoWay : bindingMode.oneWay;
           } else if (attrName === 'textcontent' || attrName === 'innerhtml') {

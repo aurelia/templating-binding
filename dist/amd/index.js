@@ -47,7 +47,7 @@ define(['exports', 'aurelia-binding', 'aurelia-templating', 'aurelia-logging'], 
       var tagName = element.tagName.toLowerCase();
 
       if (tagName === 'input') {
-        return attrName === 'value' || attrName === 'checked' ? _aureliaBinding.bindingMode.twoWay : _aureliaBinding.bindingMode.oneWay;
+        return attrName === 'value' || attrName === 'checked' || attrName === 'files' ? _aureliaBinding.bindingMode.twoWay : _aureliaBinding.bindingMode.oneWay;
       } else if (tagName == 'textarea' || tagName == 'select') {
         return attrName == 'value' ? _aureliaBinding.bindingMode.twoWay : _aureliaBinding.bindingMode.oneWay;
       } else if (attrName === 'textcontent' || attrName === 'innerhtml') {
