@@ -32,7 +32,8 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       'rowspan':'rowSpan',
       'colspan':'colSpan',
       'scrolltop':'scrollTop',
-      'scrollleft':'scrollLeft'
+      'scrollleft':'scrollLeft',
+      'readonly':'readOnly'
     };
   }
 
