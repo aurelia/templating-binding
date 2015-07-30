@@ -1,3 +1,7 @@
+### 0.13.2 (2015-07-29)
+
+* Add readonly as default bindable property
+
 ### 0.13.1 (2015-07-13)
 
 
