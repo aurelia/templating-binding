@@ -210,7 +210,8 @@ define(['exports', 'aurelia-binding', 'aurelia-templating', 'aurelia-logging'], 
         'rowspan': 'rowSpan',
         'colspan': 'colSpan',
         'scrolltop': 'scrollTop',
-        'scrollleft': 'scrollLeft'
+        'scrollleft': 'scrollLeft',
+        'readonly': 'readOnly'
       };
     }
 

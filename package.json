@@ -14,21 +14,21 @@
   },
   "license": "MIT",
   "author": "Rob Eisenberg <rob@bluespire.com> (http://robeisenberg.com/)",
-  "main": "dist/commonjs/index.js",
+  "main": "dist/commonjs/aurelia-templating-binding.js",
   "repository": {
     "type": "git",
     "url": "http://github.com/aurelia/templating-binding"
   },
   "jspm": {
-    "main": "index",
+    "main": "aurelia-templating-binding",
     "format": "amd",
     "directories": {
       "lib": "dist/amd"
     },
     "dependencies": {
-      "aurelia-binding": "github:aurelia/binding@^0.8.2",
-      "aurelia-logging": "github:aurelia/logging@^0.6.1",
-      "aurelia-templating": "github:aurelia/templating@^0.13.3"
+      "aurelia-binding": "github:aurelia/binding@^0.8.3",
+      "aurelia-logging": "github:aurelia/logging@^0.6.2",
+      "aurelia-templating": "github:aurelia/templating@^0.13.12"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.1.13",

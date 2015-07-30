@@ -219,7 +219,8 @@ var TemplatingBindingLanguage = (function (_BindingLanguage) {
       'rowspan': 'rowSpan',
       'colspan': 'colSpan',
       'scrolltop': 'scrollTop',
-      'scrollleft': 'scrollLeft'
+      'scrollleft': 'scrollLeft',
+      'readonly': 'readOnly'
     };
   }
 

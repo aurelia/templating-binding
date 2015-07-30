@@ -242,7 +242,8 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
             'rowspan': 'rowSpan',
             'colspan': 'colSpan',
             'scrolltop': 'scrollTop',
-            'scrollleft': 'scrollLeft'
+            'scrollleft': 'scrollLeft',
+            'readonly': 'readOnly'
           };
         }
 
