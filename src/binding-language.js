@@ -1,4 +1,4 @@
-import {BindingLanguage} from 'aurelia-templating';
+import {BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
 import {Parser, ObserverLocator, BindingExpression, NameExpression, bindingMode} from 'aurelia-binding';
 import {SyntaxInterpreter} from './syntax-interpreter';
 import * as LogManager from 'aurelia-logging';
@@ -77,7 +77,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
         return info.expression;
       }
 
-      instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
+      instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
       instruction.attributes[info.attrName] = info.expression;
     } else if(info.command){
       instruction = this.syntaxInterpreter.interpret(

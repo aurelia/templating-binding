@@ -14,7 +14,7 @@ import {
   Parser
 } from 'aurelia-binding';
 
-import {ResourceRegistry} from 'aurelia-templating';
+import {ViewResources} from 'aurelia-templating';
 
 import {TaskQueue} from 'jspm_packages/github/aurelia/task-queue@0.6.1/aurelia-task-queue';
 
@@ -37,7 +37,7 @@ describe('InterpolationBinding', () => {
     parser = new Parser();
     syntaxInterpreter = new SyntaxInterpreter(parser, observerLocator, eventManager);
     language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter);
-    resources = new ResourceRegistry();
+    resources = new ViewResources();
   });
 
   function getBinding(model, view, attrName) {
