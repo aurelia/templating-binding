@@ -1,17 +1,17 @@
 import {BindingLanguage} from 'aurelia-templating';
 import {TemplatingBindingLanguage} from './binding-language';
 
-export function configure(aurelia){
+export function configure(config){
   var instance,
       getInstance = function (c){
         return instance || (instance = c.invoke(TemplatingBindingLanguage));
       };
 
-  if(aurelia.container.hasHandler(TemplatingBindingLanguage)){
-    instance = aurelia.container.get(TemplatingBindingLanguage);
+  if(config.container.hasHandler(TemplatingBindingLanguage)){
+    instance = config.container.get(TemplatingBindingLanguage);
   }else{
-    aurelia.container.registerHandler(TemplatingBindingLanguage, getInstance);
+    config.container.registerHandler(TemplatingBindingLanguage, getInstance);
   }
 
-  aurelia.container.registerHandler(BindingLanguage, getInstance);
+  config.container.registerHandler(BindingLanguage, getInstance);
 }
