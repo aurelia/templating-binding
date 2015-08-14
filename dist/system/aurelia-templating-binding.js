@@ -1,31 +1,33 @@
-System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], function (_export) {
+System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], function (_export) {
   'use strict';
 
-  var Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, bindingMode, BindingLanguage, LogManager, SyntaxInterpreter, info, logger, TemplatingBindingLanguage, InterpolationBindingExpression, InterpolationBinding;
+  var LogManager, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, bindingMode, BehaviorInstruction, BindingLanguage, SyntaxInterpreter, info, logger, TemplatingBindingLanguage, InterpolationBindingExpression, InterpolationBinding;
 
   _export('configure', configure);
 
-  function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+  function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-  function configure(aurelia) {
+  function configure(config) {
     var instance,
         getInstance = function getInstance(c) {
       return instance || (instance = c.invoke(TemplatingBindingLanguage));
     };
 
-    if (aurelia.container.hasHandler(TemplatingBindingLanguage)) {
-      instance = aurelia.container.get(TemplatingBindingLanguage);
+    if (config.container.hasHandler(TemplatingBindingLanguage)) {
+      instance = config.container.get(TemplatingBindingLanguage);
     } else {
-      aurelia.container.registerHandler(TemplatingBindingLanguage, getInstance);
+      config.container.registerHandler(TemplatingBindingLanguage, getInstance);
     }
 
-    aurelia.container.registerHandler(BindingLanguage, getInstance);
+    config.container.registerHandler(BindingLanguage, getInstance);
   }
 
   return {
-    setters: [function (_aureliaBinding) {
+    setters: [function (_aureliaLogging) {
+      LogManager = _aureliaLogging;
+    }, function (_aureliaBinding) {
       Parser = _aureliaBinding.Parser;
       ObserverLocator = _aureliaBinding.ObserverLocator;
       EventManager = _aureliaBinding.EventManager;
@@ -35,12 +37,15 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
       CallExpression = _aureliaBinding.CallExpression;
       bindingMode = _aureliaBinding.bindingMode;
     }, function (_aureliaTemplating) {
+      BehaviorInstruction = _aureliaTemplating.BehaviorInstruction;
       BindingLanguage = _aureliaTemplating.BindingLanguage;
-    }, function (_aureliaLogging) {
-      LogManager = _aureliaLogging;
     }],
     execute: function () {
       SyntaxInterpreter = (function () {
+        SyntaxInterpreter.inject = function inject() {
+          return [Parser, ObserverLocator, EventManager];
+        };
+
         function SyntaxInterpreter(parser, observerLocator, eventManager) {
           _classCallCheck(this, SyntaxInterpreter);
 
@@ -48,10 +53,6 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
           this.observerLocator = observerLocator;
           this.eventManager = eventManager;
         }
-
-        SyntaxInterpreter.inject = function inject() {
-          return [Parser, ObserverLocator, EventManager];
-        };
 
         SyntaxInterpreter.prototype.interpret = function interpret(resources, element, info, existingInstruction) {
           if (info.command in this) {
@@ -92,7 +93,7 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
         };
 
         SyntaxInterpreter.prototype.bind = function bind(resources, element, info, existingInstruction) {
-          var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+          var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
           instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName), resources.valueConverterLookupFunction);
 
@@ -108,7 +109,7 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
         };
 
         SyntaxInterpreter.prototype.call = function call(resources, element, info, existingInstruction) {
-          var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+          var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
           instruction.attributes[info.attrName] = new CallExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), resources.valueConverterLookupFunction);
 
@@ -116,7 +117,7 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
         };
 
         SyntaxInterpreter.prototype.options = function options(resources, element, info, existingInstruction) {
-          var instruction = existingInstruction || { attrName: info.attrName, attributes: {} },
+          var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName),
               attrValue = info.attrValue,
               language = this.language,
               name = null,
@@ -173,7 +174,7 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
           throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
         }
 
-        instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+        instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
         if (isDestructuring) {
           keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
@@ -189,7 +190,7 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
       };
 
       SyntaxInterpreter.prototype['two-way'] = function (resources, element, info, existingInstruction) {
-        var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+        var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
         instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.twoWay, resources.valueConverterLookupFunction);
 
@@ -197,7 +198,7 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
       };
 
       SyntaxInterpreter.prototype['one-way'] = function (resources, element, info, existingInstruction) {
-        var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+        var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
         instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneWay, resources.valueConverterLookupFunction);
 
@@ -205,7 +206,7 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
       };
 
       SyntaxInterpreter.prototype['one-time'] = function (resources, element, info, existingInstruction) {
-        var instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+        var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
         instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneTime, resources.valueConverterLookupFunction);
 
@@ -216,6 +217,12 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
       logger = LogManager.getLogger('templating-binding');
 
       TemplatingBindingLanguage = (function (_BindingLanguage) {
+        _inherits(TemplatingBindingLanguage, _BindingLanguage);
+
+        TemplatingBindingLanguage.inject = function inject() {
+          return [Parser, ObserverLocator, SyntaxInterpreter];
+        };
+
         function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter) {
           _classCallCheck(this, TemplatingBindingLanguage);
 
@@ -246,12 +253,6 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
             'readonly': 'readOnly'
           };
         }
-
-        _inherits(TemplatingBindingLanguage, _BindingLanguage);
-
-        TemplatingBindingLanguage.inject = function inject() {
-          return [Parser, ObserverLocator, SyntaxInterpreter];
-        };
 
         TemplatingBindingLanguage.prototype.inspectAttribute = function inspectAttribute(resources, attrName, attrValue) {
           var parts = attrName.split('.');
@@ -293,7 +294,7 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
               return info.expression;
             }
 
-            instruction = existingInstruction || { attrName: info.attrName, attributes: {} };
+            instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
             instruction.attributes[info.attrName] = info.expression;
           } else if (info.command) {
             instruction = this.syntaxInterpreter.interpret(resources, element, info, existingInstruction);
@@ -325,7 +326,7 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
               char = attrValue[i];
               i++;
               switch (char) {
-                case '\'':
+                case "'":
                 case '"':
                   if (quote === null) {
                     quote = char;
@@ -488,14 +489,14 @@ System.register(['aurelia-binding', 'aurelia-templating', 'aurelia-logging'], fu
 
           for (i = 0, ii = parts.length; i < ii; ++i) {
             if (i % 2 === 0) {} else {
-              info = parts[i].connect(this, source);
-              if (info.observer) {
-                toDispose.push(info.observer.subscribe(partChanged));
+                info = parts[i].connect(this, source);
+                if (info.observer) {
+                  toDispose.push(info.observer.subscribe(partChanged));
+                }
+                if (info.value instanceof Array) {
+                  partChanged(info.value, undefined, true);
+                }
               }
-              if (info.value instanceof Array) {
-                partChanged(info.value, undefined, true);
-              }
-            }
           }
         };
 

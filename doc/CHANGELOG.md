@@ -1,3 +1,12 @@
+## 0.14.0 (2015-08-14)
+
+
+#### Bug Fixes
+
+* **all:** update to new templating apis ([20168204](http://github.com/aurelia/templating-binding/commit/2016820425434123803ec27d332041d7cd5cce2c))
+* **index:** update to latest configuration api ([9731a85a](http://github.com/aurelia/templating-binding/commit/9731a85a9f07b26703e54b007fe32a1ec6982fbc))
+
+
 ### 0.13.2 (2015-07-29)
 
 * Add readonly as default bindable property

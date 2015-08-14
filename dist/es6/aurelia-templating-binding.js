@@ -1,5 +1,6 @@
+import * as LogManager from 'aurelia-logging';
 import {Parser,ObserverLocator,EventManager,ListenerExpression,BindingExpression,NameExpression,CallExpression,bindingMode} from 'aurelia-binding';
-import {BindingLanguage} from 'aurelia-templating';
+import {BehaviorInstruction,BindingLanguage} from 'aurelia-templating';
 
 export class SyntaxInterpreter {
   static inject() { return [Parser,ObserverLocator,EventManager]; }
@@ -48,15 +49,15 @@ export class SyntaxInterpreter {
   }
 
   bind(resources, element, info, existingInstruction){
-    var instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
+    var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
-        this.observerLocator,
-        this.attributeMap[info.attrName] || info.attrName,
-        this.parser.parse(info.attrValue),
-        info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName),
-        resources.valueConverterLookupFunction
-      );
+      this.observerLocator,
+      this.attributeMap[info.attrName] || info.attrName,
+      this.parser.parse(info.attrValue),
+      info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName),
+      resources.valueConverterLookupFunction
+    );
 
     return instruction;
   }
@@ -82,20 +83,20 @@ export class SyntaxInterpreter {
   }
 
   call(resources, element, info, existingInstruction){
-    var instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
+    var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new CallExpression(
-        this.observerLocator,
-        info.attrName,
-        this.parser.parse(info.attrValue),
-        resources.valueConverterLookupFunction
-      );
+      this.observerLocator,
+      info.attrName,
+      this.parser.parse(info.attrValue),
+      resources.valueConverterLookupFunction
+    );
 
     return instruction;
   };
 
   options(resources, element, info, existingInstruction){
-    var instruction = existingInstruction || {attrName:info.attrName, attributes:{}},
+    var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName),
         attrValue = info.attrValue,
         language = this.language,
         name = null, target = '', current, i , ii;
@@ -144,7 +145,7 @@ SyntaxInterpreter.prototype['for'] = function(resources, element, info, existing
     throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
   }
 
-  instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
+  instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
   if(isDestructuring){
     keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
@@ -166,7 +167,7 @@ SyntaxInterpreter.prototype['for'] = function(resources, element, info, existing
 };
 
 SyntaxInterpreter.prototype['two-way'] = function(resources, element, info, existingInstruction){
-  var instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
+  var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
   instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
@@ -180,34 +181,32 @@ SyntaxInterpreter.prototype['two-way'] = function(resources, element, info, exis
 };
 
 SyntaxInterpreter.prototype['one-way'] = function(resources, element, info, existingInstruction){
-  var instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
+  var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
   instruction.attributes[info.attrName] = new BindingExpression(
-      this.observerLocator,
-      this.attributeMap[info.attrName] || info.attrName,
-      this.parser.parse(info.attrValue),
-      bindingMode.oneWay,
-      resources.valueConverterLookupFunction
-    );
+    this.observerLocator,
+    this.attributeMap[info.attrName] || info.attrName,
+    this.parser.parse(info.attrValue),
+    bindingMode.oneWay,
+    resources.valueConverterLookupFunction
+  );
 
   return instruction;
 };
 
 SyntaxInterpreter.prototype['one-time'] = function(resources, element, info, existingInstruction){
-  var instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
+  var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
   instruction.attributes[info.attrName] = new BindingExpression(
-      this.observerLocator,
-      this.attributeMap[info.attrName] || info.attrName,
-      this.parser.parse(info.attrValue),
-      bindingMode.oneTime,
-      resources.valueConverterLookupFunction
-    );
+    this.observerLocator,
+    this.attributeMap[info.attrName] || info.attrName,
+    this.parser.parse(info.attrValue),
+    bindingMode.oneTime,
+    resources.valueConverterLookupFunction
+  );
 
   return instruction;
 };
-
-import * as LogManager from 'aurelia-logging';
 
 var info = {},
     logger = LogManager.getLogger('templating-binding');
@@ -283,7 +282,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
         return info.expression;
       }
 
-      instruction = existingInstruction || {attrName:info.attrName, attributes:{}};
+      instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
       instruction.attributes[info.attrName] = info.expression;
     } else if(info.command){
       instruction = this.syntaxInterpreter.interpret(
@@ -534,17 +533,17 @@ class InterpolationBinding {
   }
 }
 
-export function configure(aurelia){
+export function configure(config){
   var instance,
       getInstance = function (c){
         return instance || (instance = c.invoke(TemplatingBindingLanguage));
       };
 
-  if(aurelia.container.hasHandler(TemplatingBindingLanguage)){
-    instance = aurelia.container.get(TemplatingBindingLanguage);
+  if(config.container.hasHandler(TemplatingBindingLanguage)){
+    instance = config.container.get(TemplatingBindingLanguage);
   }else{
-    aurelia.container.registerHandler(TemplatingBindingLanguage, getInstance);
+    config.container.registerHandler(TemplatingBindingLanguage, getInstance);
   }
 
-  aurelia.container.registerHandler(BindingLanguage, getInstance);
+  config.container.registerHandler(BindingLanguage, getInstance);
 }

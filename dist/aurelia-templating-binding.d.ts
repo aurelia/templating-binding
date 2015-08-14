@@ -1,7 +1,7 @@
 declare module 'aurelia-templating-binding' {
-  import { Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, bindingMode }  from 'aurelia-binding';
-  import { BindingLanguage }  from 'aurelia-templating';
   import * as LogManager from 'aurelia-logging';
+  import { Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, bindingMode }  from 'aurelia-binding';
+  import { BehaviorInstruction, BindingLanguage }  from 'aurelia-templating';
   export class SyntaxInterpreter {
     static inject(): any;
     constructor(parser: any, observerLocator: any, eventManager: any);
@@ -36,5 +36,5 @@ declare module 'aurelia-templating-binding' {
     interpolate(): any;
     unbind(): any;
   }
-  export function configure(aurelia: any): any;
+  export function configure(config: any): any;
 }
