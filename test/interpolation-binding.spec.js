@@ -16,7 +16,7 @@ import {
 
 import {ViewResources} from 'aurelia-templating';
 
-import {TaskQueue} from 'jspm_packages/github/aurelia/task-queue@0.6.1/aurelia-task-queue';
+import {TaskQueue} from 'jspm_packages/github/aurelia/task-queue@0.6.2/aurelia-task-queue';
 
 function createElement(html) {
   var div = document.createElement('div');
