@@ -1,14 +1,14 @@
 import {BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
-import {Parser, ObserverLocator, BindingExpression, NameExpression, bindingMode} from 'aurelia-binding';
+import {Parser, ObserverLocator, NameExpression, bindingMode} from 'aurelia-binding';
 import {SyntaxInterpreter} from './syntax-interpreter';
 import * as LogManager from 'aurelia-logging';
 
-var info = {},
-    logger = LogManager.getLogger('templating-binding');
+let info = {};
+let logger = LogManager.getLogger('templating-binding');
 
 export class TemplatingBindingLanguage extends BindingLanguage {
   static inject() { return [Parser, ObserverLocator, SyntaxInterpreter]; }
-	constructor(parser, observerLocator, syntaxInterpreter){
+	constructor(parser, observerLocator, syntaxInterpreter) {
     super();
     this.parser = parser;
     this.observerLocator = observerLocator;
@@ -16,50 +16,50 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.emptyStringExpression = this.parser.parse('\'\'');
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
-      'contenteditable':'contentEditable',
-      'for':'htmlFor',
-      'tabindex':'tabIndex',
+      'contenteditable': 'contentEditable',
+      'for': 'htmlFor',
+      'tabindex': 'tabIndex',
       'textcontent': 'textContent',
       'innerhtml': 'innerHTML',
       // HTMLInputElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement
-      'maxlength':'maxLength',
-      'minlength':'minLength',
-      'formaction':'formAction',
-      'formenctype':'formEncType',
-      'formmethod':'formMethod',
-      'formnovalidate':'formNoValidate',
-      'formtarget':'formTarget',
-      'rowspan':'rowSpan',
-      'colspan':'colSpan',
-      'scrolltop':'scrollTop',
-      'scrollleft':'scrollLeft',
-      'readonly':'readOnly'
+      'maxlength': 'maxLength',
+      'minlength': 'minLength',
+      'formaction': 'formAction',
+      'formenctype': 'formEncType',
+      'formmethod': 'formMethod',
+      'formnovalidate': 'formNoValidate',
+      'formtarget': 'formTarget',
+      'rowspan': 'rowSpan',
+      'colspan': 'colSpan',
+      'scrolltop': 'scrollTop',
+      'scrollleft': 'scrollLeft',
+      'readonly': 'readOnly'
     };
   }
 
-  inspectAttribute(resources, attrName, attrValue){
-    var parts = attrName.split('.');
+  inspectAttribute(resources, attrName, attrValue) {
+    let parts = attrName.split('.');
 
     info.defaultBindingMode = null;
 
-    if(parts.length == 2){
+    if (parts.length === 2) {
       info.attrName = parts[0].trim();
       info.attrValue = attrValue;
       info.command = parts[1].trim();
 
-      if(info.command === 'ref'){
+      if (info.command === 'ref') {
         info.expression = new NameExpression(attrValue, info.attrName);
         info.command = null;
         info.attrName = 'ref';
-      } else{
+      } else {
         info.expression = null;
       }
-    }else if(attrName == 'ref'){
+    } else if (attrName === 'ref') {
       info.attrName = attrName;
       info.attrValue = attrValue;
       info.command = null;
       info.expression = new NameExpression(attrValue, 'element');
-    }else{
+    } else {
       info.attrName = attrName;
       info.attrValue = attrValue;
       info.command = null;
@@ -69,37 +69,44 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return info;
   }
 
-	createAttributeInstruction(resources, element, info, existingInstruction){
-    var instruction;
+	createAttributeInstruction(resources, element, theInfo, existingInstruction) {
+    let instruction;
 
-    if(info.expression){
-      if(info.attrName === 'ref'){
-        return info.expression;
+    if (theInfo.expression) {
+      if (theInfo.attrName === 'ref') {
+        return theInfo.expression;
       }
 
-      instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
-      instruction.attributes[info.attrName] = info.expression;
-    } else if(info.command){
+      instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
+      instruction.attributes[theInfo.attrName] = theInfo.expression;
+    } else if (theInfo.command) {
       instruction = this.syntaxInterpreter.interpret(
         resources,
         element,
-        info,
+        theInfo,
         existingInstruction
       );
     }
 
-		return instruction;
-	}
+    return instruction;
+  }
 
-  parseText(resources, value){
+  parseText(resources, value) {
     return this.parseContent(resources, 'textContent', value);
   }
 
-  parseContent(resources, attrName, attrValue){
-    var i = attrValue.indexOf('${', 0), ii = attrValue.length,
-        char, pos = 0, open = 0, quote = null, interpolationStart,
-        parts, partIndex = 0;
-    while(i >= 0 && i < ii - 2) {
+  parseContent(resources, attrName, attrValue) {
+    let i = attrValue.indexOf('${', 0);
+    let ii = attrValue.length;
+    let char;
+    let pos = 0;
+    let open = 0;
+    let quote = null;
+    let interpolationStart;
+    let parts;
+    let partIndex = 0;
+
+    while (i >= 0 && i < ii - 2) {
       open = 1;
       interpolationStart = i;
       i += 2;
@@ -107,18 +114,19 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       do {
         char = attrValue[i];
         i++;
-        switch(char) {
-          case "'":
-          case '"':
-            if (quote === null) {
-              quote = char;
-            } else if (quote === char) {
-              quote = null;
-            }
-            continue;
-          case '\\':
-            i++;
-            continue;
+
+        if (char === "'" || char === '"') {
+          if (quote === null) {
+            quote = char;
+          } else if (quote === char) {
+            quote = null;
+          }
+          continue;
+        }
+
+        if (char === '\\') {
+          i++;
+          continue;
         }
 
         if (quote !== null) {
@@ -130,7 +138,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
         } else if (char === '}') {
           open--;
         }
-      } while(open > 0 && i < ii)
+      } while (open > 0 && i < ii)
 
       if (open === 0) {
         // lazy allocate array
@@ -176,7 +184,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
 
 export class InterpolationBindingExpression {
   constructor(observerLocator, targetProperty, parts,
-    mode, valueConverterLookupFunction, attribute){
+    mode, valueConverterLookupFunction, attribute) {
     this.observerLocator = observerLocator;
     this.targetProperty = targetProperty;
     this.parts = parts;
@@ -186,7 +194,7 @@ export class InterpolationBindingExpression {
     this.discrete = false;
   }
 
-  createBinding(target){
+  createBinding(target) {
     return new InterpolationBinding(
       this.observerLocator,
       this.parts,
@@ -199,12 +207,13 @@ export class InterpolationBindingExpression {
 }
 
 class InterpolationBinding {
-  constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction){
+  constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
     if (targetProperty === 'style') {
       logger.info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
     } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
       throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
     }
+
     this.observerLocator = observerLocator;
     this.parts = parts;
     this.targetProperty = observerLocator.getObserver(target, targetProperty);
@@ -213,88 +222,94 @@ class InterpolationBinding {
     this.toDispose = [];
   }
 
-  getObserver(obj, propertyName){
+  getObserver(obj, propertyName) {
     return this.observerLocator.getObserver(obj, propertyName);
   }
 
-  bind(source){
+  bind(source) {
     this.source = source;
 
-    if(this.mode == bindingMode.oneWay){
+    if (this.mode === bindingMode.oneWay) {
       this.unbind();
       this.connect();
       this.setValue();
-    }else{
+    } else {
       this.setValue();
     }
   }
 
-  setValue(){
-    var value = this.interpolate();
+  setValue() {
+    let value = this.interpolate();
     this.targetProperty.setValue(value);
   }
 
-  partChanged(newValue, oldValue, connecting){
-    var map, info;
+  partChanged(newValue, oldValue, connecting) {
+    let map;
+    let data;
+
     if (!connecting) {
       this.setValue();
     }
+
     if (oldValue instanceof Array) {
       map = this.arrayPartMap;
-      info = map ? map.get(oldValue) : null;
-      if (info) {
-        info.refs--;
-        if (info.refs === 0) {
-          info.dispose();
+      data = map ? map.get(oldValue) : null;
+      if (data) {
+        data.refs--;
+        if (data.refs === 0) {
+          data.dispose();
           map.delete(oldValue);
         }
       }
     }
+
     if (newValue instanceof Array) {
       map = this.arrayPartMap || (this.arrayPartMap = new Map());
-      info = map.get(newValue);
-      if (!info) {
-        info = {
+      data = map.get(newValue);
+      if (!data) {
+        data = {
           refs: 0,
           dispose: this.observerLocator.getArrayObserver(newValue).subscribe(() => this.setValue())
-        }
-        map.set(newValue, info);
+        };
+
+        map.set(newValue, data);
       }
-      info.refs++;
+      data.refs++;
     }
   }
 
-  connect(){
-    var info,
-        parts = this.parts,
-        source = this.source,
-        toDispose = this.toDispose = [],
-        partChanged = this.partChanged.bind(this),
-        i, ii;
+  connect() {
+    let result;
+    let parts = this.parts;
+    let source = this.source;
+    let toDispose = this.toDispose = [];
+    let partChanged = this.partChanged.bind(this);
+    let i;
+    let ii;
 
-    for(i = 0, ii = parts.length; i < ii; ++i){
-      if (i % 2 === 0) {
-        //do nothing
-      } else {
-        info = parts[i].connect(this, source);
-        if(info.observer){
-          toDispose.push(info.observer.subscribe(partChanged));
+    for (i = 0, ii = parts.length; i < ii; ++i) {
+      if (i % 2 !== 0) {
+        result = parts[i].connect(this, source);
+        if (result.observer) {
+          toDispose.push(result.observer.subscribe(partChanged));
         }
-        if (info.value instanceof Array) {
-          partChanged(info.value, undefined, true);
+        if (result.value instanceof Array) {
+          partChanged(result.value, undefined, true);
         }
       }
     }
   }
 
-  interpolate(){
-    var value = '',
-        parts = this.parts,
-        source = this.source,
-        valueConverterLookupFunction = this.valueConverterLookupFunction,
-        i, ii, temp;
+  interpolate() {
+    let value = '';
+    let parts = this.parts;
+    let source = this.source;
+    let valueConverterLookupFunction = this.valueConverterLookupFunction;
+    let i;
+    let ii;
+    let temp;
 
-    for(i = 0, ii = parts.length; i < ii; ++i){
+    for (i = 0, ii = parts.length; i < ii; ++i) {
       if (i % 2 === 0) {
         value += parts[i];
       } else {
@@ -306,11 +321,14 @@ class InterpolationBinding {
     return value;
   }
 
-  unbind(){
-    var i, ii, toDispose = this.toDispose, map = this.arrayPartMap;
+  unbind() {
+    let i;
+    let ii;
+    let toDispose = this.toDispose;
+    let map = this.arrayPartMap;
 
-    if(toDispose){
-      for(i = 0, ii = toDispose.length; i < ii; ++i){
+    if (toDispose) {
+      for (i = 0, ii = toDispose.length; i < ii; ++i) {
         toDispose[i]();
       }
     }
@@ -318,9 +336,10 @@ class InterpolationBinding {
     this.toDispose = null;
 
     if (map) {
-      for(toDispose of map.values()) {
+      for (toDispose of map.values()) {
         toDispose.dispose();
       }
+
       map.clear();
     }
 

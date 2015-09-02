@@ -1217,7 +1217,7 @@
                 },
                 {
                   "id": 72,
-                  "name": "info",
+                  "name": "theInfo",
                   "kind": 32768,
                   "kindString": "Parameter",
                   "flags": {},
