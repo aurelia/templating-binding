@@ -1,7 +1,7 @@
 System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], function (_export) {
   'use strict';
 
-  var LogManager, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, NameExpression, CallExpression, bindingMode, BehaviorInstruction, BindingLanguage, SyntaxInterpreter, info, logger, TemplatingBindingLanguage, InterpolationBindingExpression, InterpolationBinding;
+  var LogManager, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, bindingMode, NameExpression, BehaviorInstruction, BindingLanguage, SyntaxInterpreter, info, logger, TemplatingBindingLanguage, InterpolationBindingExpression, InterpolationBinding;
 
   _export('configure', configure);
 
@@ -10,8 +10,8 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
   function configure(config) {
-    var instance,
-        getInstance = function getInstance(c) {
+    var instance = undefined;
+    var getInstance = function getInstance(c) {
       return instance || (instance = c.invoke(TemplatingBindingLanguage));
     };
 
@@ -33,9 +33,9 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
       EventManager = _aureliaBinding.EventManager;
       ListenerExpression = _aureliaBinding.ListenerExpression;
       BindingExpression = _aureliaBinding.BindingExpression;
-      NameExpression = _aureliaBinding.NameExpression;
       CallExpression = _aureliaBinding.CallExpression;
       bindingMode = _aureliaBinding.bindingMode;
+      NameExpression = _aureliaBinding.NameExpression;
     }, function (_aureliaTemplating) {
       BehaviorInstruction = _aureliaTemplating.BehaviorInstruction;
       BindingLanguage = _aureliaTemplating.BindingLanguage;
@@ -63,9 +63,8 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         SyntaxInterpreter.prototype.handleUnknownCommand = function handleUnknownCommand(resources, element, info, existingInstruction) {
-          var attrName = info.attrName,
-              command = info.command;
-
+          var attrName = info.attrName;
+          var command = info.command;
           var instruction = this.options(resources, element, info, existingInstruction);
 
           instruction.alteredAttr = true;
@@ -81,8 +80,8 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
           if (tagName === 'input') {
             return attrName === 'value' || attrName === 'checked' || attrName === 'files' ? bindingMode.twoWay : bindingMode.oneWay;
-          } else if (tagName == 'textarea' || tagName == 'select') {
-            return attrName == 'value' ? bindingMode.twoWay : bindingMode.oneWay;
+          } else if (tagName === 'textarea' || tagName === 'select') {
+            return attrName === 'value' ? bindingMode.twoWay : bindingMode.oneWay;
           } else if (attrName === 'textcontent' || attrName === 'innerhtml') {
             return element.contentEditable === 'true' ? bindingMode.twoWay : bindingMode.oneWay;
           } else if (attrName === 'scrolltop' || attrName === 'scrollleft') {
@@ -117,14 +116,14 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         SyntaxInterpreter.prototype.options = function options(resources, element, info, existingInstruction) {
-          var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName),
-              attrValue = info.attrValue,
-              language = this.language,
-              name = null,
-              target = '',
-              current,
-              i,
-              ii;
+          var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+          var attrValue = info.attrValue;
+          var language = this.language;
+          var name = null;
+          var target = '';
+          var current = undefined;
+          var i = undefined;
+          var ii = undefined;
 
           for (i = 0, ii = attrValue.length; i < ii; ++i) {
             current = attrValue[i];
@@ -165,7 +164,12 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
       _export('SyntaxInterpreter', SyntaxInterpreter);
 
       SyntaxInterpreter.prototype['for'] = function (resources, element, info, existingInstruction) {
-        var parts, keyValue, instruction, attrValue, isDestructuring;
+        var parts = undefined;
+        var keyValue = undefined;
+        var instruction = undefined;
+        var attrValue = undefined;
+        var isDestructuring = undefined;
+
         attrValue = info.attrValue;
         isDestructuring = attrValue.match(/[[].+[\]]/);
         parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
@@ -259,7 +263,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
           info.defaultBindingMode = null;
 
-          if (parts.length == 2) {
+          if (parts.length === 2) {
             info.attrName = parts[0].trim();
             info.attrValue = attrValue;
             info.command = parts[1].trim();
@@ -271,7 +275,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             } else {
               info.expression = null;
             }
-          } else if (attrName == 'ref') {
+          } else if (attrName === 'ref') {
             info.attrName = attrName;
             info.attrValue = attrValue;
             info.command = null;
@@ -286,18 +290,18 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
           return info;
         };
 
-        TemplatingBindingLanguage.prototype.createAttributeInstruction = function createAttributeInstruction(resources, element, info, existingInstruction) {
-          var instruction;
+        TemplatingBindingLanguage.prototype.createAttributeInstruction = function createAttributeInstruction(resources, element, theInfo, existingInstruction) {
+          var instruction = undefined;
 
-          if (info.expression) {
-            if (info.attrName === 'ref') {
-              return info.expression;
+          if (theInfo.expression) {
+            if (theInfo.attrName === 'ref') {
+              return theInfo.expression;
             }
 
-            instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
-            instruction.attributes[info.attrName] = info.expression;
-          } else if (info.command) {
-            instruction = this.syntaxInterpreter.interpret(resources, element, info, existingInstruction);
+            instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
+            instruction.attributes[theInfo.attrName] = theInfo.expression;
+          } else if (theInfo.command) {
+            instruction = this.syntaxInterpreter.interpret(resources, element, theInfo, existingInstruction);
           }
 
           return instruction;
@@ -308,15 +312,16 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         TemplatingBindingLanguage.prototype.parseContent = function parseContent(resources, attrName, attrValue) {
-          var i = attrValue.indexOf('${', 0),
-              ii = attrValue.length,
-              char,
-              pos = 0,
-              open = 0,
-              quote = null,
-              interpolationStart,
-              parts,
-              partIndex = 0;
+          var i = attrValue.indexOf('${', 0);
+          var ii = attrValue.length;
+          var char = undefined;
+          var pos = 0;
+          var open = 0;
+          var quote = null;
+          var interpolationStart = undefined;
+          var parts = undefined;
+          var partIndex = 0;
+
           while (i >= 0 && i < ii - 2) {
             open = 1;
             interpolationStart = i;
@@ -325,18 +330,19 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             do {
               char = attrValue[i];
               i++;
-              switch (char) {
-                case "'":
-                case '"':
-                  if (quote === null) {
-                    quote = char;
-                  } else if (quote === char) {
-                    quote = null;
-                  }
-                  continue;
-                case '\\':
-                  i++;
-                  continue;
+
+              if (char === "'" || char === '"') {
+                if (quote === null) {
+                  quote = char;
+                } else if (quote === char) {
+                  quote = null;
+                }
+                continue;
+              }
+
+              if (char === '\\') {
+                i++;
+                continue;
               }
 
               if (quote !== null) {
@@ -415,6 +421,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
           } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
             throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
           }
+
           this.observerLocator = observerLocator;
           this.parts = parts;
           this.targetProperty = observerLocator.getObserver(target, targetProperty);
@@ -430,7 +437,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         InterpolationBinding.prototype.bind = function bind(source) {
           this.source = source;
 
-          if (this.mode == bindingMode.oneWay) {
+          if (this.mode === bindingMode.oneWay) {
             this.unbind();
             this.connect();
             this.setValue();
@@ -447,67 +454,72 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         InterpolationBinding.prototype.partChanged = function partChanged(newValue, oldValue, connecting) {
           var _this = this;
 
-          var map, info;
+          var map = undefined;
+          var data = undefined;
+
           if (!connecting) {
             this.setValue();
           }
+
           if (oldValue instanceof Array) {
             map = this.arrayPartMap;
-            info = map ? map.get(oldValue) : null;
-            if (info) {
-              info.refs--;
-              if (info.refs === 0) {
-                info.dispose();
+            data = map ? map.get(oldValue) : null;
+            if (data) {
+              data.refs--;
+              if (data.refs === 0) {
+                data.dispose();
                 map['delete'](oldValue);
               }
             }
           }
+
           if (newValue instanceof Array) {
             map = this.arrayPartMap || (this.arrayPartMap = new Map());
-            info = map.get(newValue);
-            if (!info) {
-              info = {
+            data = map.get(newValue);
+            if (!data) {
+              data = {
                 refs: 0,
                 dispose: this.observerLocator.getArrayObserver(newValue).subscribe(function () {
                   return _this.setValue();
                 })
               };
-              map.set(newValue, info);
+
+              map.set(newValue, data);
             }
-            info.refs++;
+            data.refs++;
           }
         };
 
         InterpolationBinding.prototype.connect = function connect() {
-          var info,
-              parts = this.parts,
-              source = this.source,
-              toDispose = this.toDispose = [],
-              partChanged = this.partChanged.bind(this),
-              i,
-              ii;
+          var result = undefined;
+          var parts = this.parts;
+          var source = this.source;
+          var toDispose = this.toDispose = [];
+          var partChanged = this.partChanged.bind(this);
+          var i = undefined;
+          var ii = undefined;
 
           for (i = 0, ii = parts.length; i < ii; ++i) {
-            if (i % 2 === 0) {} else {
-                info = parts[i].connect(this, source);
-                if (info.observer) {
-                  toDispose.push(info.observer.subscribe(partChanged));
-                }
-                if (info.value instanceof Array) {
-                  partChanged(info.value, undefined, true);
-                }
+            if (i % 2 !== 0) {
+              result = parts[i].connect(this, source);
+              if (result.observer) {
+                toDispose.push(result.observer.subscribe(partChanged));
               }
+              if (result.value instanceof Array) {
+                partChanged(result.value, undefined, true);
+              }
+            }
           }
         };
 
         InterpolationBinding.prototype.interpolate = function interpolate() {
-          var value = '',
-              parts = this.parts,
-              source = this.source,
-              valueConverterLookupFunction = this.valueConverterLookupFunction,
-              i,
-              ii,
-              temp;
+          var value = '';
+          var parts = this.parts;
+          var source = this.source;
+          var valueConverterLookupFunction = this.valueConverterLookupFunction;
+          var i = undefined;
+          var ii = undefined;
+          var temp = undefined;
 
           for (i = 0, ii = parts.length; i < ii; ++i) {
             if (i % 2 === 0) {
@@ -522,10 +534,10 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         InterpolationBinding.prototype.unbind = function unbind() {
-          var i,
-              ii,
-              toDispose = this.toDispose,
-              map = this.arrayPartMap;
+          var i = undefined;
+          var ii = undefined;
+          var toDispose = this.toDispose;
+          var map = this.arrayPartMap;
 
           if (toDispose) {
             for (i = 0, ii = toDispose.length; i < ii; ++i) {
@@ -548,6 +560,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
               toDispose.dispose();
             }
+
             map.clear();
           }
 

@@ -1,3 +1,16 @@
+## 0.15.0 (2015-09-05)
+
+
+#### Bug Fixes
+
+* **build:** update linting, testing and tools ([9c763bac](http://github.com/aurelia/templating-binding/commit/9c763baccbe013cc0e45ec90676cddb843280ecf))
+
+
+#### Features
+
+* **docs:** generate api.json from .d.ts file ([ea1742b7](http://github.com/aurelia/templating-binding/commit/ea1742b74bec9711d82e4c0d02ae9d2c90a72d87))
+
+
 ## 0.14.0 (2015-08-14)
 
 
