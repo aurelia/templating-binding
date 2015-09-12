@@ -109,13 +109,13 @@ describe('InterpolationBinding', () => {
     });
 
     it('unbinds', () => {
-      expect(observer1.callbacks.length > 0).toBe(true);
-      expect(observer2.callbacks.length).toBe(0);
+      expect(observer1.hasSubscribers()).toBe(true);
+      expect(observer2.hasSubscribers()).toBe(false);
 
       binding.unbind();
 
-      expect(observer1.callbacks.length).toBe(0);
-      expect(binding.toDispose).toBe(null);
+      expect(observer1.hasSubscribers()).toBe(false);
+      expect(binding.observers).toBe(null);
       expect(binding.arrayPartMap).toBe(null);
     });
   });
@@ -159,13 +159,13 @@ describe('InterpolationBinding', () => {
     });
 
     it('unbinds', () => {
-      expect(observer1.callbacks.length > 0).toBe(true);
-      expect(observer2.callbacks.length).toBe(0);
+      expect(observer1.hasSubscribers()).toBe(true);
+      expect(observer2.hasSubscribers()).toBe(false);
 
       binding.unbind();
 
-      expect(observer1.callbacks.length).toBe(0);
-      expect(binding.toDispose).toBe(null);
+      expect(observer1.hasSubscribers()).toBe(false);
+      expect(binding.observers).toBe(null);
       expect(binding.arrayPartMap).toBe(null);
     });
   });
@@ -207,13 +207,13 @@ describe('InterpolationBinding', () => {
     });
 
     it('unbinds', () => {
-      expect(observer1.callbacks.length > 0).toBe(true);
-      expect(observer2.callbacks.length).toBe(0);
+      expect(observer1.hasSubscribers()).toBe(true);
+      expect(observer2.hasSubscribers()).toBe(false);
 
       binding.unbind();
 
-      expect(observer1.callbacks.length).toBe(0);
-      expect(binding.toDispose).toBe(null);
+      expect(observer1.hasSubscribers()).toBe(false);
+      expect(binding.observers).toBe(null);
       expect(binding.arrayPartMap).toBe(null);
     });
   });

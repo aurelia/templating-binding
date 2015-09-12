@@ -219,7 +219,6 @@ class InterpolationBinding {
     this.targetProperty = observerLocator.getObserver(target, targetProperty);
     this.mode = mode;
     this.valueConverterLookupFunction = valueConverterLookupFunction;
-    this.toDispose = [];
   }
 
   getObserver(obj, propertyName) {
@@ -257,7 +256,7 @@ class InterpolationBinding {
       if (data) {
         data.refs--;
         if (data.refs === 0) {
-          data.dispose();
+          data.observer.unsubscribe(this.boundSetValue);
           map.delete(oldValue);
         }
       }
@@ -269,29 +268,28 @@ class InterpolationBinding {
       if (!data) {
         data = {
           refs: 0,
-          dispose: this.observerLocator.getArrayObserver(newValue).subscribe(() => this.setValue())
+          observer: this.observerLocator.getArrayObserver(newValue)
         };
-
         map.set(newValue, data);
+        this.boundSetValue = this.boundSetValue || (this.boundSetValue = this.setValue.bind(this));
+        data.observer.subscribe(this.boundSetValue);
       }
       data.refs++;
     }
   }
 
   connect() {
-    let result;
     let parts = this.parts;
     let source = this.source;
-    let toDispose = this.toDispose = [];
-    let partChanged = this.partChanged.bind(this);
-    let i;
-    let ii;
+    let observers = this.observers = [];
+    let partChanged = this.boundPartChanged || (this.boundPartChanged = this.partChanged.bind(this));
 
-    for (i = 0, ii = parts.length; i < ii; ++i) {
+    for (let i = 0, ii = parts.length; i < ii; ++i) {
       if (i % 2 !== 0) {
-        result = parts[i].connect(this, source);
+        let result = parts[i].connect(this, source);
         if (result.observer) {
-          toDispose.push(result.observer.subscribe(partChanged));
+          observers.push(result.observer);
+          result.observer.subscribe(partChanged);
         }
         if (result.value instanceof Array) {
           partChanged(result.value, undefined, true);
@@ -305,15 +303,12 @@ class InterpolationBinding {
     let parts = this.parts;
     let source = this.source;
     let valueConverterLookupFunction = this.valueConverterLookupFunction;
-    let i;
-    let ii;
-    let temp;
 
-    for (i = 0, ii = parts.length; i < ii; ++i) {
+    for (let i = 0, ii = parts.length; i < ii; ++i) {
       if (i % 2 === 0) {
         value += parts[i];
       } else {
-        temp = parts[i].evaluate(source, valueConverterLookupFunction);
+        let temp = parts[i].evaluate(source, valueConverterLookupFunction);
         value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
       }
     }
@@ -322,22 +317,20 @@ class InterpolationBinding {
   }
 
   unbind() {
-    let i;
-    let ii;
-    let toDispose = this.toDispose;
+    let observers = this.observers;
     let map = this.arrayPartMap;
 
-    if (toDispose) {
-      for (i = 0, ii = toDispose.length; i < ii; ++i) {
-        toDispose[i]();
+    if (observers) {
+      for (let i = 0, ii = observers.length; i < ii; ++i) {
+        observers[i].unsubscribe(this.boundPartChanged);
       }
     }
 
-    this.toDispose = null;
+    this.observers = null;
 
     if (map) {
-      for (toDispose of map.values()) {
-        toDispose.dispose();
+      for (let data of map.values()) {
+        data.observer.unsubscribe(this.boundSetValue);
       }
 
       map.clear();
