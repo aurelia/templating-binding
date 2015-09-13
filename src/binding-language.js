@@ -231,7 +231,6 @@ class InterpolationBinding {
     if (this.mode === bindingMode.oneWay) {
       this.unbind();
       this.connect();
-      this.setValue();
     } else {
       this.setValue();
     }
@@ -279,14 +278,20 @@ class InterpolationBinding {
   }
 
   connect() {
+    let value = '';
     let parts = this.parts;
     let source = this.source;
     let observers = this.observers = [];
     let partChanged = this.boundPartChanged || (this.boundPartChanged = this.partChanged.bind(this));
+    let valueConverterLookupFunction = this.valueConverterLookupFunction;
 
     for (let i = 0, ii = parts.length; i < ii; ++i) {
-      if (i % 2 !== 0) {
+      if (i % 2 === 0) {
+        value += parts[i];
+      } else {
         let result = parts[i].connect(this, source);
+        let temp = result.value;
+        value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
         if (result.observer) {
           observers.push(result.observer);
           result.observer.subscribe(partChanged);
@@ -296,6 +301,7 @@ class InterpolationBinding {
         }
       }
     }
+    this.targetProperty.setValue(value);
   }
 
   interpolate() {
