@@ -155,7 +155,7 @@ SyntaxInterpreter.prototype['for'] = function(resources, element, info, existing
   let isDestructuring;
 
   attrValue = info.attrValue;
-  isDestructuring = attrValue.match(/[[].+[\]]/);
+  isDestructuring = attrValue.match(/^ *[[].+[\]]/);
   parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
 
   if (parts.length !== 2) {

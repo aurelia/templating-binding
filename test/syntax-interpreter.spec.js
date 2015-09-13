@@ -96,6 +96,12 @@ describe('SyntaxInterpreter', () => {
       expect(instruction.attributes.local).toBe('foo');
     });
 
+    it('parses Array syntax with access-keyed', () => {
+      info.attrValue = 'foo of $parent.items[key]';
+      var instruction = interpreter.for({}, null, info, null);
+      expect(instruction.attributes.local).toBe('foo');
+    });
+
     it('parses destructuring syntax', () => {
       info.attrValue = '[foo, bar] of items';
       var instruction = interpreter.for({}, null, info, null);
