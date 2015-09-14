@@ -255,7 +255,7 @@ class InterpolationBinding {
       if (data) {
         data.refs--;
         if (data.refs === 0) {
-          data.observer.unsubscribe(this.boundSetValue);
+          data.observer.unsubscribe('setValue', this);
           map.delete(oldValue);
         }
       }
@@ -270,11 +270,14 @@ class InterpolationBinding {
           observer: this.observerLocator.getArrayObserver(newValue)
         };
         map.set(newValue, data);
-        this.boundSetValue = this.boundSetValue || (this.boundSetValue = this.setValue.bind(this));
-        data.observer.subscribe(this.boundSetValue);
+        data.observer.subscribe('setValue', this);
       }
       data.refs++;
     }
+  }
+
+  call(context, newValue, oldValue) {
+    this[context](newValue, oldValue);
   }
 
   connect() {
@@ -282,7 +285,6 @@ class InterpolationBinding {
     let parts = this.parts;
     let source = this.source;
     let observers = this.observers = [];
-    let partChanged = this.boundPartChanged || (this.boundPartChanged = this.partChanged.bind(this));
     let valueConverterLookupFunction = this.valueConverterLookupFunction;
 
     for (let i = 0, ii = parts.length; i < ii; ++i) {
@@ -294,7 +296,7 @@ class InterpolationBinding {
         value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
         if (result.observer) {
           observers.push(result.observer);
-          result.observer.subscribe(partChanged);
+          result.observer.subscribe('partChanged', this);
         }
         if (result.value instanceof Array) {
           partChanged(result.value, undefined, true);
@@ -328,7 +330,7 @@ class InterpolationBinding {
 
     if (observers) {
       for (let i = 0, ii = observers.length; i < ii; ++i) {
-        observers[i].unsubscribe(this.boundPartChanged);
+        observers[i].unsubscribe('partChanged', this);
       }
     }
 
@@ -336,7 +338,7 @@ class InterpolationBinding {
 
     if (map) {
       for (let data of map.values()) {
-        data.observer.unsubscribe(this.boundSetValue);
+        data.observer.unsubscribe('setValue', this);
       }
 
       map.clear();

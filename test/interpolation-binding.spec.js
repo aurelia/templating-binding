@@ -56,7 +56,7 @@ describe('InterpolationBinding', () => {
       { change: (m, p) => m[p] = null,      result: () => '' },
       { change: (m, p) => m[p] = undefined, result: () => '' },
       { change: (m, p) => m[p] = 0,         result: () => '0' },
-      { change: (m, p) => {debugger; m[p] = false },     result: () => 'false' },
+      { change: (m, p) => m[p] = false,     result: () => 'false' },
       { change: (m, p) => m[p] = true,      result: () => 'true' },
       { change: (m, p) => m[p] = 'baz',     result: () => 'baz' },
       { change: (m, p) => m[p] = {},        result: () => ({}.toString()) },
