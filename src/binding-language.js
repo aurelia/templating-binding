@@ -226,10 +226,11 @@ class InterpolationBinding {
   }
 
   bind(source) {
-    this.source = source;
-
-    if (this.mode === bindingMode.oneWay) {
+    if (this.source !== undefined) {
       this.unbind();
+    }
+    this.source = source;
+    if (this.mode === bindingMode.oneWay) {
       this.connect();
     } else {
       this.setValue();
@@ -325,6 +326,8 @@ class InterpolationBinding {
   }
 
   unbind() {
+    this.source = undefined;
+
     let observers = this.observers;
     let map = this.arrayPartMap;
 
