@@ -286,7 +286,6 @@ class InterpolationBinding {
     let parts = this.parts;
     let source = this.source;
     let observers = this.observers = [];
-    let valueConverterLookupFunction = this.valueConverterLookupFunction;
 
     for (let i = 0, ii = parts.length; i < ii; ++i) {
       if (i % 2 === 0) {
