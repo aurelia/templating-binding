@@ -15,11 +15,12 @@ import {
 } from 'aurelia-binding';
 
 import {ViewResources} from 'aurelia-templating';
-
-import {TaskQueue} from 'jspm_packages/github/aurelia/task-queue@0.7.0/aurelia-task-queue';
+import {TaskQueue} from 'aurelia-task-queue';
+import {initialize} from 'aurelia-pal-browser';
+import {DOM} from 'aurelia-pal';
 
 function createElement(html) {
-  var div = document.createElement('div');
+  var div = DOM.createElement('div');
   div.innerHTML = html;
   return div.firstChild;
 }
@@ -30,6 +31,7 @@ describe('InterpolationBinding', () => {
       parser, eventManager, dirtyChecker, observerLocator, syntaxInterpreter, language, resources;
 
   beforeAll(() => {
+    initialize();
     eventManager = new EventManager();
     dirtyChecker = new DirtyChecker();
     dirtyChecker.checkDelay = checkDelay / 2;

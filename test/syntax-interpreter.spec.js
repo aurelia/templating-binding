@@ -9,14 +9,18 @@ import {
   CallExpression,
   bindingMode
 } from 'aurelia-binding';
+import {initialize} from 'aurelia-pal-browser';
+import {DOM} from 'aurelia-pal';
 
 export function createElement(html) {
-  var div = document.createElement('div');
+  var div = DOM.createElement('div');
   div.innerHTML = html;
   return div.firstChild;
 }
 
 describe('SyntaxInterpreter', () => {
+  beforeAll(() => initialize());
+
   describe('determineDefaultBindingMode', () => {
     var interpreter;
 

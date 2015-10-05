@@ -3,10 +3,13 @@ import {
   InterpolationBindingExpression
 } from '../src/binding-language';
 import * as LogManager from 'aurelia-logging';
+import {initialize} from 'aurelia-pal-browser';
 
 var logger = LogManager.getLogger('templating-binding');
 
 describe('TemplatingBindingLanguage', () => {
+  beforeAll(() => initialize());
+
   describe('parseContent', () => {
     var language, resources;
     beforeAll(() => {
