@@ -117,8 +117,7 @@ describe('InterpolationBinding', () => {
       binding.unbind();
 
       expect(observer1.hasSubscribers()).toBe(false);
-      expect(binding.observers).toBe(null);
-      expect(binding.arrayPartMap).toBe(null);
+      expect(binding.source).toBe(undefined);
     });
   });
 
@@ -167,8 +166,7 @@ describe('InterpolationBinding', () => {
       binding.unbind();
 
       expect(observer1.hasSubscribers()).toBe(false);
-      expect(binding.observers).toBe(null);
-      expect(binding.arrayPartMap).toBe(null);
+      expect(binding.source).toBe(undefined);
     });
   });
 
@@ -215,8 +213,7 @@ describe('InterpolationBinding', () => {
       binding.unbind();
 
       expect(observer1.hasSubscribers()).toBe(false);
-      expect(binding.observers).toBe(null);
-      expect(binding.arrayPartMap).toBe(null);
+      expect(binding.source).toBe(undefined);
     });
   });
 });

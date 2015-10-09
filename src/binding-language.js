@@ -1,5 +1,5 @@
 import {BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
-import {Parser, ObserverLocator, NameExpression, bindingMode} from 'aurelia-binding';
+import {Parser, ObserverLocator, NameExpression, bindingMode, connectable} from 'aurelia-binding';
 import {SyntaxInterpreter} from './syntax-interpreter';
 import * as LogManager from 'aurelia-logging';
 
@@ -206,6 +206,7 @@ export class InterpolationBindingExpression {
   }
 }
 
+@connectable()
 class InterpolationBinding {
   constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
     if (targetProperty === 'style') {
@@ -221,92 +222,20 @@ class InterpolationBinding {
     this.valueConverterLookupFunction = valueConverterLookupFunction;
   }
 
-  getObserver(obj, propertyName) {
-    return this.observerLocator.getObserver(obj, propertyName);
-  }
-
   bind(source) {
     if (this.source !== undefined) {
       this.unbind();
     }
     this.source = source;
-    if (this.mode === bindingMode.oneWay) {
-      this.connect();
-    } else {
-      this.setValue();
-    }
+    this.interpolate(this.mode === bindingMode.oneWay, true);
   }
 
-  setValue() {
-    let value = this.interpolate();
-    this.targetProperty.setValue(value);
+  call() {
+    this._version++;
+    this.interpolate(this.mode === bindingMode.oneWay, false);
   }
 
-  partChanged(newValue, oldValue, connecting) {
-    let map;
-    let data;
-
-    if (!connecting) {
-      this.setValue();
-    }
-
-    if (oldValue instanceof Array) {
-      map = this.arrayPartMap;
-      data = map ? map.get(oldValue) : null;
-      if (data) {
-        data.refs--;
-        if (data.refs === 0) {
-          data.observer.unsubscribe('setValue', this);
-          map.delete(oldValue);
-        }
-      }
-    }
-
-    if (newValue instanceof Array) {
-      map = this.arrayPartMap || (this.arrayPartMap = new Map());
-      data = map.get(newValue);
-      if (!data) {
-        data = {
-          refs: 0,
-          observer: this.observerLocator.getArrayObserver(newValue)
-        };
-        map.set(newValue, data);
-        data.observer.subscribe('setValue', this);
-      }
-      data.refs++;
-    }
-  }
-
-  call(context, newValue, oldValue) {
-    this[context](newValue, oldValue);
-  }
-
-  connect() {
-    let value = '';
-    let parts = this.parts;
-    let source = this.source;
-    let observers = this.observers = [];
-
-    for (let i = 0, ii = parts.length; i < ii; ++i) {
-      if (i % 2 === 0) {
-        value += parts[i];
-      } else {
-        let result = parts[i].connect(this, source);
-        let temp = result.value;
-        value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
-        if (result.observer) {
-          observers.push(result.observer);
-          result.observer.subscribe('partChanged', this);
-        }
-        if (result.value instanceof Array) {
-          partChanged(result.value, undefined, true);
-        }
-      }
-    }
-    this.targetProperty.setValue(value);
-  }
-
-  interpolate() {
+  interpolate(connect, initial) {
     let value = '';
     let parts = this.parts;
     let source = this.source;
@@ -316,36 +245,24 @@ class InterpolationBinding {
       if (i % 2 === 0) {
         value += parts[i];
       } else {
-        let temp = parts[i].evaluate(source, valueConverterLookupFunction);
-        value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
+        let part = parts[i].evaluate(source, valueConverterLookupFunction);
+        value += part === undefined || part === null ? '' : part.toString();
+        if (connect) {
+          parts[i].connect(this, source);
+          if (part instanceof Array) {
+            this.observeArray(part);
+          }
+        }
       }
     }
-
-    return value;
+    this.targetProperty.setValue(value);
+    if (!initial) {
+      this.unobserve(false);
+    }
   }
 
   unbind() {
     this.source = undefined;
-
-    let observers = this.observers;
-    let map = this.arrayPartMap;
-
-    if (observers) {
-      for (let i = 0, ii = observers.length; i < ii; ++i) {
-        observers[i].unsubscribe('partChanged', this);
-      }
-    }
-
-    this.observers = null;
-
-    if (map) {
-      for (let data of map.values()) {
-        data.observer.unsubscribe('setValue', this);
-      }
-
-      map.clear();
-    }
-
-    this.arrayPartMap = null;
+    this.unobserve(true);
   }
 }
