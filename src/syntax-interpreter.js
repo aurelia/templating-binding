@@ -145,82 +145,82 @@ export class SyntaxInterpreter {
 
     return instruction;
   }
-}
 
-SyntaxInterpreter.prototype['for'] = function(resources, element, info, existingInstruction) {
-  let parts;
-  let keyValue;
-  let instruction;
-  let attrValue;
-  let isDestructuring;
+  'for'(resources, element, info, existingInstruction) {
+    let parts;
+    let keyValue;
+    let instruction;
+    let attrValue;
+    let isDestructuring;
 
-  attrValue = info.attrValue;
-  isDestructuring = attrValue.match(/^ *[[].+[\]]/);
-  parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
+    attrValue = info.attrValue;
+    isDestructuring = attrValue.match(/^ *[[].+[\]]/);
+    parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
 
-  if (parts.length !== 2) {
-    throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
-  }
+    if (parts.length !== 2) {
+      throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
+    }
 
-  instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+    instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-  if (isDestructuring) {
-    keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
-    instruction.attributes.key = keyValue[0];
-    instruction.attributes.value = keyValue[1];
-  } else {
-    instruction.attributes.local = parts[0];
-  }
+    if (isDestructuring) {
+      keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
+      instruction.attributes.key = keyValue[0];
+      instruction.attributes.value = keyValue[1];
+    } else {
+      instruction.attributes.local = parts[0];
+    }
 
-  instruction.attributes.items = new BindingExpression(
-    this.observerLocator,
-    'items',
-    this.parser.parse(parts[1]),
-    bindingMode.oneWay,
-    resources.valueConverterLookupFunction
-  );
-
-  return instruction;
-};
-
-SyntaxInterpreter.prototype['two-way'] = function(resources, element, info, existingInstruction) {
-  let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
-
-  instruction.attributes[info.attrName] = new BindingExpression(
+    instruction.attributes.items = new BindingExpression(
       this.observerLocator,
-      this.attributeMap[info.attrName] || info.attrName,
-      this.parser.parse(info.attrValue),
-      bindingMode.twoWay,
+      'items',
+      this.parser.parse(parts[1]),
+      bindingMode.oneWay,
       resources.valueConverterLookupFunction
     );
 
-  return instruction;
-};
+    return instruction;
+  }
 
-SyntaxInterpreter.prototype['one-way'] = function(resources, element, info, existingInstruction) {
-  let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  'two-way'(resources, element, info, existingInstruction) {
+    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-  instruction.attributes[info.attrName] = new BindingExpression(
-    this.observerLocator,
-    this.attributeMap[info.attrName] || info.attrName,
-    this.parser.parse(info.attrValue),
-    bindingMode.oneWay,
-    resources.valueConverterLookupFunction
-  );
+    instruction.attributes[info.attrName] = new BindingExpression(
+        this.observerLocator,
+        this.attributeMap[info.attrName] || info.attrName,
+        this.parser.parse(info.attrValue),
+        bindingMode.twoWay,
+        resources.valueConverterLookupFunction
+      );
 
-  return instruction;
-};
+    return instruction;
+  }
 
-SyntaxInterpreter.prototype['one-time'] = function(resources, element, info, existingInstruction) {
-  let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  'one-way'(resources, element, info, existingInstruction) {
+    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-  instruction.attributes[info.attrName] = new BindingExpression(
-    this.observerLocator,
-    this.attributeMap[info.attrName] || info.attrName,
-    this.parser.parse(info.attrValue),
-    bindingMode.oneTime,
-    resources.valueConverterLookupFunction
-  );
+    instruction.attributes[info.attrName] = new BindingExpression(
+      this.observerLocator,
+      this.attributeMap[info.attrName] || info.attrName,
+      this.parser.parse(info.attrValue),
+      bindingMode.oneWay,
+      resources.valueConverterLookupFunction
+    );
 
-  return instruction;
-};
+    return instruction;
+  }
+
+  'one-time'(resources, element, info, existingInstruction) {
+    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+    instruction.attributes[info.attrName] = new BindingExpression(
+      this.observerLocator,
+      this.attributeMap[info.attrName] || info.attrName,
+      this.parser.parse(info.attrValue),
+      bindingMode.oneTime,
+      resources.valueConverterLookupFunction
+    );
+
+    return instruction;
+  }
+}
