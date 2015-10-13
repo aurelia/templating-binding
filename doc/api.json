@@ -6,28 +6,28 @@
   "flags": {},
   "children": [
     {
-      "id": 95,
+      "id": 119,
       "name": "InterpolationBinding",
       "kind": 128,
       "kindString": "Class",
       "flags": {},
       "children": [
         {
-          "id": 96,
+          "id": 120,
           "name": "constructor",
           "kind": 512,
           "kindString": "Constructor",
           "flags": {},
           "signatures": [
             {
-              "id": 97,
+              "id": 121,
               "name": "new InterpolationBinding",
               "kind": 16384,
               "kindString": "Constructor signature",
               "flags": {},
               "parameters": [
                 {
-                  "id": 98,
+                  "id": 122,
                   "name": "observerLocator",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -38,7 +38,7 @@
                   }
                 },
                 {
-                  "id": 99,
+                  "id": 123,
                   "name": "parts",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -49,7 +49,7 @@
                   }
                 },
                 {
-                  "id": 100,
+                  "id": 124,
                   "name": "target",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -60,7 +60,7 @@
                   }
                 },
                 {
-                  "id": 101,
+                  "id": 125,
                   "name": "targetProperty",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -71,7 +71,7 @@
                   }
                 },
                 {
-                  "id": 102,
+                  "id": 126,
                   "name": "mode",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -82,7 +82,7 @@
                   }
                 },
                 {
-                  "id": 103,
+                  "id": 127,
                   "name": "valueConverterLookupFunction",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -96,28 +96,28 @@
               "type": {
                 "type": "reference",
                 "name": "InterpolationBinding",
-                "id": 95,
+                "id": 119,
                 "moduleName": "\"aurelia-templating-binding\""
               }
             }
           ]
         },
         {
-          "id": 108,
+          "id": 128,
           "name": "bind",
           "kind": 2048,
           "kindString": "Method",
           "flags": {},
           "signatures": [
             {
-              "id": 109,
+              "id": 129,
               "name": "bind",
               "kind": 4096,
               "kindString": "Call signature",
               "flags": {},
               "parameters": [
                 {
-                  "id": 110,
+                  "id": 130,
                   "name": "source",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -136,15 +136,15 @@
           ]
         },
         {
-          "id": 118,
-          "name": "connect",
+          "id": 131,
+          "name": "call",
           "kind": 2048,
           "kindString": "Method",
           "flags": {},
           "signatures": [
             {
-              "id": 119,
-              "name": "connect",
+              "id": 132,
+              "name": "call",
               "kind": 4096,
               "kindString": "Call signature",
               "flags": {},
@@ -156,86 +156,22 @@
           ]
         },
         {
-          "id": 104,
-          "name": "getObserver",
-          "kind": 2048,
-          "kindString": "Method",
-          "flags": {},
-          "signatures": [
-            {
-              "id": 105,
-              "name": "getObserver",
-              "kind": 4096,
-              "kindString": "Call signature",
-              "flags": {},
-              "parameters": [
-                {
-                  "id": 106,
-                  "name": "obj",
-                  "kind": 32768,
-                  "kindString": "Parameter",
-                  "flags": {},
-                  "type": {
-                    "type": "instrinct",
-                    "name": "any"
-                  }
-                },
-                {
-                  "id": 107,
-                  "name": "propertyName",
-                  "kind": 32768,
-                  "kindString": "Parameter",
-                  "flags": {},
-                  "type": {
-                    "type": "instrinct",
-                    "name": "any"
-                  }
-                }
-              ],
-              "type": {
-                "type": "instrinct",
-                "name": "any"
-              }
-            }
-          ]
-        },
-        {
-          "id": 120,
+          "id": 133,
           "name": "interpolate",
           "kind": 2048,
           "kindString": "Method",
           "flags": {},
           "signatures": [
             {
-              "id": 121,
+              "id": 134,
               "name": "interpolate",
-              "kind": 4096,
-              "kindString": "Call signature",
-              "flags": {},
-              "type": {
-                "type": "instrinct",
-                "name": "any"
-              }
-            }
-          ]
-        },
-        {
-          "id": 113,
-          "name": "partChanged",
-          "kind": 2048,
-          "kindString": "Method",
-          "flags": {},
-          "signatures": [
-            {
-              "id": 114,
-              "name": "partChanged",
               "kind": 4096,
               "kindString": "Call signature",
               "flags": {},
               "parameters": [
                 {
-                  "id": 115,
-                  "name": "newValue",
+                  "id": 135,
+                  "name": "connect",
                   "kind": 32768,
                   "kindString": "Parameter",
                   "flags": {},
@@ -245,19 +181,8 @@
                   }
                 },
                 {
-                  "id": 116,
-                  "name": "oldValue",
-                  "kind": 32768,
-                  "kindString": "Parameter",
-                  "flags": {},
-                  "type": {
-                    "type": "instrinct",
-                    "name": "any"
-                  }
-                },
-                {
-                  "id": 117,
-                  "name": "connecting",
+                  "id": 136,
+                  "name": "initial",
                   "kind": 32768,
                   "kindString": "Parameter",
                   "flags": {},
@@ -275,34 +200,14 @@
           ]
         },
         {
-          "id": 111,
-          "name": "setValue",
-          "kind": 2048,
-          "kindString": "Method",
-          "flags": {},
-          "signatures": [
-            {
-              "id": 112,
-              "name": "setValue",
-              "kind": 4096,
-              "kindString": "Call signature",
-              "flags": {},
-              "type": {
-                "type": "instrinct",
-                "name": "any"
-              }
-            }
-          ]
-        },
-        {
-          "id": 122,
+          "id": 137,
           "name": "unbind",
           "kind": 2048,
           "kindString": "Method",
           "flags": {},
           "signatures": [
             {
-              "id": 123,
+              "id": 138,
               "name": "unbind",
               "kind": 4096,
               "kindString": "Call signature",
@@ -320,26 +225,23 @@
           "title": "Constructors",
           "kind": 512,
           "children": [
-            96
+            120
           ]
         },
         {
           "title": "Methods",
           "kind": 2048,
           "children": [
-            108,
-            118,
-            104,
-            120,
-            113,
-            111,
-            122
+            128,
+            131,
+            133,
+            137
           ]
         }
       ]
     },
     {
-      "id": 83,
+      "id": 107,
       "name": "InterpolationBindingExpression",
       "kind": 128,
       "kindString": "Class",
@@ -348,7 +250,7 @@
       },
       "children": [
         {
-          "id": 84,
+          "id": 108,
           "name": "constructor",
           "kind": 512,
           "kindString": "Constructor",
@@ -357,14 +259,14 @@
           },
           "signatures": [
             {
-              "id": 85,
+              "id": 109,
               "name": "new InterpolationBindingExpression",
               "kind": 16384,
               "kindString": "Constructor signature",
               "flags": {},
               "parameters": [
                 {
-                  "id": 86,
+                  "id": 110,
                   "name": "observerLocator",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -375,7 +277,7 @@
                   }
                 },
                 {
-                  "id": 87,
+                  "id": 111,
                   "name": "targetProperty",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -386,7 +288,7 @@
                   }
                 },
                 {
-                  "id": 88,
+                  "id": 112,
                   "name": "parts",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -397,7 +299,7 @@
                   }
                 },
                 {
-                  "id": 89,
+                  "id": 113,
                   "name": "mode",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -408,7 +310,7 @@
                   }
                 },
                 {
-                  "id": 90,
+                  "id": 114,
                   "name": "valueConverterLookupFunction",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -419,7 +321,7 @@
                   }
                 },
                 {
-                  "id": 91,
+                  "id": 115,
                   "name": "attribute",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -433,14 +335,14 @@
               "type": {
                 "type": "reference",
                 "name": "InterpolationBindingExpression",
-                "id": 83,
+                "id": 107,
                 "moduleName": "\"aurelia-templating-binding\""
               }
             }
           ]
         },
         {
-          "id": 92,
+          "id": 116,
           "name": "createBinding",
           "kind": 2048,
           "kindString": "Method",
@@ -449,14 +351,14 @@
           },
           "signatures": [
             {
-              "id": 93,
+              "id": 117,
               "name": "createBinding",
               "kind": 4096,
               "kindString": "Call signature",
               "flags": {},
               "parameters": [
                 {
-                  "id": 94,
+                  "id": 118,
                   "name": "target",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -480,14 +382,14 @@
           "title": "Constructors",
           "kind": 512,
           "children": [
-            84
+            108
           ]
         },
         {
           "title": "Methods",
           "kind": 2048,
           "children": [
-            92
+            116
           ]
         }
       ]
@@ -800,6 +702,74 @@
           ]
         },
         {
+          "id": 55,
+          "name": "for",
+          "kind": 2048,
+          "kindString": "Method",
+          "flags": {
+            "isExported": true
+          },
+          "signatures": [
+            {
+              "id": 56,
+              "name": "for",
+              "kind": 4096,
+              "kindString": "Call signature",
+              "flags": {},
+              "parameters": [
+                {
+                  "id": 57,
+                  "name": "resources",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 58,
+                  "name": "element",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 59,
+                  "name": "info",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 60,
+                  "name": "existingInstruction",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                }
+              ],
+              "type": {
+                "type": "instrinct",
+                "name": "any"
+              }
+            }
+          ]
+        },
+        {
           "id": 17,
           "name": "handleUnknownCommand",
           "kind": 2048,
@@ -918,6 +888,142 @@
                 },
                 {
                   "id": 16,
+                  "name": "existingInstruction",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                }
+              ],
+              "type": {
+                "type": "instrinct",
+                "name": "any"
+              }
+            }
+          ]
+        },
+        {
+          "id": 73,
+          "name": "one-time",
+          "kind": 2048,
+          "kindString": "Method",
+          "flags": {
+            "isExported": true
+          },
+          "signatures": [
+            {
+              "id": 74,
+              "name": "one-time",
+              "kind": 4096,
+              "kindString": "Call signature",
+              "flags": {},
+              "parameters": [
+                {
+                  "id": 75,
+                  "name": "resources",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 76,
+                  "name": "element",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 77,
+                  "name": "info",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 78,
+                  "name": "existingInstruction",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                }
+              ],
+              "type": {
+                "type": "instrinct",
+                "name": "any"
+              }
+            }
+          ]
+        },
+        {
+          "id": 67,
+          "name": "one-way",
+          "kind": 2048,
+          "kindString": "Method",
+          "flags": {
+            "isExported": true
+          },
+          "signatures": [
+            {
+              "id": 68,
+              "name": "one-way",
+              "kind": 4096,
+              "kindString": "Call signature",
+              "flags": {},
+              "parameters": [
+                {
+                  "id": 69,
+                  "name": "resources",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 70,
+                  "name": "element",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 71,
+                  "name": "info",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 72,
                   "name": "existingInstruction",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1061,6 +1167,74 @@
           ]
         },
         {
+          "id": 61,
+          "name": "two-way",
+          "kind": 2048,
+          "kindString": "Method",
+          "flags": {
+            "isExported": true
+          },
+          "signatures": [
+            {
+              "id": 62,
+              "name": "two-way",
+              "kind": 4096,
+              "kindString": "Call signature",
+              "flags": {},
+              "parameters": [
+                {
+                  "id": 63,
+                  "name": "resources",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 64,
+                  "name": "element",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 65,
+                  "name": "info",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                },
+                {
+                  "id": 66,
+                  "name": "existingInstruction",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "type": {
+                    "type": "instrinct",
+                    "name": "any"
+                  }
+                }
+              ],
+              "type": {
+                "type": "instrinct",
+                "name": "any"
+              }
+            }
+          ]
+        },
+        {
           "id": 4,
           "name": "inject",
           "kind": 2048,
@@ -1100,17 +1274,21 @@
             43,
             38,
             23,
+            55,
             17,
             11,
+            73,
+            67,
             49,
             33,
+            61,
             4
           ]
         }
       ]
     },
     {
-      "id": 55,
+      "id": 79,
       "name": "TemplatingBindingLanguage",
       "kind": 128,
       "kindString": "Class",
@@ -1119,7 +1297,7 @@
       },
       "children": [
         {
-          "id": 58,
+          "id": 82,
           "name": "constructor",
           "kind": 512,
           "kindString": "Constructor",
@@ -1128,14 +1306,14 @@
           },
           "signatures": [
             {
-              "id": 59,
+              "id": 83,
               "name": "new TemplatingBindingLanguage",
               "kind": 16384,
               "kindString": "Constructor signature",
               "flags": {},
               "parameters": [
                 {
-                  "id": 60,
+                  "id": 84,
                   "name": "parser",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1146,7 +1324,7 @@
                   }
                 },
                 {
-                  "id": 61,
+                  "id": 85,
                   "name": "observerLocator",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1157,7 +1335,7 @@
                   }
                 },
                 {
-                  "id": 62,
+                  "id": 86,
                   "name": "syntaxInterpreter",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1171,14 +1349,14 @@
               "type": {
                 "type": "reference",
                 "name": "TemplatingBindingLanguage",
-                "id": 55,
+                "id": 79,
                 "moduleName": "\"aurelia-templating-binding\""
               }
             }
           ]
         },
         {
-          "id": 68,
+          "id": 92,
           "name": "createAttributeInstruction",
           "kind": 2048,
           "kindString": "Method",
@@ -1187,14 +1365,14 @@
           },
           "signatures": [
             {
-              "id": 69,
+              "id": 93,
               "name": "createAttributeInstruction",
               "kind": 4096,
               "kindString": "Call signature",
               "flags": {},
               "parameters": [
                 {
-                  "id": 70,
+                  "id": 94,
                   "name": "resources",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1205,7 +1383,7 @@
                   }
                 },
                 {
-                  "id": 71,
+                  "id": 95,
                   "name": "element",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1216,7 +1394,7 @@
                   }
                 },
                 {
-                  "id": 72,
+                  "id": 96,
                   "name": "theInfo",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1227,7 +1405,7 @@
                   }
                 },
                 {
-                  "id": 73,
+                  "id": 97,
                   "name": "existingInstruction",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1245,18 +1423,18 @@
               "overwrites": {
                 "type": "reference",
                 "name": "BindingLanguage.createAttributeInstruction",
-                "id": 1945
+                "id": 2127
               }
             }
           ],
           "overwrites": {
             "type": "reference",
             "name": "BindingLanguage.createAttributeInstruction",
-            "id": 1945
+            "id": 2127
           }
         },
         {
-          "id": 63,
+          "id": 87,
           "name": "inspectAttribute",
           "kind": 2048,
           "kindString": "Method",
@@ -1265,14 +1443,14 @@
           },
           "signatures": [
             {
-              "id": 64,
+              "id": 88,
               "name": "inspectAttribute",
               "kind": 4096,
               "kindString": "Call signature",
               "flags": {},
               "parameters": [
                 {
-                  "id": 65,
+                  "id": 89,
                   "name": "resources",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1283,7 +1461,7 @@
                   }
                 },
                 {
-                  "id": 66,
+                  "id": 90,
                   "name": "attrName",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1294,7 +1472,7 @@
                   }
                 },
                 {
-                  "id": 67,
+                  "id": 91,
                   "name": "attrValue",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1312,18 +1490,18 @@
               "overwrites": {
                 "type": "reference",
                 "name": "BindingLanguage.inspectAttribute",
-                "id": 1940
+                "id": 2122
               }
             }
           ],
           "overwrites": {
             "type": "reference",
             "name": "BindingLanguage.inspectAttribute",
-            "id": 1940
+            "id": 2122
           }
         },
         {
-          "id": 78,
+          "id": 102,
           "name": "parseContent",
           "kind": 2048,
           "kindString": "Method",
@@ -1332,14 +1510,14 @@
           },
           "signatures": [
             {
-              "id": 79,
+              "id": 103,
               "name": "parseContent",
               "kind": 4096,
               "kindString": "Call signature",
               "flags": {},
               "parameters": [
                 {
-                  "id": 80,
+                  "id": 104,
                   "name": "resources",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1350,7 +1528,7 @@
                   }
                 },
                 {
-                  "id": 81,
+                  "id": 105,
                   "name": "attrName",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1361,7 +1539,7 @@
                   }
                 },
                 {
-                  "id": 82,
+                  "id": 106,
                   "name": "attrValue",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1380,7 +1558,7 @@
           ]
         },
         {
-          "id": 74,
+          "id": 98,
           "name": "parseText",
           "kind": 2048,
           "kindString": "Method",
@@ -1389,14 +1567,14 @@
           },
           "signatures": [
             {
-              "id": 75,
+              "id": 99,
               "name": "parseText",
               "kind": 4096,
               "kindString": "Call signature",
               "flags": {},
               "parameters": [
                 {
-                  "id": 76,
+                  "id": 100,
                   "name": "resources",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1407,7 +1585,7 @@
                   }
                 },
                 {
-                  "id": 77,
+                  "id": 101,
                   "name": "value",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -1425,18 +1603,18 @@
               "overwrites": {
                 "type": "reference",
                 "name": "BindingLanguage.parseText",
-                "id": 1951
+                "id": 2133
               }
             }
           ],
           "overwrites": {
             "type": "reference",
             "name": "BindingLanguage.parseText",
-            "id": 1951
+            "id": 2133
           }
         },
         {
-          "id": 56,
+          "id": 80,
           "name": "inject",
           "kind": 2048,
           "kindString": "Method",
@@ -1446,7 +1624,7 @@
           },
           "signatures": [
             {
-              "id": 57,
+              "id": 81,
               "name": "inject",
               "kind": 4096,
               "kindString": "Call signature",
@@ -1464,18 +1642,18 @@
           "title": "Constructors",
           "kind": 512,
           "children": [
-            58
+            82
           ]
         },
         {
           "title": "Methods",
           "kind": 2048,
           "children": [
-            68,
-            63,
-            78,
-            74,
-            56
+            92,
+            87,
+            102,
+            98,
+            80
           ]
         }
       ],
@@ -1483,12 +1661,12 @@
         {
           "type": "reference",
           "name": "BindingLanguage",
-          "id": 1939
+          "id": 2121
         }
       ]
     },
     {
-      "id": 124,
+      "id": 139,
       "name": "configure",
       "kind": 64,
       "kindString": "Function",
@@ -1497,14 +1675,14 @@
       },
       "signatures": [
         {
-          "id": 125,
+          "id": 140,
           "name": "configure",
           "kind": 4096,
           "kindString": "Call signature",
           "flags": {},
           "parameters": [
             {
-              "id": 126,
+              "id": 141,
               "name": "config",
               "kind": 32768,
               "kindString": "Parameter",
@@ -1528,17 +1706,17 @@
       "title": "Classes",
       "kind": 128,
       "children": [
-        95,
-        83,
+        119,
+        107,
         3,
-        55
+        79
       ]
     },
     {
       "title": "Functions",
       "kind": 64,
       "children": [
-        124
+        139
       ]
     }
   ]

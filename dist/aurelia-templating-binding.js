@@ -1,5 +1,5 @@
 import * as LogManager from 'aurelia-logging';
-import {Parser,ObserverLocator,EventManager,ListenerExpression,BindingExpression,CallExpression,bindingMode,NameExpression} from 'aurelia-binding';
+import {Parser,ObserverLocator,EventManager,ListenerExpression,BindingExpression,CallExpression,bindingMode,NameExpression,connectable} from 'aurelia-binding';
 import {BehaviorInstruction,BindingLanguage} from 'aurelia-templating';
 
 /*eslint dot-notation:0*/
@@ -137,92 +137,92 @@ export class SyntaxInterpreter {
 
     return instruction;
   }
-}
 
-SyntaxInterpreter.prototype['for'] = function(resources, element, info, existingInstruction) {
-  let parts;
-  let keyValue;
-  let instruction;
-  let attrValue;
-  let isDestructuring;
+  'for'(resources, element, info, existingInstruction) {
+    let parts;
+    let keyValue;
+    let instruction;
+    let attrValue;
+    let isDestructuring;
 
-  attrValue = info.attrValue;
-  isDestructuring = attrValue.match(/[[].+[\]]/);
-  parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
+    attrValue = info.attrValue;
+    isDestructuring = attrValue.match(/^ *[[].+[\]]/);
+    parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
 
-  if (parts.length !== 2) {
-    throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
-  }
+    if (parts.length !== 2) {
+      throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
+    }
 
-  instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+    instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-  if (isDestructuring) {
-    keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
-    instruction.attributes.key = keyValue[0];
-    instruction.attributes.value = keyValue[1];
-  } else {
-    instruction.attributes.local = parts[0];
-  }
+    if (isDestructuring) {
+      keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
+      instruction.attributes.key = keyValue[0];
+      instruction.attributes.value = keyValue[1];
+    } else {
+      instruction.attributes.local = parts[0];
+    }
 
-  instruction.attributes.items = new BindingExpression(
-    this.observerLocator,
-    'items',
-    this.parser.parse(parts[1]),
-    bindingMode.oneWay,
-    resources.valueConverterLookupFunction
-  );
-
-  return instruction;
-};
-
-SyntaxInterpreter.prototype['two-way'] = function(resources, element, info, existingInstruction) {
-  let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
-
-  instruction.attributes[info.attrName] = new BindingExpression(
+    instruction.attributes.items = new BindingExpression(
       this.observerLocator,
-      this.attributeMap[info.attrName] || info.attrName,
-      this.parser.parse(info.attrValue),
-      bindingMode.twoWay,
+      'items',
+      this.parser.parse(parts[1]),
+      bindingMode.oneWay,
       resources.valueConverterLookupFunction
     );
 
-  return instruction;
-};
+    return instruction;
+  }
 
-SyntaxInterpreter.prototype['one-way'] = function(resources, element, info, existingInstruction) {
-  let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  'two-way'(resources, element, info, existingInstruction) {
+    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-  instruction.attributes[info.attrName] = new BindingExpression(
-    this.observerLocator,
-    this.attributeMap[info.attrName] || info.attrName,
-    this.parser.parse(info.attrValue),
-    bindingMode.oneWay,
-    resources.valueConverterLookupFunction
-  );
+    instruction.attributes[info.attrName] = new BindingExpression(
+        this.observerLocator,
+        this.attributeMap[info.attrName] || info.attrName,
+        this.parser.parse(info.attrValue),
+        bindingMode.twoWay,
+        resources.valueConverterLookupFunction
+      );
 
-  return instruction;
-};
+    return instruction;
+  }
 
-SyntaxInterpreter.prototype['one-time'] = function(resources, element, info, existingInstruction) {
-  let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  'one-way'(resources, element, info, existingInstruction) {
+    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-  instruction.attributes[info.attrName] = new BindingExpression(
-    this.observerLocator,
-    this.attributeMap[info.attrName] || info.attrName,
-    this.parser.parse(info.attrValue),
-    bindingMode.oneTime,
-    resources.valueConverterLookupFunction
-  );
+    instruction.attributes[info.attrName] = new BindingExpression(
+      this.observerLocator,
+      this.attributeMap[info.attrName] || info.attrName,
+      this.parser.parse(info.attrValue),
+      bindingMode.oneWay,
+      resources.valueConverterLookupFunction
+    );
 
-  return instruction;
-};
+    return instruction;
+  }
+
+  'one-time'(resources, element, info, existingInstruction) {
+    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+    instruction.attributes[info.attrName] = new BindingExpression(
+      this.observerLocator,
+      this.attributeMap[info.attrName] || info.attrName,
+      this.parser.parse(info.attrValue),
+      bindingMode.oneTime,
+      resources.valueConverterLookupFunction
+    );
+
+    return instruction;
+  }
+}
 
 let info = {};
 let logger = LogManager.getLogger('templating-binding');
 
 export class TemplatingBindingLanguage extends BindingLanguage {
   static inject() { return [Parser, ObserverLocator, SyntaxInterpreter]; }
-	constructor(parser, observerLocator, syntaxInterpreter) {
+  constructor(parser, observerLocator, syntaxInterpreter) {
     super();
     this.parser = parser;
     this.observerLocator = observerLocator;
@@ -284,26 +284,26 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   }
 
 	createAttributeInstruction(resources, element, theInfo, existingInstruction) {
-    let instruction;
+  let instruction;
 
-    if (theInfo.expression) {
-      if (theInfo.attrName === 'ref') {
-        return theInfo.expression;
-      }
-
-      instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
-      instruction.attributes[theInfo.attrName] = theInfo.expression;
-    } else if (theInfo.command) {
-      instruction = this.syntaxInterpreter.interpret(
-        resources,
-        element,
-        theInfo,
-        existingInstruction
-      );
+  if (theInfo.expression) {
+    if (theInfo.attrName === 'ref') {
+      return theInfo.expression;
     }
 
-    return instruction;
+    instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
+    instruction.attributes[theInfo.attrName] = theInfo.expression;
+  } else if (theInfo.command) {
+    instruction = this.syntaxInterpreter.interpret(
+    resources,
+    element,
+    theInfo,
+    existingInstruction
+    );
   }
+
+  return instruction;
+}
 
   parseText(resources, value) {
     return this.parseContent(resources, 'textContent', value);
@@ -420,6 +420,7 @@ export class InterpolationBindingExpression {
   }
 }
 
+@connectable()
 class InterpolationBinding {
   constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
     if (targetProperty === 'style') {
@@ -433,131 +434,50 @@ class InterpolationBinding {
     this.targetProperty = observerLocator.getObserver(target, targetProperty);
     this.mode = mode;
     this.valueConverterLookupFunction = valueConverterLookupFunction;
-    this.toDispose = [];
-  }
-
-  getObserver(obj, propertyName) {
-    return this.observerLocator.getObserver(obj, propertyName);
   }
 
   bind(source) {
-    this.source = source;
-
-    if (this.mode === bindingMode.oneWay) {
+    if (this.source !== undefined) {
       this.unbind();
-      this.connect();
-      this.setValue();
-    } else {
-      this.setValue();
     }
+    this.source = source;
+    this.interpolate(this.mode === bindingMode.oneWay, true);
   }
 
-  setValue() {
-    let value = this.interpolate();
-    this.targetProperty.setValue(value);
+  call() {
+    this._version++;
+    this.interpolate(this.mode === bindingMode.oneWay, false);
   }
 
-  partChanged(newValue, oldValue, connecting) {
-    let map;
-    let data;
-
-    if (!connecting) {
-      this.setValue();
-    }
-
-    if (oldValue instanceof Array) {
-      map = this.arrayPartMap;
-      data = map ? map.get(oldValue) : null;
-      if (data) {
-        data.refs--;
-        if (data.refs === 0) {
-          data.dispose();
-          map.delete(oldValue);
-        }
-      }
-    }
-
-    if (newValue instanceof Array) {
-      map = this.arrayPartMap || (this.arrayPartMap = new Map());
-      data = map.get(newValue);
-      if (!data) {
-        data = {
-          refs: 0,
-          dispose: this.observerLocator.getArrayObserver(newValue).subscribe(() => this.setValue())
-        };
-
-        map.set(newValue, data);
-      }
-      data.refs++;
-    }
-  }
-
-  connect() {
-    let result;
-    let parts = this.parts;
-    let source = this.source;
-    let toDispose = this.toDispose = [];
-    let partChanged = this.partChanged.bind(this);
-    let i;
-    let ii;
-
-    for (i = 0, ii = parts.length; i < ii; ++i) {
-      if (i % 2 !== 0) {
-        result = parts[i].connect(this, source);
-        if (result.observer) {
-          toDispose.push(result.observer.subscribe(partChanged));
-        }
-        if (result.value instanceof Array) {
-          partChanged(result.value, undefined, true);
-        }
-      }
-    }
-  }
-
-  interpolate() {
+  interpolate(connect, initial) {
     let value = '';
     let parts = this.parts;
     let source = this.source;
     let valueConverterLookupFunction = this.valueConverterLookupFunction;
-    let i;
-    let ii;
-    let temp;
 
-    for (i = 0, ii = parts.length; i < ii; ++i) {
+    for (let i = 0, ii = parts.length; i < ii; ++i) {
       if (i % 2 === 0) {
         value += parts[i];
       } else {
-        temp = parts[i].evaluate(source, valueConverterLookupFunction);
-        value += (typeof temp !== 'undefined' && temp !== null ? temp.toString() : '');
+        let part = parts[i].evaluate(source, valueConverterLookupFunction);
+        value += part === undefined || part === null ? '' : part.toString();
+        if (connect) {
+          parts[i].connect(this, source);
+          if (part instanceof Array) {
+            this.observeArray(part);
+          }
+        }
       }
     }
-
-    return value;
+    this.targetProperty.setValue(value);
+    if (!initial) {
+      this.unobserve(false);
+    }
   }
 
   unbind() {
-    let i;
-    let ii;
-    let toDispose = this.toDispose;
-    let map = this.arrayPartMap;
-
-    if (toDispose) {
-      for (i = 0, ii = toDispose.length; i < ii; ++i) {
-        toDispose[i]();
-      }
-    }
-
-    this.toDispose = null;
-
-    if (map) {
-      for (toDispose of map.values()) {
-        toDispose.dispose();
-      }
-
-      map.clear();
-    }
-
-    this.arrayPartMap = null;
+    this.source = undefined;
+    this.unobserve(true);
   }
 }
 

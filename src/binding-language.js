@@ -8,7 +8,7 @@ let logger = LogManager.getLogger('templating-binding');
 
 export class TemplatingBindingLanguage extends BindingLanguage {
   static inject() { return [Parser, ObserverLocator, SyntaxInterpreter]; }
-	constructor(parser, observerLocator, syntaxInterpreter) {
+  constructor(parser, observerLocator, syntaxInterpreter) {
     super();
     this.parser = parser;
     this.observerLocator = observerLocator;
@@ -70,26 +70,26 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   }
 
 	createAttributeInstruction(resources, element, theInfo, existingInstruction) {
-    let instruction;
+  let instruction;
 
-    if (theInfo.expression) {
-      if (theInfo.attrName === 'ref') {
-        return theInfo.expression;
-      }
-
-      instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
-      instruction.attributes[theInfo.attrName] = theInfo.expression;
-    } else if (theInfo.command) {
-      instruction = this.syntaxInterpreter.interpret(
-        resources,
-        element,
-        theInfo,
-        existingInstruction
-      );
+  if (theInfo.expression) {
+    if (theInfo.attrName === 'ref') {
+      return theInfo.expression;
     }
 
-    return instruction;
+    instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
+    instruction.attributes[theInfo.attrName] = theInfo.expression;
+  } else if (theInfo.command) {
+    instruction = this.syntaxInterpreter.interpret(
+    resources,
+    element,
+    theInfo,
+    existingInstruction
+    );
   }
+
+  return instruction;
+}
 
   parseText(resources, value) {
     return this.parseContent(resources, 'textContent', value);

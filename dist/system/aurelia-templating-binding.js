@@ -1,7 +1,7 @@
 System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], function (_export) {
   'use strict';
 
-  var LogManager, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, bindingMode, NameExpression, BehaviorInstruction, BindingLanguage, SyntaxInterpreter, info, logger, TemplatingBindingLanguage, InterpolationBindingExpression, InterpolationBinding;
+  var LogManager, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, bindingMode, NameExpression, connectable, BehaviorInstruction, BindingLanguage, SyntaxInterpreter, info, logger, TemplatingBindingLanguage, InterpolationBindingExpression, InterpolationBinding;
 
   _export('configure', configure);
 
@@ -36,6 +36,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
       CallExpression = _aureliaBinding.CallExpression;
       bindingMode = _aureliaBinding.bindingMode;
       NameExpression = _aureliaBinding.NameExpression;
+      connectable = _aureliaBinding.connectable;
     }, function (_aureliaTemplating) {
       BehaviorInstruction = _aureliaTemplating.BehaviorInstruction;
       BindingLanguage = _aureliaTemplating.BindingLanguage;
@@ -158,64 +159,64 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
           return instruction;
         };
 
+        SyntaxInterpreter.prototype['for'] = function _for(resources, element, info, existingInstruction) {
+          var parts = undefined;
+          var keyValue = undefined;
+          var instruction = undefined;
+          var attrValue = undefined;
+          var isDestructuring = undefined;
+
+          attrValue = info.attrValue;
+          isDestructuring = attrValue.match(/^ *[[].+[\]]/);
+          parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
+
+          if (parts.length !== 2) {
+            throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
+          }
+
+          instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+          if (isDestructuring) {
+            keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
+            instruction.attributes.key = keyValue[0];
+            instruction.attributes.value = keyValue[1];
+          } else {
+            instruction.attributes.local = parts[0];
+          }
+
+          instruction.attributes.items = new BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[1]), bindingMode.oneWay, resources.valueConverterLookupFunction);
+
+          return instruction;
+        };
+
+        SyntaxInterpreter.prototype['two-way'] = function twoWay(resources, element, info, existingInstruction) {
+          var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+          instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.twoWay, resources.valueConverterLookupFunction);
+
+          return instruction;
+        };
+
+        SyntaxInterpreter.prototype['one-way'] = function oneWay(resources, element, info, existingInstruction) {
+          var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+          instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneWay, resources.valueConverterLookupFunction);
+
+          return instruction;
+        };
+
+        SyntaxInterpreter.prototype['one-time'] = function oneTime(resources, element, info, existingInstruction) {
+          var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+          instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneTime, resources.valueConverterLookupFunction);
+
+          return instruction;
+        };
+
         return SyntaxInterpreter;
       })();
 
       _export('SyntaxInterpreter', SyntaxInterpreter);
-
-      SyntaxInterpreter.prototype['for'] = function (resources, element, info, existingInstruction) {
-        var parts = undefined;
-        var keyValue = undefined;
-        var instruction = undefined;
-        var attrValue = undefined;
-        var isDestructuring = undefined;
-
-        attrValue = info.attrValue;
-        isDestructuring = attrValue.match(/[[].+[\]]/);
-        parts = isDestructuring ? attrValue.split('of ') : attrValue.split(' of ');
-
-        if (parts.length !== 2) {
-          throw new Error('Incorrect syntax for "for". The form is: "$local of $items" or "[$key, $value] of $items".');
-        }
-
-        instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
-
-        if (isDestructuring) {
-          keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
-          instruction.attributes.key = keyValue[0];
-          instruction.attributes.value = keyValue[1];
-        } else {
-          instruction.attributes.local = parts[0];
-        }
-
-        instruction.attributes.items = new BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[1]), bindingMode.oneWay, resources.valueConverterLookupFunction);
-
-        return instruction;
-      };
-
-      SyntaxInterpreter.prototype['two-way'] = function (resources, element, info, existingInstruction) {
-        var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
-
-        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.twoWay, resources.valueConverterLookupFunction);
-
-        return instruction;
-      };
-
-      SyntaxInterpreter.prototype['one-way'] = function (resources, element, info, existingInstruction) {
-        var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
-
-        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneWay, resources.valueConverterLookupFunction);
-
-        return instruction;
-      };
-
-      SyntaxInterpreter.prototype['one-time'] = function (resources, element, info, existingInstruction) {
-        var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
-
-        instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneTime, resources.valueConverterLookupFunction);
-
-        return instruction;
-      };
 
       info = {};
       logger = LogManager.getLogger('templating-binding');
@@ -414,7 +415,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
       InterpolationBinding = (function () {
         function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
-          _classCallCheck(this, InterpolationBinding);
+          _classCallCheck(this, _InterpolationBinding);
 
           if (targetProperty === 'style') {
             logger.info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
@@ -427,146 +428,54 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
           this.targetProperty = observerLocator.getObserver(target, targetProperty);
           this.mode = mode;
           this.valueConverterLookupFunction = valueConverterLookupFunction;
-          this.toDispose = [];
         }
 
-        InterpolationBinding.prototype.getObserver = function getObserver(obj, propertyName) {
-          return this.observerLocator.getObserver(obj, propertyName);
-        };
-
         InterpolationBinding.prototype.bind = function bind(source) {
-          this.source = source;
-
-          if (this.mode === bindingMode.oneWay) {
+          if (this.source !== undefined) {
             this.unbind();
-            this.connect();
-            this.setValue();
-          } else {
-            this.setValue();
           }
+          this.source = source;
+          this.interpolate(this.mode === bindingMode.oneWay, true);
         };
 
-        InterpolationBinding.prototype.setValue = function setValue() {
-          var value = this.interpolate();
-          this.targetProperty.setValue(value);
+        InterpolationBinding.prototype.call = function call() {
+          this._version++;
+          this.interpolate(this.mode === bindingMode.oneWay, false);
         };
 
-        InterpolationBinding.prototype.partChanged = function partChanged(newValue, oldValue, connecting) {
-          var _this = this;
-
-          var map = undefined;
-          var data = undefined;
-
-          if (!connecting) {
-            this.setValue();
-          }
-
-          if (oldValue instanceof Array) {
-            map = this.arrayPartMap;
-            data = map ? map.get(oldValue) : null;
-            if (data) {
-              data.refs--;
-              if (data.refs === 0) {
-                data.dispose();
-                map['delete'](oldValue);
-              }
-            }
-          }
-
-          if (newValue instanceof Array) {
-            map = this.arrayPartMap || (this.arrayPartMap = new Map());
-            data = map.get(newValue);
-            if (!data) {
-              data = {
-                refs: 0,
-                dispose: this.observerLocator.getArrayObserver(newValue).subscribe(function () {
-                  return _this.setValue();
-                })
-              };
-
-              map.set(newValue, data);
-            }
-            data.refs++;
-          }
-        };
-
-        InterpolationBinding.prototype.connect = function connect() {
-          var result = undefined;
-          var parts = this.parts;
-          var source = this.source;
-          var toDispose = this.toDispose = [];
-          var partChanged = this.partChanged.bind(this);
-          var i = undefined;
-          var ii = undefined;
-
-          for (i = 0, ii = parts.length; i < ii; ++i) {
-            if (i % 2 !== 0) {
-              result = parts[i].connect(this, source);
-              if (result.observer) {
-                toDispose.push(result.observer.subscribe(partChanged));
-              }
-              if (result.value instanceof Array) {
-                partChanged(result.value, undefined, true);
-              }
-            }
-          }
-        };
-
-        InterpolationBinding.prototype.interpolate = function interpolate() {
+        InterpolationBinding.prototype.interpolate = function interpolate(connect, initial) {
           var value = '';
           var parts = this.parts;
           var source = this.source;
           var valueConverterLookupFunction = this.valueConverterLookupFunction;
-          var i = undefined;
-          var ii = undefined;
-          var temp = undefined;
 
-          for (i = 0, ii = parts.length; i < ii; ++i) {
+          for (var i = 0, ii = parts.length; i < ii; ++i) {
             if (i % 2 === 0) {
               value += parts[i];
             } else {
-              temp = parts[i].evaluate(source, valueConverterLookupFunction);
-              value += typeof temp !== 'undefined' && temp !== null ? temp.toString() : '';
+              var part = parts[i].evaluate(source, valueConverterLookupFunction);
+              value += part === undefined || part === null ? '' : part.toString();
+              if (connect) {
+                parts[i].connect(this, source);
+                if (part instanceof Array) {
+                  this.observeArray(part);
+                }
+              }
             }
           }
-
-          return value;
+          this.targetProperty.setValue(value);
+          if (!initial) {
+            this.unobserve(false);
+          }
         };
 
         InterpolationBinding.prototype.unbind = function unbind() {
-          var i = undefined;
-          var ii = undefined;
-          var toDispose = this.toDispose;
-          var map = this.arrayPartMap;
-
-          if (toDispose) {
-            for (i = 0, ii = toDispose.length; i < ii; ++i) {
-              toDispose[i]();
-            }
-          }
-
-          this.toDispose = null;
-
-          if (map) {
-            for (var _iterator = map.values(), _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-              if (_isArray) {
-                if (_i >= _iterator.length) break;
-                toDispose = _iterator[_i++];
-              } else {
-                _i = _iterator.next();
-                if (_i.done) break;
-                toDispose = _i.value;
-              }
-
-              toDispose.dispose();
-            }
-
-            map.clear();
-          }
-
-          this.arrayPartMap = null;
+          this.source = undefined;
+          this.unobserve(true);
         };
 
+        var _InterpolationBinding = InterpolationBinding;
+        InterpolationBinding = connectable()(InterpolationBinding) || InterpolationBinding;
         return InterpolationBinding;
       })();
     }

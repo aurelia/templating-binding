@@ -1,6 +1,6 @@
 declare module 'aurelia-templating-binding' {
   import * as LogManager from 'aurelia-logging';
-  import { Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, bindingMode, NameExpression }  from 'aurelia-binding';
+  import { Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, bindingMode, NameExpression, connectable }  from 'aurelia-binding';
   import { BehaviorInstruction, BindingLanguage }  from 'aurelia-templating';
   
   /*eslint dot-notation:0*/
@@ -15,6 +15,10 @@ declare module 'aurelia-templating-binding' {
     delegate(resources: any, element: any, info: any): any;
     call(resources: any, element: any, info: any, existingInstruction: any): any;
     options(resources: any, element: any, info: any, existingInstruction: any): any;
+    'for'(resources: any, element: any, info: any, existingInstruction: any): any;
+    'two-way'(resources: any, element: any, info: any, existingInstruction: any): any;
+    'one-way'(resources: any, element: any, info: any, existingInstruction: any): any;
+    'one-time'(resources: any, element: any, info: any, existingInstruction: any): any;
   }
   export class TemplatingBindingLanguage extends BindingLanguage {
     static inject(): any;
@@ -30,12 +34,9 @@ declare module 'aurelia-templating-binding' {
   }
   class InterpolationBinding {
     constructor(observerLocator: any, parts: any, target: any, targetProperty: any, mode: any, valueConverterLookupFunction: any);
-    getObserver(obj: any, propertyName: any): any;
     bind(source: any): any;
-    setValue(): any;
-    partChanged(newValue: any, oldValue: any, connecting: any): any;
-    connect(): any;
-    interpolate(): any;
+    call(): any;
+    interpolate(connect: any, initial: any): any;
     unbind(): any;
   }
   export function configure(config: any): any;
