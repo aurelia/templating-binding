@@ -445,8 +445,10 @@ class InterpolationBinding {
   }
 
   call() {
-    this._version++;
-    this.interpolate(this.mode === bindingMode.oneWay, false);
+    if (this.source !== undefined) {
+      this._version++;
+      this.interpolate(this.mode === bindingMode.oneWay, false);
+    }
   }
 
   interpolate(connect, initial) {

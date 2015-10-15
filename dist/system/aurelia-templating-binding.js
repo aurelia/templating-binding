@@ -439,8 +439,10 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         InterpolationBinding.prototype.call = function call() {
-          this._version++;
-          this.interpolate(this.mode === bindingMode.oneWay, false);
+          if (this.source !== undefined) {
+            this._version++;
+            this.interpolate(this.mode === bindingMode.oneWay, false);
+          }
         };
 
         InterpolationBinding.prototype.interpolate = function interpolate(connect, initial) {

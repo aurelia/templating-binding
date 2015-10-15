@@ -1,3 +1,12 @@
+### 0.16.1 (2015-10-15)
+
+
+#### Bug Fixes
+
+* **InterpolationBinding:**
+  * handle late call ([45096d0a](http://github.com/aurelia/templating-binding/commit/45096d0a02a67c0cbcaad386e516934d9fcb6838)
+
+
 ## 0.16.0 (2015-10-13)
 
 
