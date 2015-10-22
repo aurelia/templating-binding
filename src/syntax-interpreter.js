@@ -64,7 +64,7 @@ export class SyntaxInterpreter {
       this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
       info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName),
-      resources.valueConverterLookupFunction
+      resources.lookupFunctions
     );
 
     return instruction;
@@ -76,7 +76,8 @@ export class SyntaxInterpreter {
       info.attrName,
       this.parser.parse(info.attrValue),
       false,
-      true
+      true,
+      resources.lookupFunctions
     );
   }
 
@@ -86,7 +87,8 @@ export class SyntaxInterpreter {
       info.attrName,
       this.parser.parse(info.attrValue),
       true,
-      true
+      true,
+      resources.lookupFunctions
     );
   }
 
@@ -97,7 +99,7 @@ export class SyntaxInterpreter {
       this.observerLocator,
       info.attrName,
       this.parser.parse(info.attrValue),
-      resources.valueConverterLookupFunction
+      resources.lookupFunctions
     );
 
     return instruction;
@@ -176,7 +178,7 @@ export class SyntaxInterpreter {
       'items',
       this.parser.parse(parts[1]),
       bindingMode.oneWay,
-      resources.valueConverterLookupFunction
+      resources.lookupFunctions
     );
 
     return instruction;
@@ -190,7 +192,7 @@ export class SyntaxInterpreter {
         this.attributeMap[info.attrName] || info.attrName,
         this.parser.parse(info.attrValue),
         bindingMode.twoWay,
-        resources.valueConverterLookupFunction
+        resources.lookupFunctions
       );
 
     return instruction;
@@ -204,7 +206,7 @@ export class SyntaxInterpreter {
       this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
       bindingMode.oneWay,
-      resources.valueConverterLookupFunction
+      resources.lookupFunctions
     );
 
     return instruction;
@@ -218,7 +220,7 @@ export class SyntaxInterpreter {
       this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
       bindingMode.oneTime,
-      resources.valueConverterLookupFunction
+      resources.lookupFunctions
     );
 
     return instruction;

@@ -1,10 +1,9 @@
 import {BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
-import {Parser, ObserverLocator, NameExpression, bindingMode, connectable} from 'aurelia-binding';
+import {Parser, ObserverLocator, NameExpression, bindingMode} from 'aurelia-binding';
+import {InterpolationBindingExpression} from './interpolation-binding-expression';
 import {SyntaxInterpreter} from './syntax-interpreter';
-import * as LogManager from 'aurelia-logging';
 
 let info = {};
-let logger = LogManager.getLogger('templating-binding');
 
 export class TemplatingBindingLanguage extends BindingLanguage {
   static inject() { return [Parser, ObserverLocator, SyntaxInterpreter]; }
@@ -176,95 +175,8 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       this.attributeMap[attrName] || attrName,
       parts,
       bindingMode.oneWay,
-      resources.valueConverterLookupFunction,
+      resources.lookupFunctions,
       attrName
     );
-  }
-}
-
-export class InterpolationBindingExpression {
-  constructor(observerLocator, targetProperty, parts,
-    mode, valueConverterLookupFunction, attribute) {
-    this.observerLocator = observerLocator;
-    this.targetProperty = targetProperty;
-    this.parts = parts;
-    this.mode = mode;
-    this.valueConverterLookupFunction = valueConverterLookupFunction;
-    this.attribute = this.attrToRemove = attribute;
-    this.discrete = false;
-  }
-
-  createBinding(target) {
-    return new InterpolationBinding(
-      this.observerLocator,
-      this.parts,
-      target,
-      this.targetProperty,
-      this.mode,
-      this.valueConverterLookupFunction
-      );
-  }
-}
-
-@connectable()
-class InterpolationBinding {
-  constructor(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
-    if (targetProperty === 'style') {
-      logger.info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
-    } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
-      throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
-    }
-
-    this.observerLocator = observerLocator;
-    this.parts = parts;
-    this.targetProperty = observerLocator.getObserver(target, targetProperty);
-    this.mode = mode;
-    this.valueConverterLookupFunction = valueConverterLookupFunction;
-  }
-
-  bind(source) {
-    if (this.source !== undefined) {
-      this.unbind();
-    }
-    this.source = source;
-    this.interpolate(this.mode === bindingMode.oneWay, true);
-  }
-
-  call() {
-    if (this.source !== undefined) {
-      this._version++;
-      this.interpolate(this.mode === bindingMode.oneWay, false);
-    }
-  }
-
-  interpolate(connect, initial) {
-    let value = '';
-    let parts = this.parts;
-    let source = this.source;
-    let valueConverterLookupFunction = this.valueConverterLookupFunction;
-
-    for (let i = 0, ii = parts.length; i < ii; ++i) {
-      if (i % 2 === 0) {
-        value += parts[i];
-      } else {
-        let part = parts[i].evaluate(source, valueConverterLookupFunction);
-        value += part === undefined || part === null ? '' : part.toString();
-        if (connect) {
-          parts[i].connect(this, source);
-          if (part instanceof Array) {
-            this.observeArray(part);
-          }
-        }
-      }
-    }
-    this.targetProperty.setValue(value);
-    if (!initial) {
-      this.unobserve(false);
-    }
-  }
-
-  unbind() {
-    this.source = undefined;
-    this.unobserve(true);
   }
 }

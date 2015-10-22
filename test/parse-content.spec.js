@@ -1,7 +1,5 @@
-import {
-  TemplatingBindingLanguage,
-  InterpolationBindingExpression
-} from '../src/binding-language';
+import {TemplatingBindingLanguage} from '../src/binding-language';
+import {InterpolationBindingExpression} from '../src/interpolation-binding-expression';
 import * as LogManager from 'aurelia-logging';
 import {initialize} from 'aurelia-pal-browser';
 
@@ -17,7 +15,7 @@ describe('TemplatingBindingLanguage', () => {
           observerLocator = { getObserver: () => null },
           syntaxInterpreter = {};
       language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter);
-      resources = { valueConverterLookupFunction: () => null };
+      resources = { lookupFunctions: { valueConverters: name => null, bindingBehaviors: name => null } };
     });
 
     it('parses interpolation expressions', () => {

@@ -14,7 +14,12 @@ var jsName = paths.packageName + '.js';
 
 gulp.task('build-index', function(){
   var importsToAdd = [];
-  var files = ['syntax-interpreter.js', 'binding-language.js', 'index.js'].map(function(file){
+  var files = [
+      'interpolation-binding-expression.js',
+      'syntax-interpreter.js',
+      'binding-language.js',
+      'index.js'
+    ].map(function(file) {
     return paths.root + file;
   });
 
