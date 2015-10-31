@@ -10,6 +10,7 @@ import {
 } from 'aurelia-binding';
 
 import {BehaviorInstruction} from 'aurelia-templating';
+import * as LogManager from 'aurelia-logging';
 
 export class SyntaxInterpreter {
   static inject() { return [Parser, ObserverLocator, EventManager]; }
@@ -28,16 +29,8 @@ export class SyntaxInterpreter {
   }
 
   handleUnknownCommand(resources, element, info, existingInstruction) {
-    let attrName = info.attrName;
-    let command = info.command;
-    let instruction = this.options(resources, element, info, existingInstruction);
-
-    instruction.alteredAttr = true;
-    instruction.attrName = 'global-behavior';
-    instruction.attributes.aureliaAttrName = attrName;
-    instruction.attributes.aureliaCommand = command;
-
-    return instruction;
+    LogManager.getLogger('templating-binding').warn('Unknown binding command.', info);
+    return existingInstruction;
   }
 
   determineDefaultBindingMode(element, attrName) {

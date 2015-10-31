@@ -1,8 +1,6 @@
 import {bindingMode, connectable} from 'aurelia-binding';
 import * as LogManager from 'aurelia-logging';
 
-let logger = LogManager.getLogger('templating-binding');
-
 export class InterpolationBindingExpression {
   constructor(observerLocator, targetProperty, parts,
     mode, lookupFunctions, attribute) {
@@ -30,7 +28,8 @@ export class InterpolationBindingExpression {
 export class InterpolationBinding {
   constructor(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
     if (targetProperty === 'style') {
-      logger.info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
+      LogManager.getLogger('templating-binding')
+        .info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
     } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
       throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
     }
