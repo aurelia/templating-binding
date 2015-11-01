@@ -11,7 +11,8 @@ import {
   ObserverLocator,
   EventManager,
   DirtyChecker,
-  Parser
+  Parser,
+  createScopeForTest
 } from 'aurelia-binding';
 
 import {ViewResources} from 'aurelia-templating';
@@ -88,7 +89,7 @@ describe('InterpolationBinding', () => {
     });
 
     it('binds', () => {
-      binding.bind(viewModel);
+      binding.bind(createScopeForTest(viewModel));
       expect(targetProperty.getValue()).toBe(viewModel.foo);
     });
 
@@ -135,7 +136,7 @@ describe('InterpolationBinding', () => {
     });
 
     it('binds', () => {
-      binding.bind(viewModel);
+      binding.bind(createScopeForTest(viewModel));
       expect(targetProperty.getValue()).toBe(' foo hello bar world baz ');
     });
 
@@ -184,7 +185,7 @@ describe('InterpolationBinding', () => {
     });
 
     it('binds', () => {
-      binding.bind(viewModel);
+      binding.bind(createScopeForTest(viewModel));
       expect(targetProperty.getValue()).toBe(' foo hello foo world foo ');
     });
 
