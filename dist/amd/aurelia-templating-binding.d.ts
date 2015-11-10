@@ -1,7 +1,24 @@
 declare module 'aurelia-templating-binding' {
   import * as LogManager from 'aurelia-logging';
-  import { Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, bindingMode, NameExpression, connectable }  from 'aurelia-binding';
+  import { bindingMode, connectable, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression }  from 'aurelia-binding';
   import { BehaviorInstruction, BindingLanguage }  from 'aurelia-templating';
+  export class InterpolationBindingExpression {
+    constructor(observerLocator: any, targetProperty: any, parts: any, mode: any, lookupFunctions: any, attribute: any);
+    createBinding(target: any): any;
+  }
+  export class InterpolationBinding {
+    constructor(observerLocator: any, parts: any, target: any, targetProperty: any, mode: any, lookupFunctions: any);
+    interpolate(): any;
+    bind(source: any): any;
+    unbind(): any;
+  }
+  export class ChildInterpolationBinding {
+    constructor(parent: any, observerLocator: any, sourceExpression: any, mode: any, lookupFunctions: any);
+    updateTarget(value: any): any;
+    call(): any;
+    bind(source: any): any;
+    unbind(): any;
+  }
   
   /*eslint dot-notation:0*/
   export class SyntaxInterpreter {
@@ -27,17 +44,6 @@ declare module 'aurelia-templating-binding' {
     createAttributeInstruction(resources: any, element: any, theInfo: any, existingInstruction: any): any;
     parseText(resources: any, value: any): any;
     parseContent(resources: any, attrName: any, attrValue: any): any;
-  }
-  export class InterpolationBindingExpression {
-    constructor(observerLocator: any, targetProperty: any, parts: any, mode: any, valueConverterLookupFunction: any, attribute: any);
-    createBinding(target: any): any;
-  }
-  class InterpolationBinding {
-    constructor(observerLocator: any, parts: any, target: any, targetProperty: any, mode: any, valueConverterLookupFunction: any);
-    bind(source: any): any;
-    call(): any;
-    interpolate(connect: any, initial: any): any;
-    unbind(): any;
   }
   export function configure(config: any): any;
 }

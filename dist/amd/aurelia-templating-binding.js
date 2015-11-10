@@ -8,6 +8,175 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
 
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+  var InterpolationBindingExpression = (function () {
+    function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, lookupFunctions, attribute) {
+      _classCallCheck(this, InterpolationBindingExpression);
+
+      this.observerLocator = observerLocator;
+      this.targetProperty = targetProperty;
+      this.parts = parts;
+      this.mode = mode;
+      this.lookupFunctions = lookupFunctions;
+      this.attribute = this.attrToRemove = attribute;
+      this.discrete = false;
+    }
+
+    InterpolationBindingExpression.prototype.createBinding = function createBinding(target) {
+      return new InterpolationBinding(this.observerLocator, this.parts, target, this.targetProperty, this.mode, this.lookupFunctions);
+    };
+
+    return InterpolationBindingExpression;
+  })();
+
+  exports.InterpolationBindingExpression = InterpolationBindingExpression;
+
+  var InterpolationBinding = (function () {
+    function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
+      _classCallCheck(this, InterpolationBinding);
+
+      if (targetProperty === 'style') {
+        _aureliaLogging.getLogger('templating-binding').info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
+      } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
+        throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
+      }
+
+      this.observerLocator = observerLocator;
+      this.parts = parts;
+      this.targetProperty = observerLocator.getObserver(target, targetProperty);
+      this.mode = mode;
+      this.lookupFunctions = lookupFunctions;
+    }
+
+    InterpolationBinding.prototype.interpolate = function interpolate() {
+      if (this.isBound) {
+        var value = '';
+        var parts = this.parts;
+        for (var i = 0, ii = parts.length; i < ii; i++) {
+          value += i % 2 === 0 ? parts[i] : this['childBinding' + i].value;
+        }
+        this.targetProperty.setValue(value);
+      }
+    };
+
+    InterpolationBinding.prototype.bind = function bind(source) {
+      if (this.isBound) {
+        if (this.source === source) {
+          return;
+        }
+        this.unbind();
+      }
+      this.source = source;
+
+      var parts = this.parts;
+      for (var i = 1, ii = parts.length; i < ii; i += 2) {
+        var binding = new ChildInterpolationBinding(this, this.observerLocator, parts[i], this.mode, this.lookupFunctions);
+        binding.bind(source);
+        this['childBinding' + i] = binding;
+      }
+
+      this.isBound = true;
+      this.interpolate();
+    };
+
+    InterpolationBinding.prototype.unbind = function unbind() {
+      if (!this.isBound) {
+        return;
+      }
+      this.isBound = false;
+      this.source = null;
+      var parts = this.parts;
+      for (var i = 1, ii = parts.length; i < ii; i += 2) {
+        var _name = 'childBinding' + i;
+        this[_name].unbind();
+      }
+    };
+
+    return InterpolationBinding;
+  })();
+
+  exports.InterpolationBinding = InterpolationBinding;
+
+  var ChildInterpolationBinding = (function () {
+    function ChildInterpolationBinding(parent, observerLocator, sourceExpression, mode, lookupFunctions) {
+      _classCallCheck(this, _ChildInterpolationBinding);
+
+      this.parent = parent;
+      this.observerLocator = observerLocator;
+      this.sourceExpression = sourceExpression;
+      this.mode = mode;
+      this.lookupFunctions = lookupFunctions;
+    }
+
+    ChildInterpolationBinding.prototype.updateTarget = function updateTarget(value) {
+      value = value === null || value === undefined ? '' : value.toString();
+      if (value !== this.value) {
+        this.value = value;
+        this.parent.interpolate();
+      }
+    };
+
+    ChildInterpolationBinding.prototype.call = function call() {
+      if (!this.isBound) {
+        return;
+      }
+
+      var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+      this.updateTarget(value);
+
+      this._version++;
+      this.sourceExpression.connect(this, this.source);
+      if (value instanceof Array) {
+        this.observeArray(value);
+      }
+      this.unobserve(false);
+    };
+
+    ChildInterpolationBinding.prototype.bind = function bind(source) {
+      if (this.isBound) {
+        if (this.source === source) {
+          return;
+        }
+        this.unbind();
+      }
+      this.isBound = true;
+      this.source = source;
+
+      var sourceExpression = this.sourceExpression;
+      if (sourceExpression.bind) {
+        sourceExpression.bind(this, source, this.lookupFunctions);
+      }
+
+      var value = sourceExpression.evaluate(source, this.lookupFunctions);
+      this.updateTarget(value);
+
+      if (this.mode === _aureliaBinding.bindingMode.oneWay) {
+        sourceExpression.connect(this, source);
+        if (value instanceof Array) {
+          this.observeArray(value);
+        }
+      }
+    };
+
+    ChildInterpolationBinding.prototype.unbind = function unbind() {
+      if (!this.isBound) {
+        return;
+      }
+      this.isBound = false;
+      var sourceExpression = this.sourceExpression;
+      if (sourceExpression.unbind) {
+        sourceExpression.unbind(this, this.source);
+      }
+      this.source = null;
+      this.unobserve(true);
+    };
+
+    var _ChildInterpolationBinding = ChildInterpolationBinding;
+    ChildInterpolationBinding = _aureliaBinding.connectable()(ChildInterpolationBinding) || ChildInterpolationBinding;
+    return ChildInterpolationBinding;
+  })();
+
+  exports.ChildInterpolationBinding = ChildInterpolationBinding;
+
   var SyntaxInterpreter = (function () {
     SyntaxInterpreter.inject = function inject() {
       return [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, _aureliaBinding.EventManager];
@@ -30,16 +199,8 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
     };
 
     SyntaxInterpreter.prototype.handleUnknownCommand = function handleUnknownCommand(resources, element, info, existingInstruction) {
-      var attrName = info.attrName;
-      var command = info.command;
-      var instruction = this.options(resources, element, info, existingInstruction);
-
-      instruction.alteredAttr = true;
-      instruction.attrName = 'global-behavior';
-      instruction.attributes.aureliaAttrName = attrName;
-      instruction.attributes.aureliaCommand = command;
-
-      return instruction;
+      _aureliaLogging.getLogger('templating-binding').warn('Unknown binding command.', info);
+      return existingInstruction;
     };
 
     SyntaxInterpreter.prototype.determineDefaultBindingMode = function determineDefaultBindingMode(element, attrName) {
@@ -61,23 +222,23 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
     SyntaxInterpreter.prototype.bind = function bind(resources, element, info, existingInstruction) {
       var instruction = existingInstruction || _aureliaTemplating.BehaviorInstruction.attribute(info.attrName);
 
-      instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName), resources.valueConverterLookupFunction);
+      instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName), resources.lookupFunctions);
 
       return instruction;
     };
 
     SyntaxInterpreter.prototype.trigger = function trigger(resources, element, info) {
-      return new _aureliaBinding.ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true);
+      return new _aureliaBinding.ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true, resources.lookupFunctions);
     };
 
     SyntaxInterpreter.prototype.delegate = function delegate(resources, element, info) {
-      return new _aureliaBinding.ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true);
+      return new _aureliaBinding.ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true, resources.lookupFunctions);
     };
 
     SyntaxInterpreter.prototype.call = function call(resources, element, info, existingInstruction) {
       var instruction = existingInstruction || _aureliaTemplating.BehaviorInstruction.attribute(info.attrName);
 
-      instruction.attributes[info.attrName] = new _aureliaBinding.CallExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), resources.valueConverterLookupFunction);
+      instruction.attributes[info.attrName] = new _aureliaBinding.CallExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), resources.lookupFunctions);
 
       return instruction;
     };
@@ -150,7 +311,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
         instruction.attributes.local = parts[0];
       }
 
-      instruction.attributes.items = new _aureliaBinding.BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[1]), _aureliaBinding.bindingMode.oneWay, resources.valueConverterLookupFunction);
+      instruction.attributes.items = new _aureliaBinding.BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[1]), _aureliaBinding.bindingMode.oneWay, resources.lookupFunctions);
 
       return instruction;
     };
@@ -158,7 +319,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
     SyntaxInterpreter.prototype['two-way'] = function twoWay(resources, element, info, existingInstruction) {
       var instruction = existingInstruction || _aureliaTemplating.BehaviorInstruction.attribute(info.attrName);
 
-      instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), _aureliaBinding.bindingMode.twoWay, resources.valueConverterLookupFunction);
+      instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), _aureliaBinding.bindingMode.twoWay, resources.lookupFunctions);
 
       return instruction;
     };
@@ -166,7 +327,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
     SyntaxInterpreter.prototype['one-way'] = function oneWay(resources, element, info, existingInstruction) {
       var instruction = existingInstruction || _aureliaTemplating.BehaviorInstruction.attribute(info.attrName);
 
-      instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), _aureliaBinding.bindingMode.oneWay, resources.valueConverterLookupFunction);
+      instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), _aureliaBinding.bindingMode.oneWay, resources.lookupFunctions);
 
       return instruction;
     };
@@ -174,7 +335,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
     SyntaxInterpreter.prototype['one-time'] = function oneTime(resources, element, info, existingInstruction) {
       var instruction = existingInstruction || _aureliaTemplating.BehaviorInstruction.attribute(info.attrName);
 
-      instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), _aureliaBinding.bindingMode.oneTime, resources.valueConverterLookupFunction);
+      instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), _aureliaBinding.bindingMode.oneTime, resources.lookupFunctions);
 
       return instruction;
     };
@@ -185,7 +346,6 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
   exports.SyntaxInterpreter = SyntaxInterpreter;
 
   var info = {};
-  var logger = _aureliaLogging.getLogger('templating-binding');
 
   var TemplatingBindingLanguage = (function (_BindingLanguage) {
     _inherits(TemplatingBindingLanguage, _BindingLanguage);
@@ -349,7 +509,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
 
       parts[partIndex] = attrValue.substr(pos);
 
-      return new InterpolationBindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, parts, _aureliaBinding.bindingMode.oneWay, resources.valueConverterLookupFunction, attrName);
+      return new InterpolationBindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, parts, _aureliaBinding.bindingMode.oneWay, resources.lookupFunctions, attrName);
     };
 
     return TemplatingBindingLanguage;
@@ -357,108 +517,8 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
 
   exports.TemplatingBindingLanguage = TemplatingBindingLanguage;
 
-  var InterpolationBindingExpression = (function () {
-    function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, valueConverterLookupFunction, attribute) {
-      _classCallCheck(this, InterpolationBindingExpression);
-
-      this.observerLocator = observerLocator;
-      this.targetProperty = targetProperty;
-      this.parts = parts;
-      this.mode = mode;
-      this.valueConverterLookupFunction = valueConverterLookupFunction;
-      this.attribute = this.attrToRemove = attribute;
-      this.discrete = false;
-    }
-
-    InterpolationBindingExpression.prototype.createBinding = function createBinding(target) {
-      return new InterpolationBinding(this.observerLocator, this.parts, target, this.targetProperty, this.mode, this.valueConverterLookupFunction);
-    };
-
-    return InterpolationBindingExpression;
-  })();
-
-  exports.InterpolationBindingExpression = InterpolationBindingExpression;
-
-  var InterpolationBinding = (function () {
-    function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, valueConverterLookupFunction) {
-      _classCallCheck(this, _InterpolationBinding);
-
-      if (targetProperty === 'style') {
-        logger.info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
-      } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
-        throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
-      }
-
-      this.observerLocator = observerLocator;
-      this.parts = parts;
-      this.targetProperty = observerLocator.getObserver(target, targetProperty);
-      this.mode = mode;
-      this.valueConverterLookupFunction = valueConverterLookupFunction;
-    }
-
-    InterpolationBinding.prototype.bind = function bind(source) {
-      if (this.source !== undefined) {
-        this.unbind();
-      }
-      this.source = source;
-      this.interpolate(this.mode === _aureliaBinding.bindingMode.oneWay, true);
-    };
-
-    InterpolationBinding.prototype.call = function call() {
-      if (this.source !== undefined) {
-        this._version++;
-        this.interpolate(this.mode === _aureliaBinding.bindingMode.oneWay, false);
-      }
-    };
-
-    InterpolationBinding.prototype.interpolate = function interpolate(connect, initial) {
-      var value = '';
-      var parts = this.parts;
-      var source = this.source;
-      var valueConverterLookupFunction = this.valueConverterLookupFunction;
-
-      for (var i = 0, ii = parts.length; i < ii; ++i) {
-        if (i % 2 === 0) {
-          value += parts[i];
-        } else {
-          var part = parts[i].evaluate(source, valueConverterLookupFunction);
-          value += part === undefined || part === null ? '' : part.toString();
-          if (connect) {
-            parts[i].connect(this, source);
-            if (part instanceof Array) {
-              this.observeArray(part);
-            }
-          }
-        }
-      }
-      this.targetProperty.setValue(value);
-      if (!initial) {
-        this.unobserve(false);
-      }
-    };
-
-    InterpolationBinding.prototype.unbind = function unbind() {
-      this.source = undefined;
-      this.unobserve(true);
-    };
-
-    var _InterpolationBinding = InterpolationBinding;
-    InterpolationBinding = _aureliaBinding.connectable()(InterpolationBinding) || InterpolationBinding;
-    return InterpolationBinding;
-  })();
-
   function configure(config) {
-    var instance = undefined;
-    var getInstance = function getInstance(c) {
-      return instance || (instance = c.invoke(TemplatingBindingLanguage));
-    };
-
-    if (config.container.hasHandler(TemplatingBindingLanguage)) {
-      instance = config.container.get(TemplatingBindingLanguage);
-    } else {
-      config.container.registerHandler(TemplatingBindingLanguage, getInstance);
-    }
-
-    config.container.registerHandler(_aureliaTemplating.BindingLanguage, getInstance);
+    config.container.registerSingleton(_aureliaTemplating.BindingLanguage, TemplatingBindingLanguage);
+    config.container.registerAlias(_aureliaTemplating.BindingLanguage, TemplatingBindingLanguage);
   }
 });

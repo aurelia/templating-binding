@@ -1,6 +1,6 @@
 {
   "name": "aurelia-templating-binding",
-  "version": "0.16.1",
+  "version": "0.17.0",
   "description": "An implementation of the templating engine's Binding Language abstraction which uses a pluggable command syntax.",
   "keywords": [
     "aurelia",
@@ -31,9 +31,9 @@
       "aurelia-templating": "github:aurelia/templating@^0.17.0"
     },
     "devDependencies": {
-      "aurelia-pal": "github:aurelia/pal@^0.2.0",
-      "aurelia-pal-browser": "github:aurelia/pal-browser@^0.2.0",
-      "aurelia-task-queue": "github:aurelia/task-queue@^0.8.0",
+      "aurelia-pal": "github:aurelia/pal@^0.3.0",
+      "aurelia-pal-browser": "github:aurelia/pal-browser@^0.3.0",
+      "aurelia-task-queue": "github:aurelia/task-queue@^0.9.0",
       "babel": "npm:babel-core@^5.1.13",
       "babel-runtime": "npm:babel-runtime@^5.1.13",
       "core-js": "npm:core-js@^1.2.6"

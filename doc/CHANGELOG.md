@@ -1,3 +1,17 @@
+## 0.17.0 (2015-11-10)
+
+
+#### Bug Fixes
+
+* **all:** remove support for the global fallback binding command ([5eb01aa5](http://github.com/aurelia/templating-binding/commit/5eb01aa5ef116c81995c37864835f48eef84236f))
+* **index:** update to latest container api ([f7001741](http://github.com/aurelia/templating-binding/commit/f7001741e7b6f26c15dd04faf8bcfa2677e7c9d3))
+
+
+#### Features
+
+* **binding-behaviors:** add support for binding behaviors ([5fa455bd](http://github.com/aurelia/templating-binding/commit/5fa455bd5e50dce06073e80b073b619e4b1a5e27))
+
+
 ### 0.16.1 (2015-10-15)
 
 
