@@ -113,12 +113,14 @@ export class ChildInterpolationBinding {
     let value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
     this.updateTarget(value);
 
-    this._version++;
-    this.sourceExpression.connect(this, this.source);
-    if (value instanceof Array) {
-      this.observeArray(value);
+    if (this.mode !== bindingMode.oneTime) {
+      this._version++;
+      this.sourceExpression.connect(this, this.source);
+      if (value instanceof Array) {
+        this.observeArray(value);
+      }
+      this.unobserve(false);
     }
-    this.unobserve(false);
   }
 
   bind(source) {
