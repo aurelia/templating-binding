@@ -31,6 +31,9 @@ var InterpolationBindingExpression = (function () {
   }
 
   InterpolationBindingExpression.prototype.createBinding = function createBinding(target) {
+    if (this.parts.length === 3) {
+      return new ChildInterpolationBinding(target, this.observerLocator, this.parts[1], this.mode, this.lookupFunctions, this.targetProperty, this.parts[0], this.parts[2]);
+    }
     return new InterpolationBinding(this.observerLocator, this.parts, target, this.targetProperty, this.mode, this.lookupFunctions);
   };
 
@@ -39,16 +42,19 @@ var InterpolationBindingExpression = (function () {
 
 exports.InterpolationBindingExpression = InterpolationBindingExpression;
 
+function validateTarget(target, propertyName) {
+  if (propertyName === 'style') {
+    LogManager.getLogger('templating-binding').info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
+  } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && propertyName === 'textContent') {
+    throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
+  }
+}
+
 var InterpolationBinding = (function () {
   function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
     _classCallCheck(this, InterpolationBinding);
 
-    if (targetProperty === 'style') {
-      LogManager.getLogger('templating-binding').info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
-    } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && targetProperty === 'textContent') {
-      throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
-    }
-
+    validateTarget(target, targetProperty);
     this.observerLocator = observerLocator;
     this.parts = parts;
     this.targetProperty = observerLocator.getObserver(target, targetProperty);
@@ -106,21 +112,32 @@ var InterpolationBinding = (function () {
 exports.InterpolationBinding = InterpolationBinding;
 
 var ChildInterpolationBinding = (function () {
-  function ChildInterpolationBinding(parent, observerLocator, sourceExpression, mode, lookupFunctions) {
+  function ChildInterpolationBinding(target, observerLocator, sourceExpression, mode, lookupFunctions, targetProperty, left, right) {
     _classCallCheck(this, _ChildInterpolationBinding);
 
-    this.parent = parent;
+    if (target instanceof InterpolationBinding) {
+      this.parent = target;
+    } else {
+      validateTarget(target, targetProperty);
+      this.targetProperty = observerLocator.getObserver(target, targetProperty);
+    }
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
     this.mode = mode;
     this.lookupFunctions = lookupFunctions;
+    this.left = left;
+    this.right = right;
   }
 
   ChildInterpolationBinding.prototype.updateTarget = function updateTarget(value) {
     value = value === null || value === undefined ? '' : value.toString();
     if (value !== this.value) {
       this.value = value;
-      this.parent.interpolate();
+      if (this.parent) {
+        this.parent.interpolate();
+      } else {
+        this.targetProperty.setValue(this.left + value + this.right);
+      }
     }
   };
 
@@ -132,12 +149,14 @@ var ChildInterpolationBinding = (function () {
     var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
     this.updateTarget(value);
 
-    this._version++;
-    this.sourceExpression.connect(this, this.source);
-    if (value instanceof Array) {
-      this.observeArray(value);
+    if (this.mode !== _aureliaBinding.bindingMode.oneTime) {
+      this._version++;
+      this.sourceExpression.connect(this, this.source);
+      if (value instanceof Array) {
+        this.observeArray(value);
+      }
+      this.unobserve(false);
     }
-    this.unobserve(false);
   };
 
   ChildInterpolationBinding.prototype.bind = function bind(source) {

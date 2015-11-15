@@ -1,3 +1,11 @@
+### 0.17.1 (2015-11-15)
+
+
+#### Bug Fixes
+
+* **InterpolationBinding:** obey binding mode when called by signal ([d0c5ef1a](http://github.com/aurelia/templating-binding/commit/d0c5ef1ad413389b81162d2e11b6547d0e4e24eb))
+
+
 ## 0.17.0 (2015-11-10)
 
 
