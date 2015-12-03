@@ -198,20 +198,20 @@ export class SyntaxInterpreter {
     this.eventManager = eventManager;
   }
 
-  interpret(resources, element, info, existingInstruction) {
+  interpret(resources, element, info, existingInstruction, context) {
     if (info.command in this) {
-      return this[info.command](resources, element, info, existingInstruction);
+      return this[info.command](resources, element, info, existingInstruction, context);
     }
 
-    return this.handleUnknownCommand(resources, element, info, existingInstruction);
+    return this.handleUnknownCommand(resources, element, info, existingInstruction, context);
   }
 
-  handleUnknownCommand(resources, element, info, existingInstruction) {
+  handleUnknownCommand(resources, element, info, existingInstruction, context) {
     LogManager.getLogger('templating-binding').warn('Unknown binding command.', info);
     return existingInstruction;
   }
 
-  determineDefaultBindingMode(element, attrName) {
+  determineDefaultBindingMode(element, attrName, context) {
     let tagName = element.tagName.toLowerCase();
 
     if (tagName === 'input') {
@@ -224,17 +224,21 @@ export class SyntaxInterpreter {
       return bindingMode.twoWay;
     }
 
+    if (context && attrName in context.attributes) {
+      return context.attributes[attrName].defaultBindingMode || bindingMode.oneWay;
+    }
+
     return bindingMode.oneWay;
   }
 
-  bind(resources, element, info, existingInstruction) {
+  bind(resources, element, info, existingInstruction, context) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
       this.attributeMap[info.attrName] || info.attrName,
       this.parser.parse(info.attrValue),
-      info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName),
+      info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context),
       resources.lookupFunctions
     );
 
@@ -276,7 +280,7 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  options(resources, element, info, existingInstruction) {
+  options(resources, element, info, existingInstruction, context) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
     let attrValue = info.attrValue;
     let language = this.language;
@@ -291,7 +295,7 @@ export class SyntaxInterpreter {
 
       if (current === ';') {
         info = language.inspectAttribute(resources, name, target.trim());
-        language.createAttributeInstruction(resources, element, info, instruction);
+        language.createAttributeInstruction(resources, element, info, instruction, context);
 
         if (!instruction.attributes[info.attrName]) {
           instruction.attributes[info.attrName] = info.attrValue;
@@ -309,7 +313,7 @@ export class SyntaxInterpreter {
 
     if (name !== null) {
       info = language.inspectAttribute(resources, name, target.trim());
-      language.createAttributeInstruction(resources, element, info, instruction);
+      language.createAttributeInstruction(resources, element, info, instruction, context);
 
       if (!instruction.attributes[info.attrName]) {
         instruction.attributes[info.attrName] = info.attrValue;
@@ -463,7 +467,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return info;
   }
 
-	createAttributeInstruction(resources, element, theInfo, existingInstruction) {
+	createAttributeInstruction(resources, element, theInfo, existingInstruction, context) {
   let instruction;
 
   if (theInfo.expression) {
@@ -478,7 +482,8 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     resources,
     element,
     theInfo,
-    existingInstruction
+    existingInstruction,
+    context
     );
   }
 

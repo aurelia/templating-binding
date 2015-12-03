@@ -1,3 +1,11 @@
+## 1.0.0-beta.1.0.1 (2015-12-03)
+
+
+#### Bug Fixes
+
+* **binding-language:** apply default modes to options props ([d025af9b](http://github.com/aurelia/templating-binding/commit/d025af9b6f8a10cfda98ae87ae876ac9fff7b33c))
+
+
 ### 1.0.0-beta.1 (2015-11-16)
 
 
