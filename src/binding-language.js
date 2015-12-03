@@ -68,7 +68,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return info;
   }
 
-	createAttributeInstruction(resources, element, theInfo, existingInstruction) {
+	createAttributeInstruction(resources, element, theInfo, existingInstruction, context) {
   let instruction;
 
   if (theInfo.expression) {
@@ -83,7 +83,8 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     resources,
     element,
     theInfo,
-    existingInstruction
+    existingInstruction,
+    context
     );
   }
 
