@@ -12,7 +12,7 @@ describe('TemplatingBindingLanguage', () => {
     var language, resources;
     beforeAll(() => {
       var parser = { parse: expression => '!' + expression },
-          observerLocator = { getObserver: () => null },
+          observerLocator = { getObserver: () => null, getAccessor: () => null },
           syntaxInterpreter = {};
       language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter);
       resources = { lookupFunctions: { valueConverters: name => null, bindingBehaviors: name => null } };
@@ -69,7 +69,7 @@ describe('TemplatingBindingLanguage', () => {
       var expression = language.parseContent(resources, 'style', "${name}"),
           binding;
       spyOn(logger, 'info').and.callThrough();
-      binding = expression.createBinding();
+      binding = expression.createBinding(document.createElement('div'));
       expect(logger.info).toHaveBeenCalled();
     });
   });

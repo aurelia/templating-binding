@@ -76,21 +76,21 @@ describe('InterpolationBinding', () => {
   }
 
   describe('single expression', () => {
-    var viewModel, view, binding, targetProperty, observer1, observer2;
+    var viewModel, view, binding, targetAccessor, observer1, observer2;
 
     beforeAll(() => {
       reset();
       viewModel = { foo: 'bar' };
       view = createElement('<test foo="${foo}"></test>');
       binding = getBinding(viewModel, view, 'foo');
-      targetProperty = binding.targetProperty;
+      targetAccessor = binding.targetAccessor;
       observer1 = observerLocator.getArrayObserver(array1);
       observer2 = observerLocator.getArrayObserver(array2);
     });
 
     it('binds', () => {
       binding.bind(createScopeForTest(viewModel));
-      expect(targetProperty.getValue()).toBe(viewModel.foo);
+      expect(targetAccessor.getValue(view, 'foo')).toBe(viewModel.foo);
     });
 
     it('handles changes', done => {
@@ -100,7 +100,7 @@ describe('InterpolationBinding', () => {
           test.change(viewModel, 'foo');
           result = test.result();
           setTimeout(() => {
-            expect(targetProperty.getValue()).toBe(result);
+            expect(targetAccessor.getValue(view, 'foo')).toBe(result);
             next();
           }, checkDelay);
         } else {
@@ -123,21 +123,21 @@ describe('InterpolationBinding', () => {
   });
 
   describe('multiple expressions', () => {
-    var viewModel, view, binding, targetProperty, observer1, observer2;
+    var viewModel, view, binding, targetAccessor, observer1, observer2;
 
     beforeAll(() => {
       reset();
       viewModel = { foo: 'foo', bar: 'bar', baz: 'baz' };
       view = createElement('<test foo=" ${foo} hello ${bar} world ${baz} "></test>');
       binding = getBinding(viewModel, view, 'foo');
-      targetProperty = binding.targetProperty;
+      targetAccessor = binding.targetAccessor;
       observer1 = observerLocator.getArrayObserver(array1);
       observer2 = observerLocator.getArrayObserver(array2);
     });
 
     it('binds', () => {
       binding.bind(createScopeForTest(viewModel));
-      expect(targetProperty.getValue()).toBe(' foo hello bar world baz ');
+      expect(targetAccessor.getValue(view, 'foo')).toBe(' foo hello bar world baz ');
     });
 
     it('handles changes', done => {
@@ -149,7 +149,7 @@ describe('InterpolationBinding', () => {
           test.change(viewModel, 'baz');
           result = test.result();
           setTimeout(() => {
-            expect(targetProperty.getValue()).toBe(' ' + result + ' hello ' + result + ' world ' + result + ' ');
+            expect(targetAccessor.getValue(view, 'foo')).toBe(' ' + result + ' hello ' + result + ' world ' + result + ' ');
             next();
           }, checkDelay);
         } else {
@@ -172,21 +172,21 @@ describe('InterpolationBinding', () => {
   });
 
   describe('repeated expressions', () => {
-    var viewModel, view, binding, targetProperty, observer1, observer2;
+    var viewModel, view, binding, targetAccessor, observer1, observer2;
 
     beforeAll(() => {
       reset();
       viewModel = { foo: 'foo' };
       view = createElement('<test foo=" ${foo} hello ${foo} world ${foo} "></test>');
       binding = getBinding(viewModel, view, 'foo');
-      targetProperty = binding.targetProperty;
+      targetAccessor = binding.targetAccessor;
       observer1 = observerLocator.getArrayObserver(array1);
       observer2 = observerLocator.getArrayObserver(array2);
     });
 
     it('binds', () => {
       binding.bind(createScopeForTest(viewModel));
-      expect(targetProperty.getValue()).toBe(' foo hello foo world foo ');
+      expect(targetAccessor.getValue(view, 'foo')).toBe(' foo hello foo world foo ');
     });
 
     it('handles changes', done => {
@@ -196,7 +196,7 @@ describe('InterpolationBinding', () => {
           test.change(viewModel, 'foo');
           result = test.result();
           setTimeout(() => {
-            expect(targetProperty.getValue()).toBe(' ' + result + ' hello ' + result + ' world ' + result + ' ');
+            expect(targetAccessor.getValue(view, 'foo')).toBe(' ' + result + ' hello ' + result + ' world ' + result + ' ');
             next();
           }, checkDelay);
         } else {
