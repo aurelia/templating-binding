@@ -1,4 +1,4 @@
-import {bindingMode, connectable} from 'aurelia-binding';
+import {bindingMode, connectable, enqueueBindingConnect} from 'aurelia-binding';
 import * as LogManager from 'aurelia-logging';
 
 export class InterpolationBindingExpression {
@@ -171,10 +171,7 @@ export class ChildInterpolationBinding {
     this.updateTarget(value);
 
     if (this.mode === bindingMode.oneWay) {
-      sourceExpression.connect(this, source);
-      if (value instanceof Array) {
-        this.observeArray(value);
-      }
+      enqueueBindingConnect(this);
     }
   }
 
@@ -189,5 +186,19 @@ export class ChildInterpolationBinding {
     }
     this.source = null;
     this.unobserve(true);
+  }
+
+  connect(evaluate) {
+    if (!this.isBound) {
+      return;
+    }
+    if (evaluate) {
+      let value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+      this.updateTarget(value);
+    }
+    this.sourceExpression.connect(this, this.source);
+    if (this.value instanceof Array) {
+      this.observeArray(this.value);
+    }
   }
 }
