@@ -1,5 +1,5 @@
 import * as LogManager from 'aurelia-logging';
-import {bindingMode,connectable,Parser,ObserverLocator,EventManager,ListenerExpression,BindingExpression,CallExpression,NameExpression} from 'aurelia-binding';
+import {bindingMode,connectable,enqueueBindingConnect,Parser,ObserverLocator,EventManager,ListenerExpression,BindingExpression,CallExpression,NameExpression} from 'aurelia-binding';
 import {BehaviorInstruction,BindingLanguage} from 'aurelia-templating';
 
 export class InterpolationBindingExpression {
@@ -52,7 +52,9 @@ export class InterpolationBinding {
     validateTarget(target, targetProperty);
     this.observerLocator = observerLocator;
     this.parts = parts;
-    this.targetProperty = observerLocator.getObserver(target, targetProperty);
+    this.target = target;
+    this.targetProperty = targetProperty;
+    this.targetAccessor = observerLocator.getAccessor(target, targetProperty);
     this.mode = mode;
     this.lookupFunctions = lookupFunctions;
   }
@@ -64,7 +66,7 @@ export class InterpolationBinding {
       for (let i = 0, ii = parts.length; i < ii; i++) {
         value += (i % 2 === 0 ? parts[i] : this[`childBinding${i}`].value);
       }
-      this.targetProperty.setValue(value);
+      this.targetAccessor.setValue(value, this.target, this.targetProperty);
     }
   }
 
@@ -109,7 +111,9 @@ export class ChildInterpolationBinding {
       this.parent = target;
     } else {
       validateTarget(target, targetProperty);
-      this.targetProperty = observerLocator.getObserver(target, targetProperty);
+      this.target = target;
+      this.targetProperty = targetProperty;
+      this.targetAccessor = observerLocator.getAccessor(target, targetProperty);
     }
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
@@ -126,7 +130,7 @@ export class ChildInterpolationBinding {
       if (this.parent) {
         this.parent.interpolate();
       } else {
-        this.targetProperty.setValue(this.left + value + this.right);
+        this.targetAccessor.setValue(this.left + value + this.right, this.target, this.targetProperty);
       }
     }
   }
@@ -168,10 +172,7 @@ export class ChildInterpolationBinding {
     this.updateTarget(value);
 
     if (this.mode === bindingMode.oneWay) {
-      sourceExpression.connect(this, source);
-      if (value instanceof Array) {
-        this.observeArray(value);
-      }
+      enqueueBindingConnect(this);
     }
   }
 
@@ -186,6 +187,20 @@ export class ChildInterpolationBinding {
     }
     this.source = null;
     this.unobserve(true);
+  }
+
+  connect(evaluate) {
+    if (!this.isBound) {
+      return;
+    }
+    if (evaluate) {
+      let value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+      this.updateTarget(value);
+    }
+    this.sourceExpression.connect(this, this.source);
+    if (this.value instanceof Array) {
+      this.observeArray(this.value);
+    }
   }
 }
 

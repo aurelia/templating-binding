@@ -1,6 +1,6 @@
 {
   "name": "aurelia-templating-binding",
-  "version": "1.0.0-beta.1.0.1",
+  "version": "1.0.0-beta.1.0.2",
   "description": "An implementation of the templating engine's Binding Language abstraction which uses a pluggable command syntax.",
   "keywords": [
     "aurelia",
@@ -27,13 +27,13 @@
       "lib": "dist/amd"
     },
     "dependencies": {
-      "aurelia-binding": "npm:aurelia-binding@^1.0.0-beta.1",
+      "aurelia-binding": "npm:aurelia-binding@^1.0.0-beta.1.0.3",
       "aurelia-logging": "npm:aurelia-logging@^1.0.0-beta.1",
       "aurelia-templating": "npm:aurelia-templating@^1.0.0-beta.1"
     },
     "devDependencies": {
-      "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1",
-      "aurelia-pal-browser": "npm:aurelia-pal-browser@^1.0.0-beta.1",
+      "aurelia-pal": "npm:aurelia-pal@^1.0.0-beta.1.0.1",
+      "aurelia-pal-browser": "npm:aurelia-pal-browser@^1.0.0-beta.1.0.1",
       "aurelia-task-queue": "npm:aurelia-task-queue@^1.0.0-beta.1",
       "babel": "npm:babel-core@^5.1.13",
       "babel-runtime": "npm:babel-runtime@^5.1.13",
@@ -41,7 +41,7 @@
     }
   },
   "dependencies": {
-    "aurelia-binding": "^1.0.0-beta.1",
+    "aurelia-binding": "^1.0.0-beta.1.0.3",
     "aurelia-logging": "^1.0.0-beta.1",
     "aurelia-templating": "^1.0.0-beta.1"
   },

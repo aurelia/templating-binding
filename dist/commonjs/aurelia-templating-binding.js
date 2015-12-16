@@ -57,7 +57,9 @@ var InterpolationBinding = (function () {
     validateTarget(target, targetProperty);
     this.observerLocator = observerLocator;
     this.parts = parts;
-    this.targetProperty = observerLocator.getObserver(target, targetProperty);
+    this.target = target;
+    this.targetProperty = targetProperty;
+    this.targetAccessor = observerLocator.getAccessor(target, targetProperty);
     this.mode = mode;
     this.lookupFunctions = lookupFunctions;
   }
@@ -69,7 +71,7 @@ var InterpolationBinding = (function () {
       for (var i = 0, ii = parts.length; i < ii; i++) {
         value += i % 2 === 0 ? parts[i] : this['childBinding' + i].value;
       }
-      this.targetProperty.setValue(value);
+      this.targetAccessor.setValue(value, this.target, this.targetProperty);
     }
   };
 
@@ -119,7 +121,9 @@ var ChildInterpolationBinding = (function () {
       this.parent = target;
     } else {
       validateTarget(target, targetProperty);
-      this.targetProperty = observerLocator.getObserver(target, targetProperty);
+      this.target = target;
+      this.targetProperty = targetProperty;
+      this.targetAccessor = observerLocator.getAccessor(target, targetProperty);
     }
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
@@ -136,7 +140,7 @@ var ChildInterpolationBinding = (function () {
       if (this.parent) {
         this.parent.interpolate();
       } else {
-        this.targetProperty.setValue(this.left + value + this.right);
+        this.targetAccessor.setValue(this.left + value + this.right, this.target, this.targetProperty);
       }
     }
   };
@@ -178,10 +182,7 @@ var ChildInterpolationBinding = (function () {
     this.updateTarget(value);
 
     if (this.mode === _aureliaBinding.bindingMode.oneWay) {
-      sourceExpression.connect(this, source);
-      if (value instanceof Array) {
-        this.observeArray(value);
-      }
+      _aureliaBinding.enqueueBindingConnect(this);
     }
   };
 
@@ -196,6 +197,20 @@ var ChildInterpolationBinding = (function () {
     }
     this.source = null;
     this.unobserve(true);
+  };
+
+  ChildInterpolationBinding.prototype.connect = function connect(evaluate) {
+    if (!this.isBound) {
+      return;
+    }
+    if (evaluate) {
+      var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+      this.updateTarget(value);
+    }
+    this.sourceExpression.connect(this, this.source);
+    if (this.value instanceof Array) {
+      this.observeArray(this.value);
+    }
   };
 
   var _ChildInterpolationBinding = ChildInterpolationBinding;

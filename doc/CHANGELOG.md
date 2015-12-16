@@ -1,3 +1,8 @@
+### 1.0.0-beta.1.0.2 (2015-12-16)
+
+* performance improvements
+
+
 ## 1.0.0-beta.1.0.1 (2015-12-03)
 
 

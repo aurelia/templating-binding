@@ -1,7 +1,7 @@
 System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], function (_export) {
   'use strict';
 
-  var LogManager, bindingMode, connectable, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression, BehaviorInstruction, BindingLanguage, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
+  var LogManager, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression, BehaviorInstruction, BindingLanguage, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
 
   _export('configure', configure);
 
@@ -28,6 +28,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
     }, function (_aureliaBinding) {
       bindingMode = _aureliaBinding.bindingMode;
       connectable = _aureliaBinding.connectable;
+      enqueueBindingConnect = _aureliaBinding.enqueueBindingConnect;
       Parser = _aureliaBinding.Parser;
       ObserverLocator = _aureliaBinding.ObserverLocator;
       EventManager = _aureliaBinding.EventManager;
@@ -72,7 +73,9 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
           validateTarget(target, targetProperty);
           this.observerLocator = observerLocator;
           this.parts = parts;
-          this.targetProperty = observerLocator.getObserver(target, targetProperty);
+          this.target = target;
+          this.targetProperty = targetProperty;
+          this.targetAccessor = observerLocator.getAccessor(target, targetProperty);
           this.mode = mode;
           this.lookupFunctions = lookupFunctions;
         }
@@ -84,7 +87,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             for (var i = 0, ii = parts.length; i < ii; i++) {
               value += i % 2 === 0 ? parts[i] : this['childBinding' + i].value;
             }
-            this.targetProperty.setValue(value);
+            this.targetAccessor.setValue(value, this.target, this.targetProperty);
           }
         };
 
@@ -134,7 +137,9 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             this.parent = target;
           } else {
             validateTarget(target, targetProperty);
-            this.targetProperty = observerLocator.getObserver(target, targetProperty);
+            this.target = target;
+            this.targetProperty = targetProperty;
+            this.targetAccessor = observerLocator.getAccessor(target, targetProperty);
           }
           this.observerLocator = observerLocator;
           this.sourceExpression = sourceExpression;
@@ -151,7 +156,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             if (this.parent) {
               this.parent.interpolate();
             } else {
-              this.targetProperty.setValue(this.left + value + this.right);
+              this.targetAccessor.setValue(this.left + value + this.right, this.target, this.targetProperty);
             }
           }
         };
@@ -193,10 +198,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
           this.updateTarget(value);
 
           if (this.mode === bindingMode.oneWay) {
-            sourceExpression.connect(this, source);
-            if (value instanceof Array) {
-              this.observeArray(value);
-            }
+            enqueueBindingConnect(this);
           }
         };
 
@@ -211,6 +213,20 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
           }
           this.source = null;
           this.unobserve(true);
+        };
+
+        ChildInterpolationBinding.prototype.connect = function connect(evaluate) {
+          if (!this.isBound) {
+            return;
+          }
+          if (evaluate) {
+            var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+            this.updateTarget(value);
+          }
+          this.sourceExpression.connect(this, this.source);
+          if (this.value instanceof Array) {
+            this.observeArray(this.value);
+          }
         };
 
         var _ChildInterpolationBinding = ChildInterpolationBinding;
