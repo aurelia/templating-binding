@@ -64,7 +64,7 @@
                   "type": {
                     "type": "reference",
                     "name": "ViewResources",
-                    "id": 1111,
+                    "id": 1121,
                     "moduleName": "\"aurelia-templating\""
                   }
                 },
@@ -116,20 +116,20 @@
               "type": {
                 "type": "reference",
                 "name": "BehaviorInstruction",
-                "id": 983,
+                "id": 993,
                 "moduleName": "\"aurelia-templating\""
               },
               "inheritedFrom": {
                 "type": "reference",
                 "name": "BindingLanguage.createAttributeInstruction",
-                "id": 1101
+                "id": 1111
               }
             }
           ],
           "inheritedFrom": {
             "type": "reference",
             "name": "BindingLanguage.createAttributeInstruction",
-            "id": 1101
+            "id": 1111
           }
         },
         {
@@ -164,7 +164,7 @@
                   "type": {
                     "type": "reference",
                     "name": "ViewResources",
-                    "id": 1111,
+                    "id": 1121,
                     "moduleName": "\"aurelia-templating\""
                   }
                 },
@@ -204,14 +204,14 @@
               "inheritedFrom": {
                 "type": "reference",
                 "name": "BindingLanguage.inspectAttribute",
-                "id": 1096
+                "id": 1106
               }
             }
           ],
           "inheritedFrom": {
             "type": "reference",
             "name": "BindingLanguage.inspectAttribute",
-            "id": 1096
+            "id": 1106
           }
         },
         {
@@ -246,7 +246,7 @@
                   "type": {
                     "type": "reference",
                     "name": "ViewResources",
-                    "id": 1111,
+                    "id": 1121,
                     "moduleName": "\"aurelia-templating\""
                   }
                 },
@@ -272,14 +272,14 @@
               "inheritedFrom": {
                 "type": "reference",
                 "name": "BindingLanguage.parseText",
-                "id": 1107
+                "id": 1117
               }
             }
           ],
           "inheritedFrom": {
             "type": "reference",
             "name": "BindingLanguage.parseText",
-            "id": 1107
+            "id": 1117
           }
         }
       ],
@@ -298,7 +298,7 @@
         {
           "type": "reference",
           "name": "BindingLanguage",
-          "id": 1095
+          "id": 1105
         }
       ]
     }
