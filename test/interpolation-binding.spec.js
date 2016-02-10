@@ -169,6 +169,10 @@ describe('InterpolationBinding', () => {
       expect(observer1.hasSubscribers()).toBe(false);
       expect(binding.source).toBe(null);
     });
+
+    it('has an updateOneTimeBindings method', () => {
+      binding.updateOneTimeBindings();
+    });
   });
 
   describe('repeated expressions', () => {

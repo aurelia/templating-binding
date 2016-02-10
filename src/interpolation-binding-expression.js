@@ -69,6 +69,15 @@ export class InterpolationBinding {
     }
   }
 
+  updateOneTimeBindings() {
+    for (let i = 1, ii = this.parts.length; i < ii; i += 2) {
+      let child = this[`childBinding${i}`];
+      if (child.mode === bindingMode.oneTime) {
+        child.call();
+      }
+    }
+  }
+
   bind(source) {
     if (this.isBound) {
       if (this.source === source) {
