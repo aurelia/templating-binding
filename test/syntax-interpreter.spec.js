@@ -1,3 +1,4 @@
+import './setup';
 import {SyntaxInterpreter} from '../src/syntax-interpreter';
 import {
   Parser,
@@ -9,7 +10,6 @@ import {
   CallExpression,
   bindingMode
 } from 'aurelia-binding';
-import {initialize} from 'aurelia-pal-browser';
 import {DOM} from 'aurelia-pal';
 
 export function createElement(html) {
@@ -19,8 +19,6 @@ export function createElement(html) {
 }
 
 describe('SyntaxInterpreter', () => {
-  beforeAll(() => initialize());
-
   describe('determineDefaultBindingMode', () => {
     var interpreter;
 

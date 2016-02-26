@@ -1,3 +1,4 @@
+import './setup';
 import {
   TemplatingBindingLanguage,
   InterpolationBindingExpression
@@ -17,7 +18,6 @@ import {
 
 import {ViewResources} from 'aurelia-templating';
 import {TaskQueue} from 'aurelia-task-queue';
-import {initialize} from 'aurelia-pal-browser';
 import {DOM} from 'aurelia-pal';
 
 function createElement(html) {
@@ -32,7 +32,6 @@ describe('InterpolationBinding', () => {
       parser, eventManager, dirtyChecker, observerLocator, syntaxInterpreter, language, resources;
 
   beforeAll(() => {
-    initialize();
     eventManager = new EventManager();
     dirtyChecker = new DirtyChecker();
     dirtyChecker.checkDelay = checkDelay / 2;
