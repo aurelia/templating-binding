@@ -69,27 +69,27 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   }
 
 	createAttributeInstruction(resources, element, theInfo, existingInstruction, context) {
-  let instruction;
+    let instruction;
 
-  if (theInfo.expression) {
-    if (theInfo.attrName === 'ref') {
-      return theInfo.expression;
+    if (theInfo.expression) {
+      if (theInfo.attrName === 'ref') {
+        return theInfo.expression;
+      }
+
+      instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
+      instruction.attributes[theInfo.attrName] = theInfo.expression;
+    } else if (theInfo.command) {
+      instruction = this.syntaxInterpreter.interpret(
+      resources,
+      element,
+      theInfo,
+      existingInstruction,
+      context
+      );
     }
 
-    instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
-    instruction.attributes[theInfo.attrName] = theInfo.expression;
-  } else if (theInfo.command) {
-    instruction = this.syntaxInterpreter.interpret(
-    resources,
-    element,
-    theInfo,
-    existingInstruction,
-    context
-    );
+    return instruction;
   }
-
-  return instruction;
-}
 
   parseText(resources, value) {
     return this.parseContent(resources, 'textContent', value);
