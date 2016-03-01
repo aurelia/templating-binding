@@ -1,3 +1,4 @@
+/*eslint indent:0*/
 import {BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
 import {Parser, ObserverLocator, NameExpression, bindingMode} from 'aurelia-binding';
 import {InterpolationBindingExpression} from './interpolation-binding-expression';
@@ -138,7 +139,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
         } else if (char === '}') {
           open--;
         }
-      } while (open > 0 && i < ii)
+      } while (open > 0 && i < ii);
 
       if (open === 0) {
         // lazy allocate array

@@ -1,3 +1,17 @@
+### 1.0.0-beta.1.1.2 (2016-03-01)
+
+
+#### Bug Fixes
+
+* **all:** remove core-js dependency ([213fbfe4](http://github.com/aurelia/templating-binding/commit/213fbfe4257c9e47dd97d14f61443f6d03337c13))
+
+
+#### Features
+
+* **InterpolationBinding:** add method to update one-time children ([243aa759](http://github.com/aurelia/templating-binding/commit/243aa759f096fabc33d61f1f6ca6925b63a1d16f))
+* **ref:** support expressions ([a98860b6](http://github.com/aurelia/templating-binding/commit/a98860b6a9a7be65b24a74b61af7f8b585b2e5fb))
+
+
 ### 1.0.0-beta.1.1.1 (2016-02-08)
 
 

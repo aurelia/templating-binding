@@ -66,6 +66,15 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
       }
     };
 
+    InterpolationBinding.prototype.updateOneTimeBindings = function updateOneTimeBindings() {
+      for (var i = 1, ii = this.parts.length; i < ii; i += 2) {
+        var child = this['childBinding' + i];
+        if (child.mode === _aureliaBinding.bindingMode.oneTime) {
+          child.call();
+        }
+      }
+    };
+
     InterpolationBinding.prototype.bind = function bind(source) {
       if (this.isBound) {
         if (this.source === source) {
@@ -434,7 +443,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
         info.command = parts[1].trim();
 
         if (info.command === 'ref') {
-          info.expression = new _aureliaBinding.NameExpression(attrValue, info.attrName);
+          info.expression = new _aureliaBinding.NameExpression(this.parser.parse(attrValue), info.attrName);
           info.command = null;
           info.attrName = 'ref';
         } else {
@@ -444,7 +453,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
         info.attrName = attrName;
         info.attrValue = attrValue;
         info.command = null;
-        info.expression = new _aureliaBinding.NameExpression(attrValue, 'element');
+        info.expression = new _aureliaBinding.NameExpression(this.parser.parse(attrValue), 'element');
       } else {
         info.attrName = attrName;
         info.attrValue = attrValue;

@@ -70,6 +70,15 @@ export class InterpolationBinding {
     }
   }
 
+  updateOneTimeBindings() {
+    for (let i = 1, ii = this.parts.length; i < ii; i += 2) {
+      let child = this[`childBinding${i}`];
+      if (child.mode === bindingMode.oneTime) {
+        child.call();
+      }
+    }
+  }
+
   bind(source) {
     if (this.isBound) {
       if (this.source === source) {
@@ -417,6 +426,7 @@ export class SyntaxInterpreter {
   }
 }
 
+/*eslint indent:0*/
 let info = {};
 
 export class TemplatingBindingLanguage extends BindingLanguage {
@@ -461,7 +471,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       info.command = parts[1].trim();
 
       if (info.command === 'ref') {
-        info.expression = new NameExpression(attrValue, info.attrName);
+        info.expression = new NameExpression(this.parser.parse(attrValue), info.attrName);
         info.command = null;
         info.attrName = 'ref';
       } else {
@@ -471,7 +481,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       info.attrName = attrName;
       info.attrValue = attrValue;
       info.command = null;
-      info.expression = new NameExpression(attrValue, 'element');
+      info.expression = new NameExpression(this.parser.parse(attrValue), 'element');
     } else {
       info.attrName = attrName;
       info.attrValue = attrValue;
@@ -483,27 +493,27 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   }
 
 	createAttributeInstruction(resources, element, theInfo, existingInstruction, context) {
-  let instruction;
+    let instruction;
 
-  if (theInfo.expression) {
-    if (theInfo.attrName === 'ref') {
-      return theInfo.expression;
+    if (theInfo.expression) {
+      if (theInfo.attrName === 'ref') {
+        return theInfo.expression;
+      }
+
+      instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
+      instruction.attributes[theInfo.attrName] = theInfo.expression;
+    } else if (theInfo.command) {
+      instruction = this.syntaxInterpreter.interpret(
+      resources,
+      element,
+      theInfo,
+      existingInstruction,
+      context
+      );
     }
 
-    instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
-    instruction.attributes[theInfo.attrName] = theInfo.expression;
-  } else if (theInfo.command) {
-    instruction = this.syntaxInterpreter.interpret(
-    resources,
-    element,
-    theInfo,
-    existingInstruction,
-    context
-    );
+    return instruction;
   }
-
-  return instruction;
-}
 
   parseText(resources, value) {
     return this.parseContent(resources, 'textContent', value);
@@ -552,7 +562,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
         } else if (char === '}') {
           open--;
         }
-      } while (open > 0 && i < ii)
+      } while (open > 0 && i < ii);
 
       if (open === 0) {
         // lazy allocate array
