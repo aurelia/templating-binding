@@ -152,6 +152,49 @@ describe('SyntaxInterpreter', () => {
       expect(instruction.attributes.key).toBe('foo');
       expect(instruction.attributes.value).toBe('bar');
     });
+  });
 
+  describe('options attributes', () => {
+    var interpreter, info;
+
+    beforeAll(() => {
+      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager());
+
+      interpreter.language = {
+        inspectAttribute(resources, attrName, attrValue) {
+          return {
+            attrName: attrName,
+            attrValue: attrValue
+          };
+        },
+        createAttributeInstruction() {
+          return;
+        }
+      }
+
+      info = {
+        attrName: 'custom',
+        command: null,
+        defaultBindingMode: 1
+      };
+    });
+
+    it('handles a semicolon inside a string of an options attribute', () => {
+      info.attrValue = "foo: 'bar;';";
+      var instruction = interpreter.options({}, null, info, null);
+      expect(instruction.attributes['foo']).toBe("'bar;'");
+    });
+
+    it('handles an escaped single quote inside a string of an options attribute', () => {
+      info.attrValue = "foo: 'bar\\'';";
+      var instruction = interpreter.options({}, null, info, null);
+      expect(instruction.attributes['foo']).toBe("'bar\\''");
+    });
+
+    it('handles an escaped single quote and a semicolon inside a string of an options attribute', () => {
+      info.attrValue = "foo: 'bar\\';';";
+      var instruction = interpreter.options({}, null, info, null);
+      expect(instruction.attributes['foo']).toBe("'bar\\';'");
+    });
   });
 });
