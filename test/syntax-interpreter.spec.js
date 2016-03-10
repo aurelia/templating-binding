@@ -196,5 +196,14 @@ describe('SyntaxInterpreter', () => {
       var instruction = interpreter.options({}, null, info, null);
       expect(instruction.attributes['foo']).toBe("'bar\\';'");
     });
+
+    it('handles multiple properties', () => {
+      info.attrValue = "foo: 'bar;'; abc.bind: xyz; hello: ${world}; optimus: ${prime ? 'decepticon;' : ';'} test";
+      var instruction = interpreter.options({}, null, info, null);
+      expect(instruction.attributes['foo']).toBe("'bar;'");
+      expect(instruction.attributes['abc.bind']).toBe("xyz");
+      expect(instruction.attributes['hello']).toBe("${world}");
+      expect(instruction.attributes['optimus']).toBe("${prime ? 'decepticon;' : ';'} test");
+    });
   });
 });
