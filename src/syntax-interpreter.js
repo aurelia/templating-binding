@@ -111,11 +111,13 @@ export class SyntaxInterpreter {
     let current;
     let i;
     let ii;
+    let inString = false;
+    let inEscape = false
 
     for (i = 0, ii = attrValue.length; i < ii; ++i) {
       current = attrValue[i];
 
-      if (current === ';') {
+      if (current === ';' && !inString) {
         info = language.inspectAttribute(resources, name, target.trim());
         language.createAttributeInstruction(resources, element, info, instruction, context);
 
@@ -128,9 +130,19 @@ export class SyntaxInterpreter {
       } else if (current === ':' && name === null) {
         name = target.trim();
         target = '';
+      } else if (current === '\\') {
+        target += current;
+        inEscape = true;
+          continue;
       } else {
         target += current;
+
+        if(name !== null && inEscape === false && current === '\'') {
+          inString = !inString;
+        }
       }
+
+      inEscape = false;
     }
 
     if (name !== null) {
