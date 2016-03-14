@@ -112,7 +112,7 @@ export class SyntaxInterpreter {
     let i;
     let ii;
     let inString = false;
-    let inEscape = false
+    let inEscape = false;
 
     for (i = 0, ii = attrValue.length; i < ii; ++i) {
       current = attrValue[i];
@@ -133,11 +133,11 @@ export class SyntaxInterpreter {
       } else if (current === '\\') {
         target += current;
         inEscape = true;
-          continue;
+        continue;
       } else {
         target += current;
 
-        if(name !== null && inEscape === false && current === '\'') {
+        if (name !== null && inEscape === false && current === '\'') {
           inString = !inString;
         }
       }
