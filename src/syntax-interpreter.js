@@ -36,13 +36,11 @@ export class SyntaxInterpreter {
   determineDefaultBindingMode(element, attrName, context) {
     let tagName = element.tagName.toLowerCase();
 
-    if (tagName === 'input') {
-      return attrName === 'value' || attrName === 'checked' || attrName === 'files' ? bindingMode.twoWay : bindingMode.oneWay;
-    } else if (tagName === 'textarea' || tagName === 'select') {
-      return attrName === 'value' ? bindingMode.twoWay : bindingMode.oneWay;
-    } else if (attrName === 'textcontent' || attrName === 'innerhtml') {
-      return element.contentEditable === 'true' ? bindingMode.twoWay : bindingMode.oneWay;
-    } else if (attrName === 'scrolltop' || attrName === 'scrollleft') {
+    if (tagName === 'input' && (attrName === 'value' || attrName === 'checked' || attrName === 'files')
+      || (tagName === 'textarea' || tagName === 'select') && attrName === 'value'
+      || (attrName === 'textcontent' || attrName === 'innerhtml') && element.contentEditable === 'true'
+      || attrName === 'scrolltop'
+      || attrName === 'scrollleft') {
       return bindingMode.twoWay;
     }
 
