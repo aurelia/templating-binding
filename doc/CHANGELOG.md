@@ -1,3 +1,15 @@
+### 1.0.0-beta.1.2.0 (2016-03-22)
+
+#### Bug Fixes
+
+* **determineDefaultBindingMode:** only assign when conditions are matched ([c952286f](http://github.com/aurelia/templating-binding/commit/c952286fadd59e7901ff78592269eec085920de6))
+
+
+#### Features
+
+* **syntax-interpreter:** single quoted strings in options attributes ([f26cd40a](http://github.com/aurelia/templating-binding/commit/f26cd40ad65b6e1b8ec1c0ae3b56b4e7ccdd9318))
+
+
 ### 1.0.0-beta.1.1.2 (2016-03-01)
 
 

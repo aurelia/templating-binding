@@ -1,10 +1,11 @@
-import * as LogManager from 'aurelia-logging';
-import {bindingMode,connectable,enqueueBindingConnect,Parser,ObserverLocator,EventManager,ListenerExpression,BindingExpression,CallExpression,NameExpression} from 'aurelia-binding';
-import {BehaviorInstruction,BindingLanguage} from 'aurelia-templating';
+var _dec, _class;
 
-export class InterpolationBindingExpression {
-  constructor(observerLocator, targetProperty, parts,
-    mode, lookupFunctions, attribute) {
+import * as LogManager from 'aurelia-logging';
+import { bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression } from 'aurelia-binding';
+import { BehaviorInstruction, BindingLanguage } from 'aurelia-templating';
+
+export let InterpolationBindingExpression = class InterpolationBindingExpression {
+  constructor(observerLocator, targetProperty, parts, mode, lookupFunctions, attribute) {
     this.observerLocator = observerLocator;
     this.targetProperty = targetProperty;
     this.parts = parts;
@@ -16,38 +17,21 @@ export class InterpolationBindingExpression {
 
   createBinding(target) {
     if (this.parts.length === 3) {
-      return new ChildInterpolationBinding(
-        target,
-        this.observerLocator,
-        this.parts[1],
-        this.mode,
-        this.lookupFunctions,
-        this.targetProperty,
-        this.parts[0],
-        this.parts[2]
-      );
+      return new ChildInterpolationBinding(target, this.observerLocator, this.parts[1], this.mode, this.lookupFunctions, this.targetProperty, this.parts[0], this.parts[2]);
     }
-    return new InterpolationBinding(
-      this.observerLocator,
-      this.parts,
-      target,
-      this.targetProperty,
-      this.mode,
-      this.lookupFunctions
-      );
+    return new InterpolationBinding(this.observerLocator, this.parts, target, this.targetProperty, this.mode, this.lookupFunctions);
   }
-}
+};
 
 function validateTarget(target, propertyName) {
   if (propertyName === 'style') {
-    LogManager.getLogger('templating-binding')
-      .info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
+    LogManager.getLogger('templating-binding').info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
   } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && propertyName === 'textContent') {
     throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
   }
 }
 
-export class InterpolationBinding {
+export let InterpolationBinding = class InterpolationBinding {
   constructor(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
     validateTarget(target, targetProperty);
     this.observerLocator = observerLocator;
@@ -64,7 +48,7 @@ export class InterpolationBinding {
       let value = '';
       let parts = this.parts;
       for (let i = 0, ii = parts.length; i < ii; i++) {
-        value += (i % 2 === 0 ? parts[i] : this[`childBinding${i}`].value);
+        value += i % 2 === 0 ? parts[i] : this[`childBinding${ i }`].value;
       }
       this.targetAccessor.setValue(value, this.target, this.targetProperty);
     }
@@ -72,7 +56,7 @@ export class InterpolationBinding {
 
   updateOneTimeBindings() {
     for (let i = 1, ii = this.parts.length; i < ii; i += 2) {
-      let child = this[`childBinding${i}`];
+      let child = this[`childBinding${ i }`];
       if (child.mode === bindingMode.oneTime) {
         child.call();
       }
@@ -92,7 +76,7 @@ export class InterpolationBinding {
     for (let i = 1, ii = parts.length; i < ii; i += 2) {
       let binding = new ChildInterpolationBinding(this, this.observerLocator, parts[i], this.mode, this.lookupFunctions);
       binding.bind(source);
-      this[`childBinding${i}`] = binding;
+      this[`childBinding${ i }`] = binding;
     }
 
     this.isBound = true;
@@ -107,14 +91,13 @@ export class InterpolationBinding {
     this.source = null;
     let parts = this.parts;
     for (let i = 1, ii = parts.length; i < ii; i += 2) {
-      let name = `childBinding${i}`;
+      let name = `childBinding${ i }`;
       this[name].unbind();
     }
   }
-}
+};
 
-@connectable()
-export class ChildInterpolationBinding {
+export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class = class ChildInterpolationBinding {
   constructor(target, observerLocator, sourceExpression, mode, lookupFunctions, targetProperty, left, right) {
     if (target instanceof InterpolationBinding) {
       this.parent = target;
@@ -211,11 +194,12 @@ export class ChildInterpolationBinding {
       this.observeArray(this.value);
     }
   }
-}
+}) || _class);
 
-/*eslint dot-notation:0*/
-export class SyntaxInterpreter {
-  static inject() { return [Parser, ObserverLocator, EventManager]; }
+export let SyntaxInterpreter = class SyntaxInterpreter {
+  static inject() {
+    return [Parser, ObserverLocator, EventManager];
+  }
   constructor(parser, observerLocator, eventManager) {
     this.parser = parser;
     this.observerLocator = observerLocator;
@@ -238,13 +222,7 @@ export class SyntaxInterpreter {
   determineDefaultBindingMode(element, attrName, context) {
     let tagName = element.tagName.toLowerCase();
 
-    if (tagName === 'input') {
-      return attrName === 'value' || attrName === 'checked' || attrName === 'files' ? bindingMode.twoWay : bindingMode.oneWay;
-    } else if (tagName === 'textarea' || tagName === 'select') {
-      return attrName === 'value' ? bindingMode.twoWay : bindingMode.oneWay;
-    } else if (attrName === 'textcontent' || attrName === 'innerhtml') {
-      return element.contentEditable === 'true' ? bindingMode.twoWay : bindingMode.oneWay;
-    } else if (attrName === 'scrolltop' || attrName === 'scrollleft') {
+    if (tagName === 'input' && (attrName === 'value' || attrName === 'checked' || attrName === 'files') || (tagName === 'textarea' || tagName === 'select') && attrName === 'value' || (attrName === 'textcontent' || attrName === 'innerhtml') && element.contentEditable === 'true' || attrName === 'scrolltop' || attrName === 'scrollleft') {
       return bindingMode.twoWay;
     }
 
@@ -258,48 +236,23 @@ export class SyntaxInterpreter {
   bind(resources, element, info, existingInstruction, context) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(
-      this.observerLocator,
-      this.attributeMap[info.attrName] || info.attrName,
-      this.parser.parse(info.attrValue),
-      info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context),
-      resources.lookupFunctions
-    );
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context), resources.lookupFunctions);
 
     return instruction;
   }
 
   trigger(resources, element, info) {
-    return new ListenerExpression(
-      this.eventManager,
-      info.attrName,
-      this.parser.parse(info.attrValue),
-      false,
-      true,
-      resources.lookupFunctions
-    );
+    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true, resources.lookupFunctions);
   }
 
   delegate(resources, element, info) {
-    return new ListenerExpression(
-      this.eventManager,
-      info.attrName,
-      this.parser.parse(info.attrValue),
-      true,
-      true,
-      resources.lookupFunctions
-    );
+    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true, resources.lookupFunctions);
   }
 
   call(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new CallExpression(
-      this.observerLocator,
-      info.attrName,
-      this.parser.parse(info.attrValue),
-      resources.lookupFunctions
-    );
+    instruction.attributes[info.attrName] = new CallExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), resources.lookupFunctions);
 
     return instruction;
   }
@@ -313,11 +266,13 @@ export class SyntaxInterpreter {
     let current;
     let i;
     let ii;
+    let inString = false;
+    let inEscape = false;
 
     for (i = 0, ii = attrValue.length; i < ii; ++i) {
       current = attrValue[i];
 
-      if (current === ';') {
+      if (current === ';' && !inString) {
         info = language.inspectAttribute(resources, name, target.trim());
         language.createAttributeInstruction(resources, element, info, instruction, context);
 
@@ -330,9 +285,19 @@ export class SyntaxInterpreter {
       } else if (current === ':' && name === null) {
         name = target.trim();
         target = '';
+      } else if (current === '\\') {
+        target += current;
+        inEscape = true;
+        continue;
       } else {
         target += current;
+
+        if (name !== null && inEscape === false && current === '\'') {
+          inString = !inString;
+        }
       }
+
+      inEscape = false;
     }
 
     if (name !== null) {
@@ -372,13 +337,7 @@ export class SyntaxInterpreter {
       instruction.attributes.local = parts[0];
     }
 
-    instruction.attributes.items = new BindingExpression(
-      this.observerLocator,
-      'items',
-      this.parser.parse(parts[1]),
-      bindingMode.oneWay,
-      resources.lookupFunctions
-    );
+    instruction.attributes.items = new BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[1]), bindingMode.oneWay, resources.lookupFunctions);
 
     return instruction;
   }
@@ -386,13 +345,7 @@ export class SyntaxInterpreter {
   'two-way'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(
-        this.observerLocator,
-        this.attributeMap[info.attrName] || info.attrName,
-        this.parser.parse(info.attrValue),
-        bindingMode.twoWay,
-        resources.lookupFunctions
-      );
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.twoWay, resources.lookupFunctions);
 
     return instruction;
   }
@@ -400,13 +353,7 @@ export class SyntaxInterpreter {
   'one-way'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(
-      this.observerLocator,
-      this.attributeMap[info.attrName] || info.attrName,
-      this.parser.parse(info.attrValue),
-      bindingMode.oneWay,
-      resources.lookupFunctions
-    );
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneWay, resources.lookupFunctions);
 
     return instruction;
   }
@@ -414,23 +361,18 @@ export class SyntaxInterpreter {
   'one-time'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(
-      this.observerLocator,
-      this.attributeMap[info.attrName] || info.attrName,
-      this.parser.parse(info.attrValue),
-      bindingMode.oneTime,
-      resources.lookupFunctions
-    );
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneTime, resources.lookupFunctions);
 
     return instruction;
   }
-}
+};
 
-/*eslint indent:0*/
 let info = {};
 
-export class TemplatingBindingLanguage extends BindingLanguage {
-  static inject() { return [Parser, ObserverLocator, SyntaxInterpreter]; }
+export let TemplatingBindingLanguage = class TemplatingBindingLanguage extends BindingLanguage {
+  static inject() {
+    return [Parser, ObserverLocator, SyntaxInterpreter];
+  }
   constructor(parser, observerLocator, syntaxInterpreter) {
     super();
     this.parser = parser;
@@ -444,7 +386,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       'tabindex': 'tabIndex',
       'textcontent': 'textContent',
       'innerhtml': 'innerHTML',
-      // HTMLInputElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement
+
       'maxlength': 'maxLength',
       'minlength': 'minLength',
       'formaction': 'formAction',
@@ -492,7 +434,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return info;
   }
 
-	createAttributeInstruction(resources, element, theInfo, existingInstruction, context) {
+  createAttributeInstruction(resources, element, theInfo, existingInstruction, context) {
     let instruction;
 
     if (theInfo.expression) {
@@ -503,13 +445,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
       instruction.attributes[theInfo.attrName] = theInfo.expression;
     } else if (theInfo.command) {
-      instruction = this.syntaxInterpreter.interpret(
-      resources,
-      element,
-      theInfo,
-      existingInstruction,
-      context
-      );
+      instruction = this.syntaxInterpreter.interpret(resources, element, theInfo, existingInstruction, context);
     }
 
     return instruction;
@@ -565,16 +501,13 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       } while (open > 0 && i < ii);
 
       if (open === 0) {
-        // lazy allocate array
         parts = parts || [];
         if (attrValue[interpolationStart - 1] === '\\' && attrValue[interpolationStart - 2] !== '\\') {
-          // escaped interpolation
           parts[partIndex] = attrValue.substring(pos, interpolationStart - 1) + attrValue.substring(interpolationStart, i);
           partIndex++;
           parts[partIndex] = this.emptyStringExpression;
           partIndex++;
         } else {
-          // standard interpolation
           parts[partIndex] = attrValue.substring(pos, interpolationStart);
           partIndex++;
           parts[partIndex] = this.parser.parse(attrValue.substring(interpolationStart + 2, i - 1));
@@ -587,24 +520,15 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       }
     }
 
-    // no interpolation.
     if (partIndex === 0) {
       return null;
     }
 
-    // literal.
     parts[partIndex] = attrValue.substr(pos);
 
-    return new InterpolationBindingExpression(
-      this.observerLocator,
-      this.attributeMap[attrName] || attrName,
-      parts,
-      bindingMode.oneWay,
-      resources.lookupFunctions,
-      attrName
-    );
+    return new InterpolationBindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, parts, bindingMode.oneWay, resources.lookupFunctions, attrName);
   }
-}
+};
 
 export function configure(config) {
   config.container.registerSingleton(BindingLanguage, TemplatingBindingLanguage);
