@@ -74,7 +74,27 @@ describe('SyntaxInterpreter', () => {
       expect(interpreter.determineDefaultBindingMode(el, 'scrolltop')).toBe(bindingMode.twoWay);
       expect(interpreter.determineDefaultBindingMode(el, 'scrollleft')).toBe(bindingMode.twoWay);
     });
+
+    it('uses specified defaultBindingMode', () => {
+      var el = createElement('<div></div>');
+      let context = {
+        attributes: {
+          foo: { defaultBindingMode: bindingMode.oneTime },
+          bar: { defaultBindingMode: bindingMode.oneWay },
+          baz: { defaultBindingMode: bindingMode.twoWay },
+          null: null,
+          undefined: undefined
+        }
+      };
+      expect(interpreter.determineDefaultBindingMode(el, 'foo', context)).toBe(bindingMode.oneTime);
+      expect(interpreter.determineDefaultBindingMode(el, 'bar', context)).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'baz', context)).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'null', context)).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'undefined', context)).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'missing', context)).toBe(bindingMode.oneWay);
+    });
   });
+
   describe('for', () => {
     var interpreter, info;
 

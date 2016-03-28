@@ -44,8 +44,11 @@ export class SyntaxInterpreter {
       return bindingMode.twoWay;
     }
 
-    if (context && attrName in context.attributes) {
-      return context.attributes[attrName].defaultBindingMode || bindingMode.oneWay;
+    if (context
+      && attrName in context.attributes 
+      && context.attributes[attrName]
+      && context.attributes[attrName].defaultBindingMode >= bindingMode.oneTime) {
+      return context.attributes[attrName].defaultBindingMode;
     }
 
     return bindingMode.oneWay;
