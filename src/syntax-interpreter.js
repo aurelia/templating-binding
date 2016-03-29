@@ -45,7 +45,7 @@ export class SyntaxInterpreter {
     }
 
     if (context
-      && attrName in context.attributes 
+      && attrName in context.attributes
       && context.attributes[attrName]
       && context.attributes[attrName].defaultBindingMode >= bindingMode.oneTime) {
       return context.attributes[attrName].defaultBindingMode;

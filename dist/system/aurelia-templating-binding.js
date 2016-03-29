@@ -295,8 +295,8 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             return bindingMode.twoWay;
           }
 
-          if (context && attrName in context.attributes) {
-            return context.attributes[attrName].defaultBindingMode || bindingMode.oneWay;
+          if (context && attrName in context.attributes && context.attributes[attrName] && context.attributes[attrName].defaultBindingMode >= bindingMode.oneTime) {
+            return context.attributes[attrName].defaultBindingMode;
           }
 
           return bindingMode.oneWay;
@@ -460,6 +460,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
           _this.emptyStringExpression = _this.parser.parse('\'\'');
           syntaxInterpreter.language = _this;
           _this.attributeMap = syntaxInterpreter.attributeMap = {
+            'accesskey': 'accessKey',
             'contenteditable': 'contentEditable',
             'for': 'htmlFor',
             'tabindex': 'tabIndex',

@@ -226,8 +226,8 @@ export let SyntaxInterpreter = class SyntaxInterpreter {
       return bindingMode.twoWay;
     }
 
-    if (context && attrName in context.attributes) {
-      return context.attributes[attrName].defaultBindingMode || bindingMode.oneWay;
+    if (context && attrName in context.attributes && context.attributes[attrName] && context.attributes[attrName].defaultBindingMode >= bindingMode.oneTime) {
+      return context.attributes[attrName].defaultBindingMode;
     }
 
     return bindingMode.oneWay;
@@ -381,6 +381,7 @@ export let TemplatingBindingLanguage = class TemplatingBindingLanguage extends B
     this.emptyStringExpression = this.parser.parse('\'\'');
     syntaxInterpreter.language = this;
     this.attributeMap = syntaxInterpreter.attributeMap = {
+      'accesskey': 'accessKey',
       'contenteditable': 'contentEditable',
       'for': 'htmlFor',
       'tabindex': 'tabIndex',

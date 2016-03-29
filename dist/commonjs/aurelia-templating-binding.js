@@ -262,8 +262,8 @@ var SyntaxInterpreter = exports.SyntaxInterpreter = function () {
       return _aureliaBinding.bindingMode.twoWay;
     }
 
-    if (context && attrName in context.attributes) {
-      return context.attributes[attrName].defaultBindingMode || _aureliaBinding.bindingMode.oneWay;
+    if (context && attrName in context.attributes && context.attributes[attrName] && context.attributes[attrName].defaultBindingMode >= _aureliaBinding.bindingMode.oneTime) {
+      return context.attributes[attrName].defaultBindingMode;
     }
 
     return _aureliaBinding.bindingMode.oneWay;
@@ -425,6 +425,7 @@ var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = function (_B
     _this.emptyStringExpression = _this.parser.parse('\'\'');
     syntaxInterpreter.language = _this;
     _this.attributeMap = syntaxInterpreter.attributeMap = {
+      'accesskey': 'accessKey',
       'contenteditable': 'contentEditable',
       'for': 'htmlFor',
       'tabindex': 'tabIndex',

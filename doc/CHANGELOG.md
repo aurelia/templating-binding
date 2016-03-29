@@ -1,3 +1,16 @@
+### 1.0.0-beta.1.2.1 (2016-03-29)
+
+
+#### Bug Fixes
+
+* **SyntaxInterpreter:** enable specifying oneTime default binding mode ([74953349](http://github.com/aurelia/templating-binding/commit/74953349afb71538cbee4e73498ea5d3584f5f62))
+
+
+#### Features
+
+* **attributeMap:** map accesskey ([5d9b1315](http://github.com/aurelia/templating-binding/commit/5d9b1315224cd737c5d613f42eee6bda6db9e858))
+
+
 ### 1.0.0-beta.1.2.0 (2016-03-22)
 
 #### Bug Fixes
