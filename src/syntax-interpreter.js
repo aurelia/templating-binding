@@ -36,7 +36,8 @@ export class SyntaxInterpreter {
   determineDefaultBindingMode(element, attrName, context) {
     let tagName = element.tagName.toLowerCase();
 
-    if (tagName === 'input' && (attrName === 'value' || attrName === 'checked' || attrName === 'files')
+    if (tagName === 'input' && (attrName === 'value' || attrName === 'files') && element.type !== 'checkbox' && element.type !== 'radio'
+      || tagName === 'input' && attrName === 'checked' && (element.type === 'checkbox' || element.type === 'radio')
       || (tagName === 'textarea' || tagName === 'select') && attrName === 'value'
       || (attrName === 'textcontent' || attrName === 'innerhtml') && element.contentEditable === 'true'
       || attrName === 'scrolltop'

@@ -26,10 +26,29 @@ describe('SyntaxInterpreter', () => {
       interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager());
     });
 
-    it('handles input', () => {
+    it('handles checkbox input', () => {
       var el = createElement('<input type="checkbox">');
-      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.oneWay);
       expect(interpreter.determineDefaultBindingMode(el, 'checked')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+    });
+
+    it('handles radio input', () => {
+      var el = createElement('<input type="radio">');
+      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'checked')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+    });
+
+    it('handles file input', () => {
+      var el = createElement('<input type="file">');
+      expect(interpreter.determineDefaultBindingMode(el, 'files')).toBe(bindingMode.twoWay);
+    });
+
+    it('handles unspecified input', () => {
+      var el = createElement('<input>');
+      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.twoWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'checked')).toBe(bindingMode.oneWay);
       expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
 
       var el = createElement('<input type="file">');
