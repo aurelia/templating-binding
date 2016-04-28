@@ -3,42 +3,24 @@ import {BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
 import {Parser, ObserverLocator, NameExpression, bindingMode} from 'aurelia-binding';
 import {InterpolationBindingExpression} from './interpolation-binding-expression';
 import {SyntaxInterpreter} from './syntax-interpreter';
+import {AttributeMap} from './attribute-map';
 
 let info = {};
 
 export class TemplatingBindingLanguage extends BindingLanguage {
-  static inject() { return [Parser, ObserverLocator, SyntaxInterpreter]; }
-  constructor(parser, observerLocator, syntaxInterpreter) {
+  static inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap];
+
+  constructor(parser, observerLocator, syntaxInterpreter, attributeMap) {
     super();
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.syntaxInterpreter = syntaxInterpreter;
     this.emptyStringExpression = this.parser.parse('\'\'');
     syntaxInterpreter.language = this;
-    this.attributeMap = syntaxInterpreter.attributeMap = {
-      'accesskey': 'accessKey',
-      'contenteditable': 'contentEditable',
-      'for': 'htmlFor',
-      'tabindex': 'tabIndex',
-      'textcontent': 'textContent',
-      'innerhtml': 'innerHTML',
-      // HTMLInputElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement
-      'maxlength': 'maxLength',
-      'minlength': 'minLength',
-      'formaction': 'formAction',
-      'formenctype': 'formEncType',
-      'formmethod': 'formMethod',
-      'formnovalidate': 'formNoValidate',
-      'formtarget': 'formTarget',
-      'rowspan': 'rowSpan',
-      'colspan': 'colSpan',
-      'scrolltop': 'scrollTop',
-      'scrollleft': 'scrollLeft',
-      'readonly': 'readOnly'
-    };
+    this.attributeMap = attributeMap;
   }
 
-  inspectAttribute(resources, attrName, attrValue) {
+  inspectAttribute(resources, elementName, attrName, attrValue) {
     let parts = attrName.split('.');
 
     info.defaultBindingMode = null;
@@ -64,7 +46,19 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       info.attrName = attrName;
       info.attrValue = attrValue;
       info.command = null;
-      info.expression = this.parseContent(resources, attrName, attrValue);
+      const interpolationParts = this.parseInterpolation(resources, attrValue);
+      if (interpolationParts === null) {
+        info.expression = null;
+      } else {
+        info.expression = new InterpolationBindingExpression(
+          this.observerLocator,
+          this.attributeMap.map(elementName, attrName),
+          interpolationParts,
+          bindingMode.oneWay,
+          resources.lookupFunctions,
+          attrName
+        );
+      }
     }
 
     return info;
@@ -82,24 +76,33 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       instruction.attributes[theInfo.attrName] = theInfo.expression;
     } else if (theInfo.command) {
       instruction = this.syntaxInterpreter.interpret(
-      resources,
-      element,
-      theInfo,
-      existingInstruction,
-      context
-      );
+        resources,
+        element,
+        theInfo,
+        existingInstruction,
+        context);
     }
 
     return instruction;
   }
 
-  parseText(resources, value) {
-    return this.parseContent(resources, 'textContent', value);
+  inspectTextContent(resources, value) {
+    const parts = this.parseInterpolation(resources, value);
+    if (parts === null) {
+      return null;
+    }
+    return new InterpolationBindingExpression(
+      this.observerLocator,
+      'textContent',
+      parts,
+      bindingMode.oneWay,
+      resources.lookupFunctions,
+      'textContent');
   }
 
-  parseContent(resources, attrName, attrValue) {
-    let i = attrValue.indexOf('${', 0);
-    let ii = attrValue.length;
+  parseInterpolation(resources, value) {
+    let i = value.indexOf('${', 0);
+    let ii = value.length;
     let char;
     let pos = 0;
     let open = 0;
@@ -114,7 +117,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       i += 2;
 
       do {
-        char = attrValue[i];
+        char = value[i];
         i++;
 
         if (char === "'" || char === '"') {
@@ -145,21 +148,21 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       if (open === 0) {
         // lazy allocate array
         parts = parts || [];
-        if (attrValue[interpolationStart - 1] === '\\' && attrValue[interpolationStart - 2] !== '\\') {
+        if (value[interpolationStart - 1] === '\\' && value[interpolationStart - 2] !== '\\') {
           // escaped interpolation
-          parts[partIndex] = attrValue.substring(pos, interpolationStart - 1) + attrValue.substring(interpolationStart, i);
+          parts[partIndex] = value.substring(pos, interpolationStart - 1) + value.substring(interpolationStart, i);
           partIndex++;
           parts[partIndex] = this.emptyStringExpression;
           partIndex++;
         } else {
           // standard interpolation
-          parts[partIndex] = attrValue.substring(pos, interpolationStart);
+          parts[partIndex] = value.substring(pos, interpolationStart);
           partIndex++;
-          parts[partIndex] = this.parser.parse(attrValue.substring(interpolationStart + 2, i - 1));
+          parts[partIndex] = this.parser.parse(value.substring(interpolationStart + 2, i - 1));
           partIndex++;
         }
         pos = i;
-        i = attrValue.indexOf('${', i);
+        i = value.indexOf('${', i);
       } else {
         break;
       }
@@ -171,15 +174,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     }
 
     // literal.
-    parts[partIndex] = attrValue.substr(pos);
-
-    return new InterpolationBindingExpression(
-      this.observerLocator,
-      this.attributeMap[attrName] || attrName,
-      parts,
-      bindingMode.oneWay,
-      resources.lookupFunctions,
-      attrName
-    );
+    parts[partIndex] = value.substr(pos);
+    return parts;
   }
 }

@@ -200,7 +200,7 @@ describe('SyntaxInterpreter', () => {
       interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager());
 
       interpreter.language = {
-        inspectAttribute(resources, attrName, attrValue) {
+        inspectAttribute(resources, elementName, attrName, attrValue) {
           return {
             attrName: attrName,
             attrValue: attrValue

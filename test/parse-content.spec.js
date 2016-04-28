@@ -1,18 +1,19 @@
 import './setup';
 import {TemplatingBindingLanguage} from '../src/binding-language';
 import {InterpolationBindingExpression} from '../src/interpolation-binding-expression';
+import {AttributeMap} from '../src/attribute-map';
 import * as LogManager from 'aurelia-logging';
 
 var logger = LogManager.getLogger('templating-binding');
 
 describe('TemplatingBindingLanguage', () => {
-  describe('parseContent', () => {
+  describe('inspectTextContent', () => {
     var language, resources;
     beforeAll(() => {
       var parser = { parse: expression => '!' + expression },
           observerLocator = { getObserver: () => null, getAccessor: () => null },
           syntaxInterpreter = {};
-      language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter);
+      language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, new AttributeMap());
       resources = { lookupFunctions: { valueConverters: name => null, bindingBehaviors: name => null } };
     });
 
@@ -50,24 +51,23 @@ describe('TemplatingBindingLanguage', () => {
       for (i = 0, ii = tests.length; i < ii; i++) {
         test = tests[i];
         if (test.parts) {
-          expect(language.parseContent(resources, 'textContent', test.attrValue).parts).toEqual(test.parts);
+          expect(language.inspectTextContent(resources, test.attrValue).parts).toEqual(test.parts);
           aggregate.attrValue += test.attrValue;
           aggregate.parts[aggregate.parts.length - 1] += test.parts[0];
           aggregate.parts = aggregate.parts.concat(test.parts.slice(1));
         } else {
-          expect(language.parseContent(resources, 'textContent', test.attrValue)).toBe(null);
+          expect(language.inspectTextContent(resources, test.attrValue)).toBe(null);
           aggregate.attrValue += test.attrValue;
           aggregate.parts[aggregate.parts.length - 1] += test.attrValue;
         }
-        expect(language.parseContent(resources, 'textContent', aggregate.attrValue).parts).toEqual(aggregate.parts);
+        expect(language.inspectTextContent(resources, aggregate.attrValue).parts).toEqual(aggregate.parts);
       }
     });
 
     it('warns on interpolation in style attribute', () => {
-      var expression = language.parseContent(resources, 'style', "${name}"),
-          binding;
+      let expression = language.inspectAttribute(resources, 'div', 'style', '${name}').expression;
       spyOn(logger, 'info').and.callThrough();
-      binding = expression.createBinding(document.createElement('div'));
+      expression.createBinding(document.createElement('div'));
       expect(logger.info).toHaveBeenCalled();
     });
   });

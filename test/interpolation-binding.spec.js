@@ -4,6 +4,8 @@ import {
   InterpolationBindingExpression
 } from '../src/binding-language';
 
+import {AttributeMap} from '../src/attribute-map';
+
 import {
   SyntaxInterpreter
 } from '../src/syntax-interpreter';
@@ -37,15 +39,16 @@ describe('InterpolationBinding', () => {
     dirtyChecker.checkDelay = checkDelay / 2;
     observerLocator = new ObserverLocator(new TaskQueue(), eventManager, dirtyChecker, []);
     parser = new Parser();
-    syntaxInterpreter = new SyntaxInterpreter(parser, observerLocator, eventManager);
-    language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter);
+    let attributeMap = new AttributeMap();
+    syntaxInterpreter = new SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap);
+    language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap);
     resources = new ViewResources();
   });
 
   function getBinding(model, view, attrName) {
     var attrValue, info, binding;
     attrValue = view.getAttribute(attrName);
-    info = language.inspectAttribute(resources, attrName, attrValue);
+    info = language.inspectAttribute(resources, view.tagName, attrName, attrValue);
     binding = info.expression.createBinding(view);
     return binding;
   }

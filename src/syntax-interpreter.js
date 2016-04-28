@@ -11,13 +11,16 @@ import {
 
 import {BehaviorInstruction} from 'aurelia-templating';
 import * as LogManager from 'aurelia-logging';
+import {AttributeMap} from './attribute-map';
 
 export class SyntaxInterpreter {
-  static inject() { return [Parser, ObserverLocator, EventManager]; }
-  constructor(parser, observerLocator, eventManager) {
+  static inject = [Parser, ObserverLocator, EventManager, AttributeMap];
+
+  constructor(parser, observerLocator, eventManager, attributeMap) {
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.eventManager = eventManager;
+    this.attributeMap = attributeMap;
   }
 
   interpret(resources, element, info, existingInstruction, context) {
@@ -60,7 +63,7 @@ export class SyntaxInterpreter {
 
     instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
-      this.attributeMap[info.attrName] || info.attrName,
+      this.attributeMap.map(element.tagName, info.attrName),
       this.parser.parse(info.attrValue),
       info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context),
       resources.lookupFunctions
@@ -120,7 +123,7 @@ export class SyntaxInterpreter {
       current = attrValue[i];
 
       if (current === ';' && !inString) {
-        info = language.inspectAttribute(resources, name, target.trim());
+        info = language.inspectAttribute(resources, '?', name, target.trim());
         language.createAttributeInstruction(resources, element, info, instruction, context);
 
         if (!instruction.attributes[info.attrName]) {
@@ -148,7 +151,7 @@ export class SyntaxInterpreter {
     }
 
     if (name !== null) {
-      info = language.inspectAttribute(resources, name, target.trim());
+      info = language.inspectAttribute(resources, '?', name, target.trim());
       language.createAttributeInstruction(resources, element, info, instruction, context);
 
       if (!instruction.attributes[info.attrName]) {
@@ -200,7 +203,7 @@ export class SyntaxInterpreter {
 
     instruction.attributes[info.attrName] = new BindingExpression(
         this.observerLocator,
-        this.attributeMap[info.attrName] || info.attrName,
+        this.attributeMap.map(element.tagName, info.attrName),
         this.parser.parse(info.attrValue),
         bindingMode.twoWay,
         resources.lookupFunctions
@@ -214,7 +217,7 @@ export class SyntaxInterpreter {
 
     instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
-      this.attributeMap[info.attrName] || info.attrName,
+      this.attributeMap.map(element.tagName, info.attrName),
       this.parser.parse(info.attrValue),
       bindingMode.oneWay,
       resources.lookupFunctions
@@ -228,7 +231,7 @@ export class SyntaxInterpreter {
 
     instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
-      this.attributeMap[info.attrName] || info.attrName,
+      this.attributeMap.map(element.tagName, info.attrName),
       this.parser.parse(info.attrValue),
       bindingMode.oneTime,
       resources.lookupFunctions
