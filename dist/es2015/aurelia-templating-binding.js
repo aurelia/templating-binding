@@ -1,8 +1,69 @@
-var _dec, _class;
+var _dec, _class2, _class3, _temp, _class4, _temp2;
 
 import * as LogManager from 'aurelia-logging';
-import { bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression } from 'aurelia-binding';
+import { camelCase, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression } from 'aurelia-binding';
 import { BehaviorInstruction, BindingLanguage } from 'aurelia-templating';
+
+export let AttributeMap = class AttributeMap {
+
+  constructor() {
+    this.elements = Object.create(null);
+    this.allElements = Object.create(null);
+
+    this.registerUniversal('accesskey', 'accessKey');
+    this.registerUniversal('contenteditable', 'contentEditable');
+    this.registerUniversal('tabindex', 'tabIndex');
+    this.registerUniversal('textcontent', 'textContent');
+    this.registerUniversal('innerhtml', 'innerHTML');
+    this.registerUniversal('scrolltop', 'scrollTop');
+    this.registerUniversal('scrollleft', 'scrollLeft');
+    this.registerUniversal('readonly', 'readOnly');
+
+    this.register('label', 'for', 'htmlFor');
+
+    this.register('input', 'maxlength', 'maxLength');
+    this.register('input', 'minlength', 'minLength');
+    this.register('input', 'formaction', 'formAction');
+    this.register('input', 'formenctype', 'formEncType');
+    this.register('input', 'formmethod', 'formMethod');
+    this.register('input', 'formnovalidate', 'formNoValidate');
+    this.register('input', 'formtarget', 'formTarget');
+
+    this.register('td', 'rowspan', 'rowSpan');
+    this.register('td', 'colspan', 'colSpan');
+    this.register('th', 'rowspan', 'rowSpan');
+    this.register('th', 'colspan', 'colSpan');
+  }
+
+  register(elementName, attributeName, propertyName) {
+    elementName = elementName.toLowerCase();
+    attributeName = attributeName.toLowerCase();
+    const element = this.elements[elementName] = this.elements[elementName] || Object.create(null);
+    element[attributeName] = propertyName;
+  }
+
+  registerUniversal(attributeName, propertyName) {
+    attributeName = attributeName.toLowerCase();
+    this.allElements[attributeName] = propertyName;
+  }
+
+  map(elementName, attributeName) {
+    elementName = elementName.toLowerCase();
+    attributeName = attributeName.toLowerCase();
+    const element = this.elements[elementName];
+    if (element !== undefined && attributeName in element) {
+      return element[attributeName];
+    }
+    if (attributeName in this.allElements) {
+      return this.allElements[attributeName];
+    }
+
+    if (/(^data-)|(^aria-)|:/.test(attributeName)) {
+      return attributeName;
+    }
+    return camelCase(attributeName);
+  }
+};
 
 export let InterpolationBindingExpression = class InterpolationBindingExpression {
   constructor(observerLocator, targetProperty, parts, mode, lookupFunctions, attribute) {
@@ -97,7 +158,7 @@ export let InterpolationBinding = class InterpolationBinding {
   }
 };
 
-export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class = class ChildInterpolationBinding {
+export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = class ChildInterpolationBinding {
   constructor(target, observerLocator, sourceExpression, mode, lookupFunctions, targetProperty, left, right) {
     if (target instanceof InterpolationBinding) {
       this.parent = target;
@@ -194,16 +255,15 @@ export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class = clas
       this.observeArray(this.value);
     }
   }
-}) || _class);
+}) || _class2);
 
-export let SyntaxInterpreter = class SyntaxInterpreter {
-  static inject() {
-    return [Parser, ObserverLocator, EventManager];
-  }
-  constructor(parser, observerLocator, eventManager) {
+export let SyntaxInterpreter = (_temp = _class3 = class SyntaxInterpreter {
+
+  constructor(parser, observerLocator, eventManager, attributeMap) {
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.eventManager = eventManager;
+    this.attributeMap = attributeMap;
   }
 
   interpret(resources, element, info, existingInstruction, context) {
@@ -222,7 +282,7 @@ export let SyntaxInterpreter = class SyntaxInterpreter {
   determineDefaultBindingMode(element, attrName, context) {
     let tagName = element.tagName.toLowerCase();
 
-    if (tagName === 'input' && (attrName === 'value' || attrName === 'checked' || attrName === 'files') || (tagName === 'textarea' || tagName === 'select') && attrName === 'value' || (attrName === 'textcontent' || attrName === 'innerhtml') && element.contentEditable === 'true' || attrName === 'scrolltop' || attrName === 'scrollleft') {
+    if (tagName === 'input' && (attrName === 'value' || attrName === 'files') && element.type !== 'checkbox' && element.type !== 'radio' || tagName === 'input' && attrName === 'checked' && (element.type === 'checkbox' || element.type === 'radio') || (tagName === 'textarea' || tagName === 'select') && attrName === 'value' || (attrName === 'textcontent' || attrName === 'innerhtml') && element.contentEditable === 'true' || attrName === 'scrolltop' || attrName === 'scrollleft') {
       return bindingMode.twoWay;
     }
 
@@ -236,7 +296,7 @@ export let SyntaxInterpreter = class SyntaxInterpreter {
   bind(resources, element, info, existingInstruction, context) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context), resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context), resources.lookupFunctions);
 
     return instruction;
   }
@@ -273,7 +333,7 @@ export let SyntaxInterpreter = class SyntaxInterpreter {
       current = attrValue[i];
 
       if (current === ';' && !inString) {
-        info = language.inspectAttribute(resources, name, target.trim());
+        info = language.inspectAttribute(resources, '?', name, target.trim());
         language.createAttributeInstruction(resources, element, info, instruction, context);
 
         if (!instruction.attributes[info.attrName]) {
@@ -301,7 +361,7 @@ export let SyntaxInterpreter = class SyntaxInterpreter {
     }
 
     if (name !== null) {
-      info = language.inspectAttribute(resources, name, target.trim());
+      info = language.inspectAttribute(resources, '?', name, target.trim());
       language.createAttributeInstruction(resources, element, info, instruction, context);
 
       if (!instruction.attributes[info.attrName]) {
@@ -345,7 +405,7 @@ export let SyntaxInterpreter = class SyntaxInterpreter {
   'two-way'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.twoWay, resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.twoWay, resources.lookupFunctions);
 
     return instruction;
   }
@@ -353,7 +413,7 @@ export let SyntaxInterpreter = class SyntaxInterpreter {
   'one-way'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneWay, resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.oneWay, resources.lookupFunctions);
 
     return instruction;
   }
@@ -361,49 +421,27 @@ export let SyntaxInterpreter = class SyntaxInterpreter {
   'one-time'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap[info.attrName] || info.attrName, this.parser.parse(info.attrValue), bindingMode.oneTime, resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.oneTime, resources.lookupFunctions);
 
     return instruction;
   }
-};
+}, _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp);
 
 let info = {};
 
-export let TemplatingBindingLanguage = class TemplatingBindingLanguage extends BindingLanguage {
-  static inject() {
-    return [Parser, ObserverLocator, SyntaxInterpreter];
-  }
-  constructor(parser, observerLocator, syntaxInterpreter) {
+export let TemplatingBindingLanguage = (_temp2 = _class4 = class TemplatingBindingLanguage extends BindingLanguage {
+
+  constructor(parser, observerLocator, syntaxInterpreter, attributeMap) {
     super();
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.syntaxInterpreter = syntaxInterpreter;
     this.emptyStringExpression = this.parser.parse('\'\'');
     syntaxInterpreter.language = this;
-    this.attributeMap = syntaxInterpreter.attributeMap = {
-      'accesskey': 'accessKey',
-      'contenteditable': 'contentEditable',
-      'for': 'htmlFor',
-      'tabindex': 'tabIndex',
-      'textcontent': 'textContent',
-      'innerhtml': 'innerHTML',
-
-      'maxlength': 'maxLength',
-      'minlength': 'minLength',
-      'formaction': 'formAction',
-      'formenctype': 'formEncType',
-      'formmethod': 'formMethod',
-      'formnovalidate': 'formNoValidate',
-      'formtarget': 'formTarget',
-      'rowspan': 'rowSpan',
-      'colspan': 'colSpan',
-      'scrolltop': 'scrollTop',
-      'scrollleft': 'scrollLeft',
-      'readonly': 'readOnly'
-    };
+    this.attributeMap = attributeMap;
   }
 
-  inspectAttribute(resources, attrName, attrValue) {
+  inspectAttribute(resources, elementName, attrName, attrValue) {
     let parts = attrName.split('.');
 
     info.defaultBindingMode = null;
@@ -429,7 +467,12 @@ export let TemplatingBindingLanguage = class TemplatingBindingLanguage extends B
       info.attrName = attrName;
       info.attrValue = attrValue;
       info.command = null;
-      info.expression = this.parseContent(resources, attrName, attrValue);
+      const interpolationParts = this.parseInterpolation(resources, attrValue);
+      if (interpolationParts === null) {
+        info.expression = null;
+      } else {
+        info.expression = new InterpolationBindingExpression(this.observerLocator, this.attributeMap.map(elementName, attrName), interpolationParts, bindingMode.oneWay, resources.lookupFunctions, attrName);
+      }
     }
 
     return info;
@@ -452,13 +495,17 @@ export let TemplatingBindingLanguage = class TemplatingBindingLanguage extends B
     return instruction;
   }
 
-  parseText(resources, value) {
-    return this.parseContent(resources, 'textContent', value);
+  inspectTextContent(resources, value) {
+    const parts = this.parseInterpolation(resources, value);
+    if (parts === null) {
+      return null;
+    }
+    return new InterpolationBindingExpression(this.observerLocator, 'textContent', parts, bindingMode.oneWay, resources.lookupFunctions, 'textContent');
   }
 
-  parseContent(resources, attrName, attrValue) {
-    let i = attrValue.indexOf('${', 0);
-    let ii = attrValue.length;
+  parseInterpolation(resources, value) {
+    let i = value.indexOf('${', 0);
+    let ii = value.length;
     let char;
     let pos = 0;
     let open = 0;
@@ -473,7 +520,7 @@ export let TemplatingBindingLanguage = class TemplatingBindingLanguage extends B
       i += 2;
 
       do {
-        char = attrValue[i];
+        char = value[i];
         i++;
 
         if (char === "'" || char === '"') {
@@ -503,19 +550,19 @@ export let TemplatingBindingLanguage = class TemplatingBindingLanguage extends B
 
       if (open === 0) {
         parts = parts || [];
-        if (attrValue[interpolationStart - 1] === '\\' && attrValue[interpolationStart - 2] !== '\\') {
-          parts[partIndex] = attrValue.substring(pos, interpolationStart - 1) + attrValue.substring(interpolationStart, i);
+        if (value[interpolationStart - 1] === '\\' && value[interpolationStart - 2] !== '\\') {
+          parts[partIndex] = value.substring(pos, interpolationStart - 1) + value.substring(interpolationStart, i);
           partIndex++;
           parts[partIndex] = this.emptyStringExpression;
           partIndex++;
         } else {
-          parts[partIndex] = attrValue.substring(pos, interpolationStart);
+          parts[partIndex] = value.substring(pos, interpolationStart);
           partIndex++;
-          parts[partIndex] = this.parser.parse(attrValue.substring(interpolationStart + 2, i - 1));
+          parts[partIndex] = this.parser.parse(value.substring(interpolationStart + 2, i - 1));
           partIndex++;
         }
         pos = i;
-        i = attrValue.indexOf('${', i);
+        i = value.indexOf('${', i);
       } else {
         break;
       }
@@ -525,11 +572,10 @@ export let TemplatingBindingLanguage = class TemplatingBindingLanguage extends B
       return null;
     }
 
-    parts[partIndex] = attrValue.substr(pos);
-
-    return new InterpolationBindingExpression(this.observerLocator, this.attributeMap[attrName] || attrName, parts, bindingMode.oneWay, resources.lookupFunctions, attrName);
+    parts[partIndex] = value.substr(pos);
+    return parts;
   }
-};
+}, _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp2);
 
 export function configure(config) {
   config.container.registerSingleton(BindingLanguage, TemplatingBindingLanguage);

@@ -1,3 +1,11 @@
+### 1.0.0-beta.1.2.2 (2016-05-03)
+
+
+#### Bug Fixes
+
+* **SyntaxInterpreter:** one-way default binding mode for checkbox/radio value ([124498c3](http://github.com/aurelia/templating-binding/commit/124498c3ffe7238e1a812586b941fca048d2c8fc))
+
+
 ### 1.0.0-beta.1.2.1 (2016-03-29)
 
 

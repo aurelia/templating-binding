@@ -33,7 +33,7 @@
       },
       "children": [
         {
-          "id": 10,
+          "id": 11,
           "name": "createAttributeInstruction",
           "kind": 2048,
           "kindString": "Method",
@@ -42,7 +42,7 @@
           },
           "signatures": [
             {
-              "id": 11,
+              "id": 12,
               "name": "createAttributeInstruction",
               "kind": 4096,
               "kindString": "Call signature",
@@ -53,7 +53,7 @@
               },
               "parameters": [
                 {
-                  "id": 12,
+                  "id": 13,
                   "name": "resources",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -64,12 +64,12 @@
                   "type": {
                     "type": "reference",
                     "name": "ViewResources",
-                    "id": 1199,
+                    "id": 1202,
                     "moduleName": "\"aurelia-templating\""
                   }
                 },
                 {
-                  "id": 13,
+                  "id": 14,
                   "name": "element",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -83,7 +83,7 @@
                   }
                 },
                 {
-                  "id": 14,
+                  "id": 15,
                   "name": "info",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -97,7 +97,7 @@
                   }
                 },
                 {
-                  "id": 15,
+                  "id": 16,
                   "name": "existingInstruction",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -116,20 +116,20 @@
               "type": {
                 "type": "reference",
                 "name": "BehaviorInstruction",
-                "id": 1071,
+                "id": 1073,
                 "moduleName": "\"aurelia-templating\""
               },
               "inheritedFrom": {
                 "type": "reference",
                 "name": "BindingLanguage.createAttributeInstruction",
-                "id": 1189
+                "id": 1192
               }
             }
           ],
           "inheritedFrom": {
             "type": "reference",
             "name": "BindingLanguage.createAttributeInstruction",
-            "id": 1189
+            "id": 1192
           }
         },
         {
@@ -164,12 +164,26 @@
                   "type": {
                     "type": "reference",
                     "name": "ViewResources",
-                    "id": 1199,
+                    "id": 1202,
                     "moduleName": "\"aurelia-templating\""
                   }
                 },
                 {
                   "id": 8,
+                  "name": "elementName",
+                  "kind": 32768,
+                  "kindString": "Parameter",
+                  "flags": {},
+                  "comment": {
+                    "text": "The element name to inspect."
+                  },
+                  "type": {
+                    "type": "instrinct",
+                    "name": "string"
+                  }
+                },
+                {
+                  "id": 9,
                   "name": "attrName",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -183,13 +197,13 @@
                   }
                 },
                 {
-                  "id": 9,
+                  "id": 10,
                   "name": "attrValue",
                   "kind": 32768,
                   "kindString": "Parameter",
                   "flags": {},
                   "comment": {
-                    "text": "The attribute value to inspce."
+                    "text": "The attribute value to inspect."
                   },
                   "type": {
                     "type": "instrinct",
@@ -204,19 +218,19 @@
               "inheritedFrom": {
                 "type": "reference",
                 "name": "BindingLanguage.inspectAttribute",
-                "id": 1184
+                "id": 1186
               }
             }
           ],
           "inheritedFrom": {
             "type": "reference",
             "name": "BindingLanguage.inspectAttribute",
-            "id": 1184
+            "id": 1186
           }
         },
         {
-          "id": 16,
-          "name": "parseText",
+          "id": 17,
+          "name": "inspectTextContent",
           "kind": 2048,
           "kindString": "Method",
           "flags": {
@@ -224,8 +238,8 @@
           },
           "signatures": [
             {
-              "id": 17,
-              "name": "parseText",
+              "id": 18,
+              "name": "inspectTextContent",
               "kind": 4096,
               "kindString": "Call signature",
               "flags": {},
@@ -235,7 +249,7 @@
               },
               "parameters": [
                 {
-                  "id": 18,
+                  "id": 19,
                   "name": "resources",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -246,12 +260,12 @@
                   "type": {
                     "type": "reference",
                     "name": "ViewResources",
-                    "id": 1199,
+                    "id": 1202,
                     "moduleName": "\"aurelia-templating\""
                   }
                 },
                 {
-                  "id": 19,
+                  "id": 20,
                   "name": "value",
                   "kind": 32768,
                   "kindString": "Parameter",
@@ -271,15 +285,15 @@
               },
               "inheritedFrom": {
                 "type": "reference",
-                "name": "BindingLanguage.parseText",
-                "id": 1195
+                "name": "BindingLanguage.inspectTextContent",
+                "id": 1198
               }
             }
           ],
           "inheritedFrom": {
             "type": "reference",
-            "name": "BindingLanguage.parseText",
-            "id": 1195
+            "name": "BindingLanguage.inspectTextContent",
+            "id": 1198
           }
         }
       ],
@@ -288,9 +302,9 @@
           "title": "Methods",
           "kind": 2048,
           "children": [
-            10,
+            11,
             5,
-            16
+            17
           ]
         }
       ],
@@ -298,7 +312,7 @@
         {
           "type": "reference",
           "name": "BindingLanguage",
-          "id": 1183
+          "id": 1185
         }
       ]
     }
