@@ -3,7 +3,7 @@ import {TemplatingBindingLanguage} from '../src/binding-language';
 import {InterpolationBindingExpression} from '../src/interpolation-binding-expression';
 import {AttributeMap} from '../src/attribute-map';
 import * as LogManager from 'aurelia-logging';
-
+import {SVGAnalyzer} from 'aurelia-binding';
 var logger = LogManager.getLogger('templating-binding');
 
 describe('TemplatingBindingLanguage', () => {
@@ -13,7 +13,7 @@ describe('TemplatingBindingLanguage', () => {
       var parser = { parse: expression => '!' + expression },
           observerLocator = { getObserver: () => null, getAccessor: () => null },
           syntaxInterpreter = {};
-      language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, new AttributeMap());
+      language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, new AttributeMap(new SVGAnalyzer()));
       resources = { lookupFunctions: { valueConverters: name => null, bindingBehaviors: name => null } };
     });
 

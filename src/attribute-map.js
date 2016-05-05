@@ -1,13 +1,14 @@
-import {camelCase} from 'aurelia-binding';
+import {camelCase, SVGAnalyzer} from 'aurelia-binding';
 
-/**
- * Mapping between html element attributes and javascript object properties.
- */
 export class AttributeMap {
+  static inject = [SVGAnalyzer];
+
   elements = Object.create(null);
   allElements = Object.create(null);
 
-  constructor() {
+  constructor(svg) {
+    this.svg = svg;
+
     this.registerUniversal('accesskey', 'accessKey');
     this.registerUniversal('contenteditable', 'contentEditable');
     this.registerUniversal('tabindex', 'tabIndex');
@@ -55,6 +56,9 @@ export class AttributeMap {
    * Returns the javascript property name for a particlar HTML attribute.
    */
   map(elementName, attributeName) {
+    if (this.svg.isStandardSvgAttribute(elementName, attributeName)) {
+      return attributeName;
+    }
     elementName = elementName.toLowerCase();
     attributeName = attributeName.toLowerCase();
     const element = this.elements[elementName];

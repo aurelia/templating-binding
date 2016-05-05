@@ -15,7 +15,8 @@ import {
   EventManager,
   DirtyChecker,
   Parser,
-  createScopeForTest
+  createScopeForTest,
+  SVGAnalyzer
 } from 'aurelia-binding';
 
 import {ViewResources} from 'aurelia-templating';
@@ -39,7 +40,7 @@ describe('InterpolationBinding', () => {
     dirtyChecker.checkDelay = checkDelay / 2;
     observerLocator = new ObserverLocator(new TaskQueue(), eventManager, dirtyChecker, []);
     parser = new Parser();
-    let attributeMap = new AttributeMap();
+    let attributeMap = new AttributeMap(new SVGAnalyzer());
     syntaxInterpreter = new SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap);
     language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap);
     resources = new ViewResources();
