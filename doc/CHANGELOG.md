@@ -1,3 +1,11 @@
+### 1.0.0-beta.1.2.3 (2016-05-05)
+
+
+#### Bug Fixes
+
+* **AttributeMap:** handle standard SVG attributes ([288ba120](http://github.com/aurelia/templating-binding/commit/288ba120b4a093350b5385b8d657bd5bd5c34b3b))
+
+
 ### 1.0.0-beta.1.2.2 (2016-05-03)
 
 

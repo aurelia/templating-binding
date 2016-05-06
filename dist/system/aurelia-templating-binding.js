@@ -1,7 +1,7 @@
 'use strict';
 
 System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], function (_export, _context) {
-  var LogManager, camelCase, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression, BehaviorInstruction, BindingLanguage, _dec, _class2, _class3, _temp, _class4, _temp2, AttributeMap, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
+  var LogManager, camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression, BehaviorInstruction, BindingLanguage, _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3, AttributeMap, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
 
   function _possibleConstructorReturn(self, call) {
     if (!self) {
@@ -46,6 +46,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
       LogManager = _aureliaLogging;
     }, function (_aureliaBinding) {
       camelCase = _aureliaBinding.camelCase;
+      SVGAnalyzer = _aureliaBinding.SVGAnalyzer;
       bindingMode = _aureliaBinding.bindingMode;
       connectable = _aureliaBinding.connectable;
       enqueueBindingConnect = _aureliaBinding.enqueueBindingConnect;
@@ -61,12 +62,14 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
       BindingLanguage = _aureliaTemplating.BindingLanguage;
     }],
     execute: function () {
-      _export('AttributeMap', AttributeMap = function () {
-        function AttributeMap() {
+      _export('AttributeMap', AttributeMap = (_temp = _class = function () {
+        function AttributeMap(svg) {
           _classCallCheck(this, AttributeMap);
 
           this.elements = Object.create(null);
           this.allElements = Object.create(null);
+
+          this.svg = svg;
 
           this.registerUniversal('accesskey', 'accessKey');
           this.registerUniversal('contenteditable', 'contentEditable');
@@ -106,6 +109,9 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         AttributeMap.prototype.map = function map(elementName, attributeName) {
+          if (this.svg.isStandardSvgAttribute(elementName, attributeName)) {
+            return attributeName;
+          }
           elementName = elementName.toLowerCase();
           attributeName = attributeName.toLowerCase();
           var element = this.elements[elementName];
@@ -123,7 +129,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         return AttributeMap;
-      }());
+      }(), _class.inject = [SVGAnalyzer], _temp));
 
       _export('AttributeMap', AttributeMap);
 
@@ -329,7 +335,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
       _export('ChildInterpolationBinding', ChildInterpolationBinding);
 
-      _export('SyntaxInterpreter', SyntaxInterpreter = (_temp = _class3 = function () {
+      _export('SyntaxInterpreter', SyntaxInterpreter = (_temp2 = _class3 = function () {
         function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
           _classCallCheck(this, SyntaxInterpreter);
 
@@ -500,13 +506,13 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         return SyntaxInterpreter;
-      }(), _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp));
+      }(), _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2));
 
       _export('SyntaxInterpreter', SyntaxInterpreter);
 
       info = {};
 
-      _export('TemplatingBindingLanguage', TemplatingBindingLanguage = (_temp2 = _class4 = function (_BindingLanguage) {
+      _export('TemplatingBindingLanguage', TemplatingBindingLanguage = (_temp3 = _class4 = function (_BindingLanguage) {
         _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
         function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap) {
@@ -659,7 +665,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         return TemplatingBindingLanguage;
-      }(BindingLanguage), _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp2));
+      }(BindingLanguage), _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3));
 
       _export('TemplatingBindingLanguage', TemplatingBindingLanguage);
 

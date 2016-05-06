@@ -1,15 +1,16 @@
 import * as LogManager from 'aurelia-logging';
-import {camelCase,bindingMode,connectable,enqueueBindingConnect,Parser,ObserverLocator,EventManager,ListenerExpression,BindingExpression,CallExpression,NameExpression} from 'aurelia-binding';
+import {camelCase,SVGAnalyzer,bindingMode,connectable,enqueueBindingConnect,Parser,ObserverLocator,EventManager,ListenerExpression,BindingExpression,CallExpression,NameExpression} from 'aurelia-binding';
 import {BehaviorInstruction,BindingLanguage} from 'aurelia-templating';
 
-/**
- * Mapping between html element attributes and javascript object properties.
- */
 export class AttributeMap {
+  static inject = [SVGAnalyzer];
+
   elements = Object.create(null);
   allElements = Object.create(null);
 
-  constructor() {
+  constructor(svg) {
+    this.svg = svg;
+
     this.registerUniversal('accesskey', 'accessKey');
     this.registerUniversal('contenteditable', 'contentEditable');
     this.registerUniversal('tabindex', 'tabIndex');
@@ -57,6 +58,9 @@ export class AttributeMap {
    * Returns the javascript property name for a particlar HTML attribute.
    */
   map(elementName, attributeName) {
+    if (this.svg.isStandardSvgAttribute(elementName, attributeName)) {
+      return attributeName;
+    }
     elementName = elementName.toLowerCase();
     attributeName = attributeName.toLowerCase();
     const element = this.elements[elementName];

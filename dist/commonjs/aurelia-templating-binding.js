@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.TemplatingBindingLanguage = exports.SyntaxInterpreter = exports.ChildInterpolationBinding = exports.InterpolationBinding = exports.InterpolationBindingExpression = exports.AttributeMap = undefined;
 
-var _dec, _class2, _class3, _temp, _class4, _temp2;
+var _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3;
 
 exports.configure = configure;
 
@@ -25,12 +25,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var AttributeMap = exports.AttributeMap = function () {
-  function AttributeMap() {
+var AttributeMap = exports.AttributeMap = (_temp = _class = function () {
+  function AttributeMap(svg) {
     _classCallCheck(this, AttributeMap);
 
     this.elements = Object.create(null);
     this.allElements = Object.create(null);
+
+    this.svg = svg;
 
     this.registerUniversal('accesskey', 'accessKey');
     this.registerUniversal('contenteditable', 'contentEditable');
@@ -70,6 +72,9 @@ var AttributeMap = exports.AttributeMap = function () {
   };
 
   AttributeMap.prototype.map = function map(elementName, attributeName) {
+    if (this.svg.isStandardSvgAttribute(elementName, attributeName)) {
+      return attributeName;
+    }
     elementName = elementName.toLowerCase();
     attributeName = attributeName.toLowerCase();
     var element = this.elements[elementName];
@@ -87,7 +92,7 @@ var AttributeMap = exports.AttributeMap = function () {
   };
 
   return AttributeMap;
-}();
+}(), _class.inject = [_aureliaBinding.SVGAnalyzer], _temp);
 
 var InterpolationBindingExpression = exports.InterpolationBindingExpression = function () {
   function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, lookupFunctions, attribute) {
@@ -292,7 +297,7 @@ var ChildInterpolationBinding = exports.ChildInterpolationBinding = (_dec = (0, 
 
   return ChildInterpolationBinding;
 }()) || _class2);
-var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp = _class3 = function () {
+var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class3 = function () {
   function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
     _classCallCheck(this, SyntaxInterpreter);
 
@@ -463,11 +468,11 @@ var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp = _class3 = function 
   };
 
   return SyntaxInterpreter;
-}(), _class3.inject = [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, _aureliaBinding.EventManager, AttributeMap], _temp);
+}(), _class3.inject = [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, _aureliaBinding.EventManager, AttributeMap], _temp2);
 
 var info = {};
 
-var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (_temp2 = _class4 = function (_BindingLanguage) {
+var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (_temp3 = _class4 = function (_BindingLanguage) {
   _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
   function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap) {
@@ -620,7 +625,7 @@ var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (_temp2 = _c
   };
 
   return TemplatingBindingLanguage;
-}(_aureliaTemplating.BindingLanguage), _class4.inject = [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, SyntaxInterpreter, AttributeMap], _temp2);
+}(_aureliaTemplating.BindingLanguage), _class4.inject = [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3);
 function configure(config) {
   config.container.registerSingleton(_aureliaTemplating.BindingLanguage, TemplatingBindingLanguage);
   config.container.registerAlias(_aureliaTemplating.BindingLanguage, TemplatingBindingLanguage);

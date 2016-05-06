@@ -1,14 +1,16 @@
-var _dec, _class2, _class3, _temp, _class4, _temp2;
+var _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3;
 
 import * as LogManager from 'aurelia-logging';
-import { camelCase, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression } from 'aurelia-binding';
+import { camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression } from 'aurelia-binding';
 import { BehaviorInstruction, BindingLanguage } from 'aurelia-templating';
 
-export let AttributeMap = class AttributeMap {
+export let AttributeMap = (_temp = _class = class AttributeMap {
 
-  constructor() {
+  constructor(svg) {
     this.elements = Object.create(null);
     this.allElements = Object.create(null);
+
+    this.svg = svg;
 
     this.registerUniversal('accesskey', 'accessKey');
     this.registerUniversal('contenteditable', 'contentEditable');
@@ -48,6 +50,9 @@ export let AttributeMap = class AttributeMap {
   }
 
   map(elementName, attributeName) {
+    if (this.svg.isStandardSvgAttribute(elementName, attributeName)) {
+      return attributeName;
+    }
     elementName = elementName.toLowerCase();
     attributeName = attributeName.toLowerCase();
     const element = this.elements[elementName];
@@ -63,7 +68,7 @@ export let AttributeMap = class AttributeMap {
     }
     return camelCase(attributeName);
   }
-};
+}, _class.inject = [SVGAnalyzer], _temp);
 
 export let InterpolationBindingExpression = class InterpolationBindingExpression {
   constructor(observerLocator, targetProperty, parts, mode, lookupFunctions, attribute) {
@@ -257,7 +262,7 @@ export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = cla
   }
 }) || _class2);
 
-export let SyntaxInterpreter = (_temp = _class3 = class SyntaxInterpreter {
+export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
 
   constructor(parser, observerLocator, eventManager, attributeMap) {
     this.parser = parser;
@@ -425,11 +430,11 @@ export let SyntaxInterpreter = (_temp = _class3 = class SyntaxInterpreter {
 
     return instruction;
   }
-}, _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp);
+}, _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2);
 
 let info = {};
 
-export let TemplatingBindingLanguage = (_temp2 = _class4 = class TemplatingBindingLanguage extends BindingLanguage {
+export let TemplatingBindingLanguage = (_temp3 = _class4 = class TemplatingBindingLanguage extends BindingLanguage {
 
   constructor(parser, observerLocator, syntaxInterpreter, attributeMap) {
     super();
@@ -575,7 +580,7 @@ export let TemplatingBindingLanguage = (_temp2 = _class4 = class TemplatingBindi
     parts[partIndex] = value.substr(pos);
     return parts;
   }
-}, _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp2);
+}, _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3);
 
 export function configure(config) {
   config.container.registerSingleton(BindingLanguage, TemplatingBindingLanguage);
