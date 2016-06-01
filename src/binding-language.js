@@ -31,7 +31,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       info.command = parts[1].trim();
 
       if (info.command === 'ref') {
-        info.expression = new NameExpression(this.parser.parse(attrValue), info.attrName);
+        info.expression = new NameExpression(this.parser.parse(attrValue), info.attrName, resources.lookupFunctions);
         info.command = null;
         info.attrName = 'ref';
       } else {
@@ -41,7 +41,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       info.attrName = attrName;
       info.attrValue = attrValue;
       info.command = null;
-      info.expression = new NameExpression(this.parser.parse(attrValue), 'element');
+      info.expression = new NameExpression(this.parser.parse(attrValue), 'element', resources.lookupFunctions);
     } else {
       info.attrName = attrName;
       info.attrValue = attrValue;
