@@ -50,17 +50,13 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   }
 
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
+  
 
   var _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3;
 
   var AttributeMap = exports.AttributeMap = (_temp = _class = function () {
     function AttributeMap(svg) {
-      _classCallCheck(this, AttributeMap);
+      
 
       this.elements = Object.create(null);
       this.allElements = Object.create(null);
@@ -129,7 +125,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
 
   var InterpolationBindingExpression = exports.InterpolationBindingExpression = function () {
     function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, lookupFunctions, attribute) {
-      _classCallCheck(this, InterpolationBindingExpression);
+      
 
       this.observerLocator = observerLocator;
       this.targetProperty = targetProperty;
@@ -160,7 +156,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
 
   var InterpolationBinding = exports.InterpolationBinding = function () {
     function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
-      _classCallCheck(this, InterpolationBinding);
+      
 
       validateTarget(target, targetProperty);
       this.observerLocator = observerLocator;
@@ -230,7 +226,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
 
   var ChildInterpolationBinding = exports.ChildInterpolationBinding = (_dec = (0, _aureliaBinding.connectable)(), _dec(_class2 = function () {
     function ChildInterpolationBinding(target, observerLocator, sourceExpression, mode, lookupFunctions, targetProperty, left, right) {
-      _classCallCheck(this, ChildInterpolationBinding);
+      
 
       if (target instanceof InterpolationBinding) {
         this.parent = target;
@@ -332,7 +328,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
   }()) || _class2);
   var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class3 = function () {
     function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
-      _classCallCheck(this, SyntaxInterpreter);
+      
 
       this.parser = parser;
       this.observerLocator = observerLocator;
@@ -509,7 +505,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
     _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
     function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap) {
-      _classCallCheck(this, TemplatingBindingLanguage);
+      
 
       var _this = _possibleConstructorReturn(this, _BindingLanguage.call(this));
 
@@ -533,7 +529,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
         info.command = parts[1].trim();
 
         if (info.command === 'ref') {
-          info.expression = new _aureliaBinding.NameExpression(this.parser.parse(attrValue), info.attrName);
+          info.expression = new _aureliaBinding.NameExpression(this.parser.parse(attrValue), info.attrName, resources.lookupFunctions);
           info.command = null;
           info.attrName = 'ref';
         } else {
@@ -543,7 +539,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
         info.attrName = attrName;
         info.attrValue = attrValue;
         info.command = null;
-        info.expression = new _aureliaBinding.NameExpression(this.parser.parse(attrValue), 'element');
+        info.expression = new _aureliaBinding.NameExpression(this.parser.parse(attrValue), 'element', resources.lookupFunctions);
       } else {
         info.attrName = attrName;
         info.attrValue = attrValue;

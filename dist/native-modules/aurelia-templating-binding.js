@@ -1,12 +1,19 @@
 var _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3;
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
 import * as LogManager from 'aurelia-logging';
 import { camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression } from 'aurelia-binding';
 import { BehaviorInstruction, BindingLanguage } from 'aurelia-templating';
 
-export let AttributeMap = (_temp = _class = class AttributeMap {
+export var AttributeMap = (_temp = _class = function () {
+  function AttributeMap(svg) {
+    
 
-  constructor(svg) {
     this.elements = Object.create(null);
     this.allElements = Object.create(null);
 
@@ -37,25 +44,25 @@ export let AttributeMap = (_temp = _class = class AttributeMap {
     this.register('th', 'colspan', 'colSpan');
   }
 
-  register(elementName, attributeName, propertyName) {
+  AttributeMap.prototype.register = function register(elementName, attributeName, propertyName) {
     elementName = elementName.toLowerCase();
     attributeName = attributeName.toLowerCase();
-    const element = this.elements[elementName] = this.elements[elementName] || Object.create(null);
+    var element = this.elements[elementName] = this.elements[elementName] || Object.create(null);
     element[attributeName] = propertyName;
-  }
+  };
 
-  registerUniversal(attributeName, propertyName) {
+  AttributeMap.prototype.registerUniversal = function registerUniversal(attributeName, propertyName) {
     attributeName = attributeName.toLowerCase();
     this.allElements[attributeName] = propertyName;
-  }
+  };
 
-  map(elementName, attributeName) {
+  AttributeMap.prototype.map = function map(elementName, attributeName) {
     if (this.svg.isStandardSvgAttribute(elementName, attributeName)) {
       return attributeName;
     }
     elementName = elementName.toLowerCase();
     attributeName = attributeName.toLowerCase();
-    const element = this.elements[elementName];
+    var element = this.elements[elementName];
     if (element !== undefined && attributeName in element) {
       return element[attributeName];
     }
@@ -67,11 +74,15 @@ export let AttributeMap = (_temp = _class = class AttributeMap {
       return attributeName;
     }
     return camelCase(attributeName);
-  }
-}, _class.inject = [SVGAnalyzer], _temp);
+  };
 
-export let InterpolationBindingExpression = class InterpolationBindingExpression {
-  constructor(observerLocator, targetProperty, parts, mode, lookupFunctions, attribute) {
+  return AttributeMap;
+}(), _class.inject = [SVGAnalyzer], _temp);
+
+export var InterpolationBindingExpression = function () {
+  function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, lookupFunctions, attribute) {
+    
+
     this.observerLocator = observerLocator;
     this.targetProperty = targetProperty;
     this.parts = parts;
@@ -81,13 +92,15 @@ export let InterpolationBindingExpression = class InterpolationBindingExpression
     this.discrete = false;
   }
 
-  createBinding(target) {
+  InterpolationBindingExpression.prototype.createBinding = function createBinding(target) {
     if (this.parts.length === 3) {
       return new ChildInterpolationBinding(target, this.observerLocator, this.parts[1], this.mode, this.lookupFunctions, this.targetProperty, this.parts[0], this.parts[2]);
     }
     return new InterpolationBinding(this.observerLocator, this.parts, target, this.targetProperty, this.mode, this.lookupFunctions);
-  }
-};
+  };
+
+  return InterpolationBindingExpression;
+}();
 
 function validateTarget(target, propertyName) {
   if (propertyName === 'style') {
@@ -97,8 +110,10 @@ function validateTarget(target, propertyName) {
   }
 }
 
-export let InterpolationBinding = class InterpolationBinding {
-  constructor(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
+export var InterpolationBinding = function () {
+  function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
+    
+
     validateTarget(target, targetProperty);
     this.observerLocator = observerLocator;
     this.parts = parts;
@@ -109,27 +124,27 @@ export let InterpolationBinding = class InterpolationBinding {
     this.lookupFunctions = lookupFunctions;
   }
 
-  interpolate() {
+  InterpolationBinding.prototype.interpolate = function interpolate() {
     if (this.isBound) {
-      let value = '';
-      let parts = this.parts;
-      for (let i = 0, ii = parts.length; i < ii; i++) {
-        value += i % 2 === 0 ? parts[i] : this[`childBinding${ i }`].value;
+      var value = '';
+      var parts = this.parts;
+      for (var i = 0, ii = parts.length; i < ii; i++) {
+        value += i % 2 === 0 ? parts[i] : this['childBinding' + i].value;
       }
       this.targetAccessor.setValue(value, this.target, this.targetProperty);
     }
-  }
+  };
 
-  updateOneTimeBindings() {
-    for (let i = 1, ii = this.parts.length; i < ii; i += 2) {
-      let child = this[`childBinding${ i }`];
+  InterpolationBinding.prototype.updateOneTimeBindings = function updateOneTimeBindings() {
+    for (var i = 1, ii = this.parts.length; i < ii; i += 2) {
+      var child = this['childBinding' + i];
       if (child.mode === bindingMode.oneTime) {
         child.call();
       }
     }
-  }
+  };
 
-  bind(source) {
+  InterpolationBinding.prototype.bind = function bind(source) {
     if (this.isBound) {
       if (this.source === source) {
         return;
@@ -138,33 +153,37 @@ export let InterpolationBinding = class InterpolationBinding {
     }
     this.source = source;
 
-    let parts = this.parts;
-    for (let i = 1, ii = parts.length; i < ii; i += 2) {
-      let binding = new ChildInterpolationBinding(this, this.observerLocator, parts[i], this.mode, this.lookupFunctions);
+    var parts = this.parts;
+    for (var i = 1, ii = parts.length; i < ii; i += 2) {
+      var binding = new ChildInterpolationBinding(this, this.observerLocator, parts[i], this.mode, this.lookupFunctions);
       binding.bind(source);
-      this[`childBinding${ i }`] = binding;
+      this['childBinding' + i] = binding;
     }
 
     this.isBound = true;
     this.interpolate();
-  }
+  };
 
-  unbind() {
+  InterpolationBinding.prototype.unbind = function unbind() {
     if (!this.isBound) {
       return;
     }
     this.isBound = false;
     this.source = null;
-    let parts = this.parts;
-    for (let i = 1, ii = parts.length; i < ii; i += 2) {
-      let name = `childBinding${ i }`;
+    var parts = this.parts;
+    for (var i = 1, ii = parts.length; i < ii; i += 2) {
+      var name = 'childBinding' + i;
       this[name].unbind();
     }
-  }
-};
+  };
 
-export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = class ChildInterpolationBinding {
-  constructor(target, observerLocator, sourceExpression, mode, lookupFunctions, targetProperty, left, right) {
+  return InterpolationBinding;
+}();
+
+export var ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = function () {
+  function ChildInterpolationBinding(target, observerLocator, sourceExpression, mode, lookupFunctions, targetProperty, left, right) {
+    
+
     if (target instanceof InterpolationBinding) {
       this.parent = target;
     } else {
@@ -181,7 +200,7 @@ export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = cla
     this.right = right;
   }
 
-  updateTarget(value) {
+  ChildInterpolationBinding.prototype.updateTarget = function updateTarget(value) {
     value = value === null || value === undefined ? '' : value.toString();
     if (value !== this.value) {
       this.value = value;
@@ -191,14 +210,14 @@ export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = cla
         this.targetAccessor.setValue(this.left + value + this.right, this.target, this.targetProperty);
       }
     }
-  }
+  };
 
-  call() {
+  ChildInterpolationBinding.prototype.call = function call() {
     if (!this.isBound) {
       return;
     }
 
-    let value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+    var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
     this.updateTarget(value);
 
     if (this.mode !== bindingMode.oneTime) {
@@ -209,9 +228,9 @@ export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = cla
       }
       this.unobserve(false);
     }
-  }
+  };
 
-  bind(source) {
+  ChildInterpolationBinding.prototype.bind = function bind(source) {
     if (this.isBound) {
       if (this.source === source) {
         return;
@@ -221,71 +240,74 @@ export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = cla
     this.isBound = true;
     this.source = source;
 
-    let sourceExpression = this.sourceExpression;
+    var sourceExpression = this.sourceExpression;
     if (sourceExpression.bind) {
       sourceExpression.bind(this, source, this.lookupFunctions);
     }
 
-    let value = sourceExpression.evaluate(source, this.lookupFunctions);
+    var value = sourceExpression.evaluate(source, this.lookupFunctions);
     this.updateTarget(value);
 
     if (this.mode === bindingMode.oneWay) {
       enqueueBindingConnect(this);
     }
-  }
+  };
 
-  unbind() {
+  ChildInterpolationBinding.prototype.unbind = function unbind() {
     if (!this.isBound) {
       return;
     }
     this.isBound = false;
-    let sourceExpression = this.sourceExpression;
+    var sourceExpression = this.sourceExpression;
     if (sourceExpression.unbind) {
       sourceExpression.unbind(this, this.source);
     }
     this.source = null;
     this.unobserve(true);
-  }
+  };
 
-  connect(evaluate) {
+  ChildInterpolationBinding.prototype.connect = function connect(evaluate) {
     if (!this.isBound) {
       return;
     }
     if (evaluate) {
-      let value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+      var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
       this.updateTarget(value);
     }
     this.sourceExpression.connect(this, this.source);
     if (this.value instanceof Array) {
       this.observeArray(this.value);
     }
-  }
-}) || _class2);
+  };
 
-export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
+  return ChildInterpolationBinding;
+}()) || _class2);
 
-  constructor(parser, observerLocator, eventManager, attributeMap) {
+export var SyntaxInterpreter = (_temp2 = _class3 = function () {
+  function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
+    
+
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.eventManager = eventManager;
     this.attributeMap = attributeMap;
   }
 
-  interpret(resources, element, info, existingInstruction, context) {
+  SyntaxInterpreter.prototype.interpret = function interpret(resources, element, info, existingInstruction, context) {
     if (info.command in this) {
       return this[info.command](resources, element, info, existingInstruction, context);
     }
 
     return this.handleUnknownCommand(resources, element, info, existingInstruction, context);
-  }
+  };
 
-  handleUnknownCommand(resources, element, info, existingInstruction, context) {
+  SyntaxInterpreter.prototype.handleUnknownCommand = function handleUnknownCommand(resources, element, info, existingInstruction, context) {
     LogManager.getLogger('templating-binding').warn('Unknown binding command.', info);
     return existingInstruction;
-  }
+  };
 
-  determineDefaultBindingMode(element, attrName, context) {
-    let tagName = element.tagName.toLowerCase();
+  SyntaxInterpreter.prototype.determineDefaultBindingMode = function determineDefaultBindingMode(element, attrName, context) {
+    var tagName = element.tagName.toLowerCase();
 
     if (tagName === 'input' && (attrName === 'value' || attrName === 'files') && element.type !== 'checkbox' && element.type !== 'radio' || tagName === 'input' && attrName === 'checked' && (element.type === 'checkbox' || element.type === 'radio') || (tagName === 'textarea' || tagName === 'select') && attrName === 'value' || (attrName === 'textcontent' || attrName === 'innerhtml') && element.contentEditable === 'true' || attrName === 'scrolltop' || attrName === 'scrollleft') {
       return bindingMode.twoWay;
@@ -296,43 +318,43 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
     }
 
     return bindingMode.oneWay;
-  }
+  };
 
-  bind(resources, element, info, existingInstruction, context) {
-    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  SyntaxInterpreter.prototype.bind = function bind(resources, element, info, existingInstruction, context) {
+    var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context), resources.lookupFunctions);
 
     return instruction;
-  }
+  };
 
-  trigger(resources, element, info) {
+  SyntaxInterpreter.prototype.trigger = function trigger(resources, element, info) {
     return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true, resources.lookupFunctions);
-  }
+  };
 
-  delegate(resources, element, info) {
+  SyntaxInterpreter.prototype.delegate = function delegate(resources, element, info) {
     return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true, resources.lookupFunctions);
-  }
+  };
 
-  call(resources, element, info, existingInstruction) {
-    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  SyntaxInterpreter.prototype.call = function call(resources, element, info, existingInstruction) {
+    var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new CallExpression(this.observerLocator, info.attrName, this.parser.parse(info.attrValue), resources.lookupFunctions);
 
     return instruction;
-  }
+  };
 
-  options(resources, element, info, existingInstruction, context) {
-    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
-    let attrValue = info.attrValue;
-    let language = this.language;
-    let name = null;
-    let target = '';
-    let current;
-    let i;
-    let ii;
-    let inString = false;
-    let inEscape = false;
+  SyntaxInterpreter.prototype.options = function options(resources, element, info, existingInstruction, context) {
+    var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+    var attrValue = info.attrValue;
+    var language = this.language;
+    var name = null;
+    var target = '';
+    var current = void 0;
+    var i = void 0;
+    var ii = void 0;
+    var inString = false;
+    var inEscape = false;
 
     for (i = 0, ii = attrValue.length; i < ii; ++i) {
       current = attrValue[i];
@@ -375,14 +397,14 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
     }
 
     return instruction;
-  }
+  };
 
-  'for'(resources, element, info, existingInstruction) {
-    let parts;
-    let keyValue;
-    let instruction;
-    let attrValue;
-    let isDestructuring;
+  SyntaxInterpreter.prototype['for'] = function _for(resources, element, info, existingInstruction) {
+    var parts = void 0;
+    var keyValue = void 0;
+    var instruction = void 0;
+    var attrValue = void 0;
+    var isDestructuring = void 0;
 
     attrValue = info.attrValue;
     isDestructuring = attrValue.match(/^ *[[].+[\]]/);
@@ -405,49 +427,56 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
     instruction.attributes.items = new BindingExpression(this.observerLocator, 'items', this.parser.parse(parts[1]), bindingMode.oneWay, resources.lookupFunctions);
 
     return instruction;
-  }
+  };
 
-  'two-way'(resources, element, info, existingInstruction) {
-    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  SyntaxInterpreter.prototype['two-way'] = function twoWay(resources, element, info, existingInstruction) {
+    var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.twoWay, resources.lookupFunctions);
 
     return instruction;
-  }
+  };
 
-  'one-way'(resources, element, info, existingInstruction) {
-    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  SyntaxInterpreter.prototype['one-way'] = function oneWay(resources, element, info, existingInstruction) {
+    var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.oneWay, resources.lookupFunctions);
 
     return instruction;
-  }
+  };
 
-  'one-time'(resources, element, info, existingInstruction) {
-    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  SyntaxInterpreter.prototype['one-time'] = function oneTime(resources, element, info, existingInstruction) {
+    var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.oneTime, resources.lookupFunctions);
 
     return instruction;
+  };
+
+  return SyntaxInterpreter;
+}(), _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2);
+
+var info = {};
+
+export var TemplatingBindingLanguage = (_temp3 = _class4 = function (_BindingLanguage) {
+  _inherits(TemplatingBindingLanguage, _BindingLanguage);
+
+  function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap) {
+    
+
+    var _this = _possibleConstructorReturn(this, _BindingLanguage.call(this));
+
+    _this.parser = parser;
+    _this.observerLocator = observerLocator;
+    _this.syntaxInterpreter = syntaxInterpreter;
+    _this.emptyStringExpression = _this.parser.parse('\'\'');
+    syntaxInterpreter.language = _this;
+    _this.attributeMap = attributeMap;
+    return _this;
   }
-}, _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2);
 
-let info = {};
-
-export let TemplatingBindingLanguage = (_temp3 = _class4 = class TemplatingBindingLanguage extends BindingLanguage {
-
-  constructor(parser, observerLocator, syntaxInterpreter, attributeMap) {
-    super();
-    this.parser = parser;
-    this.observerLocator = observerLocator;
-    this.syntaxInterpreter = syntaxInterpreter;
-    this.emptyStringExpression = this.parser.parse('\'\'');
-    syntaxInterpreter.language = this;
-    this.attributeMap = attributeMap;
-  }
-
-  inspectAttribute(resources, elementName, attrName, attrValue) {
-    let parts = attrName.split('.');
+  TemplatingBindingLanguage.prototype.inspectAttribute = function inspectAttribute(resources, elementName, attrName, attrValue) {
+    var parts = attrName.split('.');
 
     info.defaultBindingMode = null;
 
@@ -472,7 +501,7 @@ export let TemplatingBindingLanguage = (_temp3 = _class4 = class TemplatingBindi
       info.attrName = attrName;
       info.attrValue = attrValue;
       info.command = null;
-      const interpolationParts = this.parseInterpolation(resources, attrValue);
+      var interpolationParts = this.parseInterpolation(resources, attrValue);
       if (interpolationParts === null) {
         info.expression = null;
       } else {
@@ -481,10 +510,10 @@ export let TemplatingBindingLanguage = (_temp3 = _class4 = class TemplatingBindi
     }
 
     return info;
-  }
+  };
 
-  createAttributeInstruction(resources, element, theInfo, existingInstruction, context) {
-    let instruction;
+  TemplatingBindingLanguage.prototype.createAttributeInstruction = function createAttributeInstruction(resources, element, theInfo, existingInstruction, context) {
+    var instruction = void 0;
 
     if (theInfo.expression) {
       if (theInfo.attrName === 'ref') {
@@ -498,26 +527,26 @@ export let TemplatingBindingLanguage = (_temp3 = _class4 = class TemplatingBindi
     }
 
     return instruction;
-  }
+  };
 
-  inspectTextContent(resources, value) {
-    const parts = this.parseInterpolation(resources, value);
+  TemplatingBindingLanguage.prototype.inspectTextContent = function inspectTextContent(resources, value) {
+    var parts = this.parseInterpolation(resources, value);
     if (parts === null) {
       return null;
     }
     return new InterpolationBindingExpression(this.observerLocator, 'textContent', parts, bindingMode.oneWay, resources.lookupFunctions, 'textContent');
-  }
+  };
 
-  parseInterpolation(resources, value) {
-    let i = value.indexOf('${', 0);
-    let ii = value.length;
-    let char;
-    let pos = 0;
-    let open = 0;
-    let quote = null;
-    let interpolationStart;
-    let parts;
-    let partIndex = 0;
+  TemplatingBindingLanguage.prototype.parseInterpolation = function parseInterpolation(resources, value) {
+    var i = value.indexOf('${', 0);
+    var ii = value.length;
+    var char = void 0;
+    var pos = 0;
+    var open = 0;
+    var quote = null;
+    var interpolationStart = void 0;
+    var parts = void 0;
+    var partIndex = 0;
 
     while (i >= 0 && i < ii - 2) {
       open = 1;
@@ -579,8 +608,10 @@ export let TemplatingBindingLanguage = (_temp3 = _class4 = class TemplatingBindi
 
     parts[partIndex] = value.substr(pos);
     return parts;
-  }
-}, _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3);
+  };
+
+  return TemplatingBindingLanguage;
+}(BindingLanguage), _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3);
 
 export function configure(config) {
   config.container.registerSingleton(BindingLanguage, TemplatingBindingLanguage);

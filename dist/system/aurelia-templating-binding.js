@@ -1,6 +1,8 @@
 'use strict';
 
 System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], function (_export, _context) {
+  "use strict";
+
   var LogManager, camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression, BehaviorInstruction, BindingLanguage, _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3, AttributeMap, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
 
   function _possibleConstructorReturn(self, call) {
@@ -27,11 +29,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   }
 
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
+  
 
   function validateTarget(target, propertyName) {
     if (propertyName === 'style') {
@@ -64,7 +62,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
     execute: function () {
       _export('AttributeMap', AttributeMap = (_temp = _class = function () {
         function AttributeMap(svg) {
-          _classCallCheck(this, AttributeMap);
+          
 
           this.elements = Object.create(null);
           this.allElements = Object.create(null);
@@ -135,7 +133,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
       _export('InterpolationBindingExpression', InterpolationBindingExpression = function () {
         function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, lookupFunctions, attribute) {
-          _classCallCheck(this, InterpolationBindingExpression);
+          
 
           this.observerLocator = observerLocator;
           this.targetProperty = targetProperty;
@@ -160,7 +158,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
       _export('InterpolationBinding', InterpolationBinding = function () {
         function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
-          _classCallCheck(this, InterpolationBinding);
+          
 
           validateTarget(target, targetProperty);
           this.observerLocator = observerLocator;
@@ -232,7 +230,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
       _export('ChildInterpolationBinding', ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = function () {
         function ChildInterpolationBinding(target, observerLocator, sourceExpression, mode, lookupFunctions, targetProperty, left, right) {
-          _classCallCheck(this, ChildInterpolationBinding);
+          
 
           if (target instanceof InterpolationBinding) {
             this.parent = target;
@@ -337,7 +335,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
       _export('SyntaxInterpreter', SyntaxInterpreter = (_temp2 = _class3 = function () {
         function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
-          _classCallCheck(this, SyntaxInterpreter);
+          
 
           this.parser = parser;
           this.observerLocator = observerLocator;
@@ -516,7 +514,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
         function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap) {
-          _classCallCheck(this, TemplatingBindingLanguage);
+          
 
           var _this = _possibleConstructorReturn(this, _BindingLanguage.call(this));
 
@@ -540,7 +538,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             info.command = parts[1].trim();
 
             if (info.command === 'ref') {
-              info.expression = new NameExpression(this.parser.parse(attrValue), info.attrName);
+              info.expression = new NameExpression(this.parser.parse(attrValue), info.attrName, resources.lookupFunctions);
               info.command = null;
               info.attrName = 'ref';
             } else {
@@ -550,7 +548,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             info.attrName = attrName;
             info.attrValue = attrValue;
             info.command = null;
-            info.expression = new NameExpression(this.parser.parse(attrValue), 'element');
+            info.expression = new NameExpression(this.parser.parse(attrValue), 'element', resources.lookupFunctions);
           } else {
             info.attrName = attrName;
             info.attrValue = attrValue;

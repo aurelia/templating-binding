@@ -23,11 +23,11 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 
 var AttributeMap = exports.AttributeMap = (_temp = _class = function () {
   function AttributeMap(svg) {
-    _classCallCheck(this, AttributeMap);
+    
 
     this.elements = Object.create(null);
     this.allElements = Object.create(null);
@@ -96,7 +96,7 @@ var AttributeMap = exports.AttributeMap = (_temp = _class = function () {
 
 var InterpolationBindingExpression = exports.InterpolationBindingExpression = function () {
   function InterpolationBindingExpression(observerLocator, targetProperty, parts, mode, lookupFunctions, attribute) {
-    _classCallCheck(this, InterpolationBindingExpression);
+    
 
     this.observerLocator = observerLocator;
     this.targetProperty = targetProperty;
@@ -127,7 +127,7 @@ function validateTarget(target, propertyName) {
 
 var InterpolationBinding = exports.InterpolationBinding = function () {
   function InterpolationBinding(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
-    _classCallCheck(this, InterpolationBinding);
+    
 
     validateTarget(target, targetProperty);
     this.observerLocator = observerLocator;
@@ -197,7 +197,7 @@ var InterpolationBinding = exports.InterpolationBinding = function () {
 
 var ChildInterpolationBinding = exports.ChildInterpolationBinding = (_dec = (0, _aureliaBinding.connectable)(), _dec(_class2 = function () {
   function ChildInterpolationBinding(target, observerLocator, sourceExpression, mode, lookupFunctions, targetProperty, left, right) {
-    _classCallCheck(this, ChildInterpolationBinding);
+    
 
     if (target instanceof InterpolationBinding) {
       this.parent = target;
@@ -299,7 +299,7 @@ var ChildInterpolationBinding = exports.ChildInterpolationBinding = (_dec = (0, 
 }()) || _class2);
 var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class3 = function () {
   function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
-    _classCallCheck(this, SyntaxInterpreter);
+    
 
     this.parser = parser;
     this.observerLocator = observerLocator;
@@ -476,7 +476,7 @@ var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (_temp3 = _c
   _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
   function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap) {
-    _classCallCheck(this, TemplatingBindingLanguage);
+    
 
     var _this = _possibleConstructorReturn(this, _BindingLanguage.call(this));
 
@@ -500,7 +500,7 @@ var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (_temp3 = _c
       info.command = parts[1].trim();
 
       if (info.command === 'ref') {
-        info.expression = new _aureliaBinding.NameExpression(this.parser.parse(attrValue), info.attrName);
+        info.expression = new _aureliaBinding.NameExpression(this.parser.parse(attrValue), info.attrName, resources.lookupFunctions);
         info.command = null;
         info.attrName = 'ref';
       } else {
@@ -510,7 +510,7 @@ var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (_temp3 = _c
       info.attrName = attrName;
       info.attrValue = attrValue;
       info.command = null;
-      info.expression = new _aureliaBinding.NameExpression(this.parser.parse(attrValue), 'element');
+      info.expression = new _aureliaBinding.NameExpression(this.parser.parse(attrValue), 'element', resources.lookupFunctions);
     } else {
       info.attrName = attrName;
       info.attrValue = attrValue;
