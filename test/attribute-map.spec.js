@@ -19,5 +19,7 @@ describe('AttributeMap', () => {
 
     expect(attributeMap.map('svg', 'viewBox')).toBe('viewBox');
     expect(attributeMap.map('svg', 'stroke-width')).toBe('stroke-width');
+
+    expect(attributeMap.map('textarea', 'maxlength')).toBe('maxLength');
   });
 });
