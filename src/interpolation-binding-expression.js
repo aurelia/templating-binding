@@ -148,14 +148,14 @@ export class ChildInterpolationBinding {
       return;
     }
 
-    let value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
-    this.updateTarget(value);
+    this.rawValue = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+    this.updateTarget(this.rawValue);
 
     if (this.mode !== bindingMode.oneTime) {
       this._version++;
       this.sourceExpression.connect(this, this.source);
-      if (value instanceof Array) {
-        this.observeArray(value);
+      if (this.rawValue instanceof Array) {
+        this.observeArray(this.rawValue);
       }
       this.unobserve(false);
     }
@@ -176,8 +176,8 @@ export class ChildInterpolationBinding {
       sourceExpression.bind(this, source, this.lookupFunctions);
     }
 
-    let value = sourceExpression.evaluate(source, this.lookupFunctions);
-    this.updateTarget(value);
+    this.rawValue = sourceExpression.evaluate(source, this.lookupFunctions);
+    this.updateTarget(this.rawValue);
 
     if (this.mode === bindingMode.oneWay) {
       enqueueBindingConnect(this);
@@ -194,6 +194,8 @@ export class ChildInterpolationBinding {
       sourceExpression.unbind(this, this.source);
     }
     this.source = null;
+    this.value = null;
+    this.rawValue = null;
     this.unobserve(true);
   }
 
@@ -202,12 +204,12 @@ export class ChildInterpolationBinding {
       return;
     }
     if (evaluate) {
-      let value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
-      this.updateTarget(value);
+      this.rawValue = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+      this.updateTarget(this.rawValue);
     }
     this.sourceExpression.connect(this, this.source);
-    if (this.value instanceof Array) {
-      this.observeArray(this.value);
+    if (this.rawValue instanceof Array) {
+      this.observeArray(this.rawValue);
     }
   }
 }

@@ -83,7 +83,7 @@ describe('InterpolationBinding', () => {
 
     beforeAll(() => {
       reset();
-      viewModel = { foo: 'bar' };
+      viewModel = { foo: [1,2] };
       view = createElement('<test foo="${foo}"></test>');
       binding = getBinding(viewModel, view, 'foo');
       targetAccessor = binding.targetAccessor;
@@ -93,7 +93,7 @@ describe('InterpolationBinding', () => {
 
     it('binds', () => {
       binding.bind(createScopeForTest(viewModel));
-      expect(targetAccessor.getValue(view, 'foo')).toBe(viewModel.foo);
+      expect(targetAccessor.getValue(view, 'foo')).toBe(viewModel.foo.toString());
     });
 
     it('handles changes', done => {
