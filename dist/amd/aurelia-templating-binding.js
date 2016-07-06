@@ -82,6 +82,8 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
       this.register('input', 'formnovalidate', 'formNoValidate');
       this.register('input', 'formtarget', 'formTarget');
 
+      this.register('textarea', 'maxlength', 'maxLength');
+
       this.register('td', 'rowspan', 'rowSpan');
       this.register('td', 'colspan', 'colSpan');
       this.register('th', 'rowspan', 'rowSpan');
