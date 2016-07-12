@@ -1,3 +1,13 @@
+<a name="1.0.0-rc.1.0.1"></a>
+# [1.0.0-rc.1.0.1](https://github.com/aurelia/templating-binding/compare/1.0.0-rc.1.0.0...v1.0.0-rc.1.0.1) (2016-07-12)
+
+
+### Bug Fixes
+
+* **InterpolationBinding:** regression issue in array handling ([5d772ca](https://github.com/aurelia/templating-binding/commit/5d772ca))
+
+
+
 <a name="1.0.0-rc.1.0.0"></a>
 # [1.0.0-rc.1.0.0](https://github.com/aurelia/templating-binding/compare/1.0.0-beta.2.0.2...v1.0.0-rc.1.0.0) (2016-06-22)
 

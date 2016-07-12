@@ -267,14 +267,14 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             return;
           }
 
-          var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
-          this.updateTarget(value);
+          this.rawValue = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+          this.updateTarget(this.rawValue);
 
           if (this.mode !== bindingMode.oneTime) {
             this._version++;
             this.sourceExpression.connect(this, this.source);
-            if (value instanceof Array) {
-              this.observeArray(value);
+            if (this.rawValue instanceof Array) {
+              this.observeArray(this.rawValue);
             }
             this.unobserve(false);
           }
@@ -295,8 +295,8 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             sourceExpression.bind(this, source, this.lookupFunctions);
           }
 
-          var value = sourceExpression.evaluate(source, this.lookupFunctions);
-          this.updateTarget(value);
+          this.rawValue = sourceExpression.evaluate(source, this.lookupFunctions);
+          this.updateTarget(this.rawValue);
 
           if (this.mode === bindingMode.oneWay) {
             enqueueBindingConnect(this);
@@ -313,6 +313,8 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             sourceExpression.unbind(this, this.source);
           }
           this.source = null;
+          this.value = null;
+          this.rawValue = null;
           this.unobserve(true);
         };
 
@@ -321,12 +323,12 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
             return;
           }
           if (evaluate) {
-            var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
-            this.updateTarget(value);
+            this.rawValue = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+            this.updateTarget(this.rawValue);
           }
           this.sourceExpression.connect(this, this.source);
-          if (this.value instanceof Array) {
-            this.observeArray(this.value);
+          if (this.rawValue instanceof Array) {
+            this.observeArray(this.rawValue);
           }
         };
 

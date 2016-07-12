@@ -219,14 +219,14 @@ export var ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = fun
       return;
     }
 
-    var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
-    this.updateTarget(value);
+    this.rawValue = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+    this.updateTarget(this.rawValue);
 
     if (this.mode !== bindingMode.oneTime) {
       this._version++;
       this.sourceExpression.connect(this, this.source);
-      if (value instanceof Array) {
-        this.observeArray(value);
+      if (this.rawValue instanceof Array) {
+        this.observeArray(this.rawValue);
       }
       this.unobserve(false);
     }
@@ -247,8 +247,8 @@ export var ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = fun
       sourceExpression.bind(this, source, this.lookupFunctions);
     }
 
-    var value = sourceExpression.evaluate(source, this.lookupFunctions);
-    this.updateTarget(value);
+    this.rawValue = sourceExpression.evaluate(source, this.lookupFunctions);
+    this.updateTarget(this.rawValue);
 
     if (this.mode === bindingMode.oneWay) {
       enqueueBindingConnect(this);
@@ -265,6 +265,8 @@ export var ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = fun
       sourceExpression.unbind(this, this.source);
     }
     this.source = null;
+    this.value = null;
+    this.rawValue = null;
     this.unobserve(true);
   };
 
@@ -273,12 +275,12 @@ export var ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = fun
       return;
     }
     if (evaluate) {
-      var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
-      this.updateTarget(value);
+      this.rawValue = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+      this.updateTarget(this.rawValue);
     }
     this.sourceExpression.connect(this, this.source);
-    if (this.value instanceof Array) {
-      this.observeArray(this.value);
+    if (this.rawValue instanceof Array) {
+      this.observeArray(this.rawValue);
     }
   };
 
