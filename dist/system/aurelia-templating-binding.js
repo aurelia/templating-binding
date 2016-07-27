@@ -39,6 +39,13 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
     }
   }
 
+  function configure(config) {
+    config.container.registerSingleton(BindingLanguage, TemplatingBindingLanguage);
+    config.container.registerAlias(BindingLanguage, TemplatingBindingLanguage);
+  }
+
+  _export('configure', configure);
+
   return {
     setters: [function (_aureliaLogging) {
       LogManager = _aureliaLogging;
@@ -670,13 +677,6 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
       }(BindingLanguage), _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3));
 
       _export('TemplatingBindingLanguage', TemplatingBindingLanguage);
-
-      function configure(config) {
-        config.container.registerSingleton(BindingLanguage, TemplatingBindingLanguage);
-        config.container.registerAlias(BindingLanguage, TemplatingBindingLanguage);
-      }
-
-      _export('configure', configure);
     }
   };
 });
