@@ -6,7 +6,8 @@ import {
   ListenerExpression,
   BindingExpression,
   CallExpression,
-  bindingMode
+  bindingMode,
+  delegationStrategy
 } from 'aurelia-binding';
 
 import {BehaviorInstruction} from 'aurelia-templating';
@@ -77,7 +78,18 @@ export class SyntaxInterpreter {
       this.eventManager,
       info.attrName,
       this.parser.parse(info.attrValue),
-      false,
+      delegationStrategy.none,
+      true,
+      resources.lookupFunctions
+    );
+  }
+  
+  capture(resources, element, info) {
+    return new ListenerExpression(
+      this.eventManager,
+      info.attrName,
+      this.parser.parse(info.attrValue),
+      delegationStrategy.capturing,
       true,
       resources.lookupFunctions
     );
@@ -88,7 +100,7 @@ export class SyntaxInterpreter {
       this.eventManager,
       info.attrName,
       this.parser.parse(info.attrValue),
-      true,
+      delegationStrategy.bubbling,
       true,
       resources.lookupFunctions
     );
