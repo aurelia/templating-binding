@@ -83,7 +83,7 @@ export class SyntaxInterpreter {
       resources.lookupFunctions
     );
   }
-  
+
   capture(resources, element, info) {
     return new ListenerExpression(
       this.eventManager,
