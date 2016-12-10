@@ -3,7 +3,7 @@
 System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], function (_export, _context) {
   "use strict";
 
-  var LogManager, camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression, BehaviorInstruction, BindingLanguage, _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3, AttributeMap, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
+  var LogManager, camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression, BehaviorInstruction, BindingLanguage, _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3, AttributeMap, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
 
   function _possibleConstructorReturn(self, call) {
     if (!self) {
@@ -61,6 +61,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
       ListenerExpression = _aureliaBinding.ListenerExpression;
       BindingExpression = _aureliaBinding.BindingExpression;
       CallExpression = _aureliaBinding.CallExpression;
+      delegationStrategy = _aureliaBinding.delegationStrategy;
       NameExpression = _aureliaBinding.NameExpression;
     }, function (_aureliaTemplating) {
       BehaviorInstruction = _aureliaTemplating.BehaviorInstruction;
@@ -390,11 +391,15 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         SyntaxInterpreter.prototype.trigger = function trigger(resources, element, info) {
-          return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true, resources.lookupFunctions);
+          return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), delegationStrategy.none, true, resources.lookupFunctions);
+        };
+
+        SyntaxInterpreter.prototype.capture = function capture(resources, element, info) {
+          return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), delegationStrategy.capturing, true, resources.lookupFunctions);
         };
 
         SyntaxInterpreter.prototype.delegate = function delegate(resources, element, info) {
-          return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true, resources.lookupFunctions);
+          return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), delegationStrategy.bubbling, true, resources.lookupFunctions);
         };
 
         SyntaxInterpreter.prototype.call = function call(resources, element, info, existingInstruction) {

@@ -1,3 +1,13 @@
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/aurelia/templating-binding/compare/1.0.0...v1.1.0) (2016-12-10)
+
+
+### Features
+
+* **SyntaxInterpreter:** add capture binding command ([97fbfd7](https://github.com/aurelia/templating-binding/commit/97fbfd7))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/aurelia/templating-binding/compare/1.0.0-rc.1.0.1...v1.0.0) (2016-07-27)
 

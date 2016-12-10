@@ -7,7 +7,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 import * as LogManager from 'aurelia-logging';
-import { camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression } from 'aurelia-binding';
+import { camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression } from 'aurelia-binding';
 import { BehaviorInstruction, BindingLanguage } from 'aurelia-templating';
 
 export var AttributeMap = (_temp = _class = function () {
@@ -333,11 +333,15 @@ export var SyntaxInterpreter = (_temp2 = _class3 = function () {
   };
 
   SyntaxInterpreter.prototype.trigger = function trigger(resources, element, info) {
-    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true, resources.lookupFunctions);
+    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), delegationStrategy.none, true, resources.lookupFunctions);
+  };
+
+  SyntaxInterpreter.prototype.capture = function capture(resources, element, info) {
+    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), delegationStrategy.capturing, true, resources.lookupFunctions);
   };
 
   SyntaxInterpreter.prototype.delegate = function delegate(resources, element, info) {
-    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true, resources.lookupFunctions);
+    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), delegationStrategy.bubbling, true, resources.lookupFunctions);
   };
 
   SyntaxInterpreter.prototype.call = function call(resources, element, info, existingInstruction) {

@@ -8,7 +8,7 @@ System.register(['./aurelia-templating-binding'], function (_export, _context) {
       var _exportObj = {};
 
       for (var _key in _aureliaTemplatingBinding) {
-        if (_key !== "default" && key !== "__esModule") _exportObj[_key] = _aureliaTemplatingBinding[_key];
+        if (_key !== "default" && _key !== "__esModule") _exportObj[_key] = _aureliaTemplatingBinding[_key];
       }
 
       _export(_exportObj);

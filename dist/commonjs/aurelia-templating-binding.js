@@ -347,11 +347,15 @@ var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class3 = function
   };
 
   SyntaxInterpreter.prototype.trigger = function trigger(resources, element, info) {
-    return new _aureliaBinding.ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true, resources.lookupFunctions);
+    return new _aureliaBinding.ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), _aureliaBinding.delegationStrategy.none, true, resources.lookupFunctions);
+  };
+
+  SyntaxInterpreter.prototype.capture = function capture(resources, element, info) {
+    return new _aureliaBinding.ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), _aureliaBinding.delegationStrategy.capturing, true, resources.lookupFunctions);
   };
 
   SyntaxInterpreter.prototype.delegate = function delegate(resources, element, info) {
-    return new _aureliaBinding.ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true, resources.lookupFunctions);
+    return new _aureliaBinding.ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), _aureliaBinding.delegationStrategy.bubbling, true, resources.lookupFunctions);
   };
 
   SyntaxInterpreter.prototype.call = function call(resources, element, info, existingInstruction) {

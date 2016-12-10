@@ -1,7 +1,7 @@
 var _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3;
 
 import * as LogManager from 'aurelia-logging';
-import { camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, NameExpression } from 'aurelia-binding';
+import { camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression } from 'aurelia-binding';
 import { BehaviorInstruction, BindingLanguage } from 'aurelia-templating';
 
 export let AttributeMap = (_temp = _class = class AttributeMap {
@@ -311,11 +311,15 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
   }
 
   trigger(resources, element, info) {
-    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), false, true, resources.lookupFunctions);
+    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), delegationStrategy.none, true, resources.lookupFunctions);
+  }
+
+  capture(resources, element, info) {
+    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), delegationStrategy.capturing, true, resources.lookupFunctions);
   }
 
   delegate(resources, element, info) {
-    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), true, true, resources.lookupFunctions);
+    return new ListenerExpression(this.eventManager, info.attrName, this.parser.parse(info.attrValue), delegationStrategy.bubbling, true, resources.lookupFunctions);
   }
 
   call(resources, element, info, existingInstruction) {

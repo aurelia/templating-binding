@@ -1,5 +1,5 @@
 import * as LogManager from 'aurelia-logging';
-import {camelCase,SVGAnalyzer,bindingMode,connectable,enqueueBindingConnect,Parser,ObserverLocator,EventManager,ListenerExpression,BindingExpression,CallExpression,NameExpression} from 'aurelia-binding';
+import {camelCase,SVGAnalyzer,bindingMode,connectable,enqueueBindingConnect,Parser,ObserverLocator,EventManager,ListenerExpression,BindingExpression,CallExpression,delegationStrategy,NameExpression} from 'aurelia-binding';
 import {BehaviorInstruction,BindingLanguage} from 'aurelia-templating';
 
 export class AttributeMap {
@@ -358,7 +358,18 @@ export class SyntaxInterpreter {
       this.eventManager,
       info.attrName,
       this.parser.parse(info.attrValue),
-      false,
+      delegationStrategy.none,
+      true,
+      resources.lookupFunctions
+    );
+  }
+
+  capture(resources, element, info) {
+    return new ListenerExpression(
+      this.eventManager,
+      info.attrName,
+      this.parser.parse(info.attrValue),
+      delegationStrategy.capturing,
       true,
       resources.lookupFunctions
     );
@@ -369,7 +380,7 @@ export class SyntaxInterpreter {
       this.eventManager,
       info.attrName,
       this.parser.parse(info.attrValue),
-      true,
+      delegationStrategy.bubbling,
       true,
       resources.lookupFunctions
     );
