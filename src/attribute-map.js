@@ -71,7 +71,7 @@ export class AttributeMap {
       return this.allElements[attributeName];
     }
     // do not camel case data-*, aria-*, or attributes with : in the name.
-    if (/(^data-)|(^aria-)|:/.test(attributeName)) {
+    if (/(?:^data-)|(?:^aria-)|:/.test(attributeName)) {
       return attributeName;
     }
     return camelCase(attributeName);
