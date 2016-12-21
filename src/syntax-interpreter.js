@@ -162,6 +162,13 @@ export class SyntaxInterpreter {
       inEscape = false;
     }
 
+    if (name === null) {
+      var type = resources.getAttribute(context.attributeName);
+      if (type && type.defaultProperty) {
+        name = type.defaultProperty.name;
+      }
+    }
+
     if (name !== null) {
       info = language.inspectAttribute(resources, '?', name, target.trim());
       language.createAttributeInstruction(resources, element, info, instruction, context);
