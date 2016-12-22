@@ -244,5 +244,18 @@ describe('SyntaxInterpreter', () => {
       expect(instruction.attributes['hello']).toBe("${world}");
       expect(instruction.attributes['optimus']).toBe("${prime ? 'decepticon;' : ';'} test");
     });
+
+    it('handles single unnamed option with default property', () => {
+      let resources = { getAttribute(name) {} };
+
+      info.attrValue = "bar";
+
+      spyOn(resources,'getAttribute').and.returnValue({
+        defaultProperty: { name: 'foo' }
+      });
+
+      var instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
+      expect(instruction.attributes['foo']).toBe('bar');
+    });
   });
 });
