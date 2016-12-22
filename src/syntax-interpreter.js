@@ -83,7 +83,7 @@ export class SyntaxInterpreter {
       resources.lookupFunctions
     );
   }
-  
+
   capture(resources, element, info) {
     return new ListenerExpression(
       this.eventManager,
@@ -130,6 +130,8 @@ export class SyntaxInterpreter {
     let ii;
     let inString = false;
     let inEscape = false;
+    let foundNameValuePair = false;
+    let type;
 
     for (i = 0, ii = attrValue.length; i < ii; ++i) {
       current = attrValue[i];
@@ -137,6 +139,7 @@ export class SyntaxInterpreter {
       if (current === ';' && !inString) {
         info = language.inspectAttribute(resources, '?', name, target.trim());
         language.createAttributeInstruction(resources, element, info, instruction, context);
+        foundNameValuePair = true;
 
         if (!instruction.attributes[info.attrName]) {
           instruction.attributes[info.attrName] = info.attrValue;
@@ -162,8 +165,11 @@ export class SyntaxInterpreter {
       inEscape = false;
     }
 
-    if (name === null) {
-      var type = resources.getAttribute(context.attributeName);
+    // check for the case where we have a single value with no name
+    // and there is a default property that we can use to obtain
+    // the name of the property with which the value should be associated.
+    if (!foundNameValuePair && (name === null)) {
+      type = resources.getAttribute(context.attributeName);
       if (type && type.defaultProperty) {
         name = type.defaultProperty.name;
       }
