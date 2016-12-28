@@ -244,7 +244,9 @@ describe('SyntaxInterpreter', () => {
       expect(instruction.attributes['hello']).toBe("${world}");
       expect(instruction.attributes['optimus']).toBe("${prime ? 'decepticon;' : ';'} test");
     });
-
+    /**
+     * options with a default
+     */
     it('handles single unnamed option with default property', () => {
       let resources = { getAttribute(name) {} };
 
@@ -257,5 +259,73 @@ describe('SyntaxInterpreter', () => {
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
       expect(instruction.attributes['foo']).toBe('bar');
     });
+
+    it('handles single unnamed option with default property and semicolon', () => {
+      let resources = { getAttribute(name) {} };
+
+      info.attrValue = "bar;";
+
+      spyOn(resources,'getAttribute').and.returnValue({
+        defaultProperty: { name: 'foo' }
+      });
+
+      let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
+      expect(instruction.attributes['foo']).toBe('bar');
+    });
+
+    it('handles single named option with default property and no semicolon', () => {
+      let resources = { getAttribute(name) {} };
+
+      info.attrValue = "foo: bar";
+
+      spyOn(resources,'getAttribute').and.returnValue({
+        defaultProperty: { name: 'foo' }
+      });
+
+      let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
+      expect(instruction.attributes['foo']).toBe('bar');
+    });
+
+    it('handles single named option with default property and semicolon', () => {
+      let resources = { getAttribute(name) {} };
+
+      info.attrValue = "foo: bar;";
+
+      spyOn(resources,'getAttribute').and.returnValue({
+        defaultProperty: { name: 'foo' }
+      });
+
+      let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
+      expect(instruction.attributes['foo']).toBe('bar');
+    });
+
+    it('handles single non-default named option with default property and no semicolon', () => {
+      let resources = { getAttribute(name) {} };
+
+      info.attrValue = "far: boo";
+
+      spyOn(resources,'getAttribute').and.returnValue({
+        defaultProperty: { name: 'foo' }
+      });
+
+      let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
+      expect(instruction.attributes['far']).toBe('boo');
+    });
+
+    it('handles single non-default named option with default property and semicolon', () => {
+      let resources = { getAttribute(name) {} };
+
+      info.attrValue = "far: boo;";
+
+      spyOn(resources,'getAttribute').and.returnValue({
+        defaultProperty: { name: 'foo' }
+      });
+
+      let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
+      expect(instruction.attributes['far']).toBe('boo');
+    });
+    /**
+     * end: options with a default
+     */
   });
 });
