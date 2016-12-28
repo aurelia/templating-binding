@@ -130,11 +130,15 @@ export class SyntaxInterpreter {
     let ii;
     let inString = false;
     let inEscape = false;
+    let foundNameValuePair = false;
 
     for (i = 0, ii = attrValue.length; i < ii; ++i) {
       current = attrValue[i];
 
       if (current === ';' && !inString) {
+        if (!foundNameValuePair) {
+          name = this._getDefaultValue(resources, context);
+        }
         info = language.inspectAttribute(resources, '?', name, target.trim());
         language.createAttributeInstruction(resources, element, info, instruction, context);
 
@@ -145,6 +149,7 @@ export class SyntaxInterpreter {
         target = '';
         name = null;
       } else if (current === ':' && name === null) {
+        foundNameValuePair = true;
         name = target.trim();
         target = '';
       } else if (current === '\\') {
@@ -162,6 +167,13 @@ export class SyntaxInterpreter {
       inEscape = false;
     }
 
+    // check for the case where we have a single value with no name
+    // and there is a default property that we can use to obtain
+    // the name of the property with which the value should be associated.
+    if (!foundNameValuePair) {
+      name = this._getDefaultValue(resources, context);
+    }
+
     if (name !== null) {
       info = language.inspectAttribute(resources, '?', name, target.trim());
       language.createAttributeInstruction(resources, element, info, instruction, context);
@@ -172,6 +184,15 @@ export class SyntaxInterpreter {
     }
 
     return instruction;
+  }
+
+  _getDefaultValue(resources, context) {
+    let name = null;
+    let type = resources.getAttribute(context.attributeName);
+    if (type && type.defaultProperty) {
+      name = type.defaultProperty.name;
+    }
+    return name;
   }
 
   'for'(resources, element, info, existingInstruction) {
