@@ -253,7 +253,7 @@ describe('SyntaxInterpreter', () => {
       info.attrValue = "bar";
 
       spyOn(resources,'getAttribute').and.returnValue({
-        defaultProperty: { name: 'foo' }
+        primaryProperty: { name: 'foo' }
       });
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
@@ -266,7 +266,7 @@ describe('SyntaxInterpreter', () => {
       info.attrValue = "bar;";
 
       spyOn(resources,'getAttribute').and.returnValue({
-        defaultProperty: { name: 'foo' }
+        primaryProperty: { name: 'foo' }
       });
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
@@ -279,7 +279,7 @@ describe('SyntaxInterpreter', () => {
       info.attrValue = "foo: bar";
 
       spyOn(resources,'getAttribute').and.returnValue({
-        defaultProperty: { name: 'foo' }
+        primaryProperty: { name: 'foo' }
       });
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
@@ -292,7 +292,7 @@ describe('SyntaxInterpreter', () => {
       info.attrValue = "foo: bar;";
 
       spyOn(resources,'getAttribute').and.returnValue({
-        defaultProperty: { name: 'foo' }
+        primaryProperty: { name: 'foo' }
       });
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
@@ -305,7 +305,7 @@ describe('SyntaxInterpreter', () => {
       info.attrValue = "far: boo";
 
       spyOn(resources,'getAttribute').and.returnValue({
-        defaultProperty: { name: 'foo' }
+        primaryProperty: { name: 'foo' }
       });
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
@@ -318,7 +318,7 @@ describe('SyntaxInterpreter', () => {
       info.attrValue = "far: boo;";
 
       spyOn(resources,'getAttribute').and.returnValue({
-        defaultProperty: { name: 'foo' }
+        primaryProperty: { name: 'foo' }
       });
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
