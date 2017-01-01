@@ -137,7 +137,7 @@ export class SyntaxInterpreter {
 
       if (current === ';' && !inString) {
         if (!foundName) {
-          name = this._getDefaultPropertyName(resources, context);
+          name = this._getPrimaryPropertyName(resources, context);
         }
         info = language.inspectAttribute(resources, '?', name, target.trim());
         language.createAttributeInstruction(resources, element, info, instruction, context);
@@ -171,7 +171,7 @@ export class SyntaxInterpreter {
     // and there is a default property that we can use to obtain
     // the name of the property with which the value should be associated.
     if (!foundName) {
-      name = this._getDefaultPropertyName(resources, context);
+      name = this._getPrimaryPropertyName(resources, context);
     }
 
     if (name !== null) {
@@ -186,10 +186,10 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  _getDefaultPropertyName(resources, context) {
+  _getPrimaryPropertyName(resources, context) {
     let type = resources.getAttribute(context.attributeName);
-    if (type && type.defaultProperty) {
-      return type.defaultProperty.name;
+    if (type && type.primaryProperty) {
+      return type.primaryProperty.name;
     }
     return null;
   }
