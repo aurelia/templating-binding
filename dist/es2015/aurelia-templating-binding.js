@@ -65,7 +65,7 @@ export let AttributeMap = (_temp = _class = class AttributeMap {
       return this.allElements[attributeName];
     }
 
-    if (/(^data-)|(^aria-)|:/.test(attributeName)) {
+    if (/(?:^data-)|(?:^aria-)|:/.test(attributeName)) {
       return attributeName;
     }
     return camelCase(attributeName);
@@ -341,11 +341,15 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
     let ii;
     let inString = false;
     let inEscape = false;
+    let foundName = false;
 
     for (i = 0, ii = attrValue.length; i < ii; ++i) {
       current = attrValue[i];
 
       if (current === ';' && !inString) {
+        if (!foundName) {
+          name = this._getPrimaryPropertyName(resources, context);
+        }
         info = language.inspectAttribute(resources, '?', name, target.trim());
         language.createAttributeInstruction(resources, element, info, instruction, context);
 
@@ -356,6 +360,7 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
         target = '';
         name = null;
       } else if (current === ':' && name === null) {
+        foundName = true;
         name = target.trim();
         target = '';
       } else if (current === '\\') {
@@ -373,6 +378,10 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
       inEscape = false;
     }
 
+    if (!foundName) {
+      name = this._getPrimaryPropertyName(resources, context);
+    }
+
     if (name !== null) {
       info = language.inspectAttribute(resources, '?', name, target.trim());
       language.createAttributeInstruction(resources, element, info, instruction, context);
@@ -383,6 +392,14 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
     }
 
     return instruction;
+  }
+
+  _getPrimaryPropertyName(resources, context) {
+    let type = resources.getAttribute(context.attributeName);
+    if (type && type.primaryProperty) {
+      return type.primaryProperty.name;
+    }
+    return null;
   }
 
   'for'(resources, element, info, existingInstruction) {

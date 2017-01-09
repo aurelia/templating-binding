@@ -1,3 +1,18 @@
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/aurelia/templating-binding/compare/1.1.0...v1.2.0) (2017-01-09)
+
+
+### Features
+
+* **options:** default property support ([e422b6c](https://github.com/aurelia/templating-binding/commit/e422b6c))
+
+
+### Performance Improvements
+
+* **AttributeMap:** use non-capturing regex group ([fd4a7e7](https://github.com/aurelia/templating-binding/commit/fd4a7e7))
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/aurelia/templating-binding/compare/1.0.0...v1.1.0) (2016-12-10)
 

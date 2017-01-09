@@ -73,7 +73,7 @@ export class AttributeMap {
       return this.allElements[attributeName];
     }
     // do not camel case data-*, aria-*, or attributes with : in the name.
-    if (/(^data-)|(^aria-)|:/.test(attributeName)) {
+    if (/(?:^data-)|(?:^aria-)|:/.test(attributeName)) {
       return attributeName;
     }
     return camelCase(attributeName);
@@ -410,11 +410,15 @@ export class SyntaxInterpreter {
     let ii;
     let inString = false;
     let inEscape = false;
+    let foundName = false;
 
     for (i = 0, ii = attrValue.length; i < ii; ++i) {
       current = attrValue[i];
 
       if (current === ';' && !inString) {
+        if (!foundName) {
+          name = this._getPrimaryPropertyName(resources, context);
+        }
         info = language.inspectAttribute(resources, '?', name, target.trim());
         language.createAttributeInstruction(resources, element, info, instruction, context);
 
@@ -425,6 +429,7 @@ export class SyntaxInterpreter {
         target = '';
         name = null;
       } else if (current === ':' && name === null) {
+        foundName = true;
         name = target.trim();
         target = '';
       } else if (current === '\\') {
@@ -442,6 +447,13 @@ export class SyntaxInterpreter {
       inEscape = false;
     }
 
+    // check for the case where we have a single value with no name
+    // and there is a default property that we can use to obtain
+    // the name of the property with which the value should be associated.
+    if (!foundName) {
+      name = this._getPrimaryPropertyName(resources, context);
+    }
+
     if (name !== null) {
       info = language.inspectAttribute(resources, '?', name, target.trim());
       language.createAttributeInstruction(resources, element, info, instruction, context);
@@ -452,6 +464,14 @@ export class SyntaxInterpreter {
     }
 
     return instruction;
+  }
+
+  _getPrimaryPropertyName(resources, context) {
+    let type = resources.getAttribute(context.attributeName);
+    if (type && type.primaryProperty) {
+      return type.primaryProperty.name;
+    }
+    return null;
   }
 
   'for'(resources, element, info, existingInstruction) {
