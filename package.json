@@ -31,12 +31,12 @@
     "peerDependencies": {
       "aurelia-binding": "^1.1.0",
       "aurelia-logging": "^1.0.0",
-      "aurelia-templating": "^1.0.0"
+      "aurelia-templating": "^1.2.0"
     },
     "dependencies": {
       "aurelia-binding": "^1.1.0",
       "aurelia-logging": "^1.0.0",
-      "aurelia-templating": "^1.0.0"
+      "aurelia-templating": "^1.2.0"
     },
     "devDependencies": {
       "aurelia-dependency-injection": "^1.0.0-rc.1.0.0",
@@ -52,7 +52,7 @@
   "dependencies": {
     "aurelia-binding": "^1.1.0",
     "aurelia-logging": "^1.0.0",
-    "aurelia-templating": "^1.0.0"
+    "aurelia-templating": "^1.2.0"
   },
   "devDependencies": {
     "aurelia-tools": "^0.2.4",
