@@ -12,6 +12,8 @@ describe('AttributeMap', () => {
     expect(attributeMap.map('label', 'for')).toBe('htmlFor');
     expect(attributeMap.map('foo', 'for')).toBe('for');
 
+    expect(attributeMap.map('img', 'usemap')).toBe('useMap');
+
     expect(attributeMap.map('input', 'data-bind')).toBe('data-bind');
     expect(attributeMap.map('input', 'aria-label')).toBe('aria-label');
     expect(attributeMap.map('input', 'foo-bar')).toBe('fooBar');
