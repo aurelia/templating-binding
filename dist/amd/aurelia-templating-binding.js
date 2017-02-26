@@ -74,6 +74,8 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
 
       this.register('label', 'for', 'htmlFor');
 
+      this.register('img', 'usemap', 'useMap');
+
       this.register('input', 'maxlength', 'maxLength');
       this.register('input', 'minlength', 'minLength');
       this.register('input', 'formaction', 'formAction');

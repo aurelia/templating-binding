@@ -1,3 +1,14 @@
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/aurelia/templating-binding/compare/1.2.0...v1.3.0) (2017-02-26)
+
+
+### Features
+
+* **AttributeMap:** map img usemap to useMap ([58fb98f](https://github.com/aurelia/templating-binding/commit/58fb98f)), closes [aurelia/binding#564](https://github.com/aurelia/binding/issues/564)
+* Updating Dependencies
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/aurelia/templating-binding/compare/1.1.0...v1.2.0) (2017-01-09)
 

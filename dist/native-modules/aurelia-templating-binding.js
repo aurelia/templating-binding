@@ -30,6 +30,8 @@ export var AttributeMap = (_temp = _class = function () {
 
     this.register('label', 'for', 'htmlFor');
 
+    this.register('img', 'usemap', 'useMap');
+
     this.register('input', 'maxlength', 'maxLength');
     this.register('input', 'minlength', 'minLength');
     this.register('input', 'formaction', 'formAction');
