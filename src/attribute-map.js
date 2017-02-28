@@ -9,43 +9,39 @@ export class AttributeMap {
   constructor(svg) {
     this.svg = svg;
 
-    this.registerUniversal('accesskey', 'accessKey');
-    this.registerUniversal('contenteditable', 'contentEditable');
-    this.registerUniversal('tabindex', 'tabIndex');
-    this.registerUniversal('textcontent', 'textContent');
-    this.registerUniversal('innerhtml', 'innerHTML');
-    this.registerUniversal('scrolltop', 'scrollTop');
-    this.registerUniversal('scrollleft', 'scrollLeft');
-    this.registerUniversal('readonly', 'readOnly');
+    // RegisterUniversal() and register() do .toLowerCase() the attributes,
+    // which is why we can pass the same name for both parameters.
+    ['accessKey', 'contentEditable', 'tabIndex', 'textContent', 'innerHTML', 'scrollTop', 'scrollLeft', 'readOnly']
+    .forEach(n => this.registerUniversal(n, n));
 
     this.register('label', 'for', 'htmlFor');
-
     this.register('img', 'usemap', 'useMap');
-
-    this.register('input', 'maxlength', 'maxLength');
-    this.register('input', 'minlength', 'minLength');
-    this.register('input', 'formaction', 'formAction');
-    this.register('input', 'formenctype', 'formEncType');
-    this.register('input', 'formmethod', 'formMethod');
-    this.register('input', 'formnovalidate', 'formNoValidate');
-    this.register('input', 'formtarget', 'formTarget');
-
     this.register('textarea', 'maxlength', 'maxLength');
 
-    this.register('td', 'rowspan', 'rowSpan');
-    this.register('td', 'colspan', 'colSpan');
-    this.register('th', 'rowspan', 'rowSpan');
-    this.register('th', 'colspan', 'colSpan');
+    ['maxLength', 'minLength', 'formAction', 'formEncType', 'formMethod', 'formNoValidate', 'formTarget']
+    .forEach(n => this.register('input', n, n));
+
+    
+    ['rowSpan', 'colSpan']
+    .forEach(n => {
+      this.register('td', n, n);
+      this.register('th', n, n);
+    });    
   }
 
   /**
    * Maps a specific HTML element attribute to a javascript property.
    */
   register(elementName, attributeName, propertyName) {
-    elementName = elementName.toLowerCase();
-    attributeName = attributeName.toLowerCase();
-    const element = this.elements[elementName] = (this.elements[elementName] || Object.create(null));
-    element[attributeName] = propertyName;
+    const elements = this.elements;
+    let element = elements[elementName];
+
+    if (!element) {
+      elementName = elementName.toLowerCase();
+      element = elements[elementName] || (elements[elementName] = Object.create(null));
+    }
+    
+    element[attributeName.toLowerCase()] = propertyName;
   }
 
   /**
