@@ -287,8 +287,4 @@ export class SyntaxInterpreter {
   }
 }
 
-Object.defineProperty(SyntaxInterpreter.prototype, 'one-way', {
-  configurable: true,
-  writable: true,
-  value: SyntaxInterpreter.prototype['to-view']
-});
+SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
