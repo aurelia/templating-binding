@@ -244,19 +244,33 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  'one-way'(resources, element, info, existingInstruction) {
+  'to-view'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
       this.attributeMap.map(element.tagName, info.attrName),
       this.parser.parse(info.attrValue),
-      bindingMode.oneWay,
+      bindingMode.toView,
       resources.lookupFunctions
     );
 
     return instruction;
   }
+
+  'from-view'(resources, element, info, existingInstruction) {
+    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+    instruction.attributes[info.attrName] = new BindingExpression(
+      this.observerLocator,
+      this.attributeMap.map(element.tagName, info.attrName),
+      this.parser.parse(info.attrValue),
+      bindingMode.fromView,
+      resources.lookupFunctions
+    );
+
+    return instruction;
+  }  
 
   'one-time'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
@@ -272,3 +286,5 @@ export class SyntaxInterpreter {
     return instruction;
   }
 }
+
+SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
