@@ -1,4 +1,5 @@
 import './setup';
+import {AttributeMap} from '../src/attribute-map';
 import {SyntaxInterpreter} from '../src/syntax-interpreter';
 import {
   Parser,
@@ -11,6 +12,9 @@ import {
   bindingMode
 } from 'aurelia-binding';
 import {DOM} from 'aurelia-pal';
+import {
+  ViewResources
+} from 'aurelia-templating';
 
 export function createElement(html) {
   let div = DOM.createElement('div');
@@ -111,6 +115,22 @@ describe('SyntaxInterpreter', () => {
       expect(interpreter.determineDefaultBindingMode(el, 'null', context)).toBe(bindingMode.oneWay);
       expect(interpreter.determineDefaultBindingMode(el, 'undefined', context)).toBe(bindingMode.oneWay);
       expect(interpreter.determineDefaultBindingMode(el, 'missing', context)).toBe(bindingMode.oneWay);
+    });
+    
+    it('uses specified defaultBindingMode in `bind` method', () => {
+      interpreter.attributeMap = new AttributeMap();
+      interpreter.attributeMap.svg = {
+        isStandardSvgAttribute: () => false
+      }
+      let element = document.createElement('input');
+      let attrName = 'value';
+      let info = {
+        attrName: attrName,
+        attrValue: 'bar',
+        defaultBindingMode: bindingMode.oneTime
+      }
+      let instruction = interpreter.bind(new ViewResources(), element, info);
+      expect(instruction.attributes[attrName].mode).toBe(bindingMode.oneTime);
     });
   });
 

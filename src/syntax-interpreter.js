@@ -66,7 +66,9 @@ export class SyntaxInterpreter {
       this.observerLocator,
       this.attributeMap.map(element.tagName, info.attrName),
       this.parser.parse(info.attrValue),
-      info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context),
+      info.defaultBindingMode === undefined || info.defaultBindingMode === null
+        ? this.determineDefaultBindingMode(element, info.attrName, context)
+        : info.defaultBindingMode,
       resources.lookupFunctions
     );
 
