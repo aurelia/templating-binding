@@ -1,9 +1,12 @@
 /*eslint indent:0*/
 import {BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
-import {Parser, ObserverLocator, NameExpression, bindingMode} from 'aurelia-binding';
+import {Parser, ObserverLocator, NameExpression, bindingMode, camelCase, LiteralString} from 'aurelia-binding';
 import {InterpolationBindingExpression} from './interpolation-binding-expression';
 import {SyntaxInterpreter} from './syntax-interpreter';
 import {AttributeMap} from './attribute-map';
+import {LetExpression} from './let-expression';
+import {LetInterpolationBindingExpression} from './let-interpolation-binding-expression';
+import * as LogManager from 'aurelia-logging';
 
 let info = {};
 
@@ -84,6 +87,67 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     }
 
     return instruction;
+  }
+
+  /**
+   * @param {ViewResources} resources
+   * @param {Element} letElement
+   * @param {(LetExpression | LetInterpolationBindingExpression)[]} existingLetExpressions 
+   */
+  createLetExpressions(resources, letElement, existingLetExpressions) {
+    existingLetExpressions = existingLetExpressions || [];
+    let attributes = letElement.attributes;
+    /**@type {Attr} */
+    let attr;
+    /**@type {string[]} */
+    let parts;
+    let attrName;
+    let attrValue;
+    let command;
+    for (let i = 0, ii = attributes.length; ii > i; ++i) {
+      attr = attributes[i];
+      attrName = attr.name;
+      attrValue = attr.nodeValue;
+      parts = attrName.split('.');
+
+      if (parts.length === 2) {
+        command = parts[1];
+        if (command !== 'bind') {
+          LogManager.getLogger('templating-binding-language')
+            .warn(`Detected invalid let command. Expected "${part[0]}.bind", given "${attrName}"`);
+          continue;
+        }
+        existingLetExpressions.push(new LetExpression(
+          this.observerLocator,
+          camelCase(parts[0]),
+          this.parser.parse(attrValue),
+          resources.lookupFunctions
+        ));
+      } else {
+        attrName = camelCase(attrName);
+        parts = this.parseInterpolation(resources, attrValue);
+        if (parts === null) {
+          LogManager.getLogger('templating-binding-language')
+            .warn(`Detected string literal in let bindings. Did you mean "${ attrName }.bind=${ attrValue }" or "${ attrName }=\${${ attrValue }}" ?`);
+        }
+        if (parts) {
+          existingLetExpressions.push(new LetInterpolationBindingExpression(
+            this.observerLocator,
+            attrName,
+            parts,
+            resources.lookupFunctions
+          ));
+        } else {
+          existingLetExpressions.push(new LetExpression(
+            this.observerLocator,
+            attrName,
+            new LiteralString(attrValue),
+            resources.lookupFunctions
+          ));
+        }
+      }
+    }
+    return existingLetExpressions;
   }
 
   inspectTextContent(resources, value) {
