@@ -307,7 +307,7 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
   bind(resources, element, info, existingInstruction, context) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context), resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), info.defaultBindingMode === undefined || info.defaultBindingMode === null ? this.determineDefaultBindingMode(element, info.attrName, context) : info.defaultBindingMode, resources.lookupFunctions);
 
     return instruction;
   }
@@ -442,10 +442,18 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
     return instruction;
   }
 
-  'one-way'(resources, element, info, existingInstruction) {
+  'to-view'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.oneWay, resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.toView, resources.lookupFunctions);
+
+    return instruction;
+  }
+
+  'from-view'(resources, element, info, existingInstruction) {
+    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.fromView, resources.lookupFunctions);
 
     return instruction;
   }
@@ -458,6 +466,8 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
     return instruction;
   }
 }, _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2);
+
+SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
 
 let info = {};
 

@@ -1,3 +1,18 @@
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/aurelia/templating-binding/compare/1.3.0...v1.4.0) (2017-10-02)
+
+
+### Bug Fixes
+
+* **SyntaxInterpreter:** fix defaultBindingMode condition ([c1a9792](https://github.com/aurelia/templating-binding/commit/c1a9792)), closes [aurelia/binding#598](https://github.com/aurelia/binding/issues/598)
+
+
+### Features
+
+* **SyntaxInterpreter:** add from-view, to-view commands ([23938a6](https://github.com/aurelia/templating-binding/commit/23938a6)), closes [aurelia/templating-binding#33](https://github.com/aurelia/templating-binding/issues/33)
+
+
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/aurelia/templating-binding/compare/1.2.0...v1.3.0) (2017-02-26)
 
