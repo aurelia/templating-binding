@@ -20,7 +20,7 @@
     "url": "http://github.com/aurelia/templating-binding"
   },
   "dependencies": {
-    "aurelia-binding": "^1.1.0",
+    "aurelia-binding": "^1.3.0",
     "aurelia-logging": "^1.0.0",
     "aurelia-templating": "^1.3.0"
   }
