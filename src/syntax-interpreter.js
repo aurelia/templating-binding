@@ -272,7 +272,7 @@ export class SyntaxInterpreter {
     );
 
     return instruction;
-  }  
+  }
 
   'one-time'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
