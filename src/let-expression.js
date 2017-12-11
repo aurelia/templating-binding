@@ -54,7 +54,7 @@ export class Let {
     this.target[this.targetProperty] = value;
   }
 
-  call(context, newValue, oldValue) {
+  call(context) {
     if (!this.isBound) {
       return;
     }
@@ -70,21 +70,18 @@ export class Let {
    */
   bind(source) {
     if (this.isBound) {
-      if (this.originalSource === source) {
+      if (this.source === source) {
         return;
       }
       this.unbind();
     }
 
-    let { bindingContext, parentOverrideContext } = source.overrideContext;
-
     this.isBound = true;
-    this.originalSource = source;
-    this.source = createOverrideContext(bindingContext, parentOverrideContext);
-    this.target = bindingContext;
+    this.source = source;
+    this.target = source.bindingContext;
 
     if (this.sourceExpression.bind) {
-      this.sourceExpression.bind(this, this.source, this.lookupFunctions);
+      this.sourceExpression.bind(this, source, this.lookupFunctions);
     }
 
     enqueueBindingConnect(this);
@@ -99,7 +96,6 @@ export class Let {
       this.sourceExpression.unbind(this, this.source);
     }
     this.source = null;
-    this.originalSource = null;
     this.target = null;
     this.unobserve(true);
   }

@@ -16,24 +16,25 @@ import {
 } from 'aurelia-binding';
 import {
   BehaviorInstruction,
-  BindingLanguage
+  BindingLanguage,
+  ViewResources
 } from 'aurelia-templating';
 export declare class AttributeMap {
   static inject: any;
   elements: any;
   allElements: any;
   constructor(svg?: any);
-  
+
   /**
      * Maps a specific HTML element attribute to a javascript property.
      */
   register(elementName?: any, attributeName?: any, propertyName?: any): any;
-  
+
   /**
      * Maps an HTML attribute to a javascript property.
      */
   registerUniversal(attributeName?: any, propertyName?: any): any;
-  
+
   /**
      * Returns the javascript property name for a particlar HTML attribute.
      */
@@ -74,13 +75,47 @@ export declare class SyntaxInterpreter {
   options(resources?: any, element?: any, info?: any, existingInstruction?: any, context?: any): any;
   'for'(resources?: any, element?: any, info?: any, existingInstruction?: any): any;
   'two-way'(resources?: any, element?: any, info?: any, existingInstruction?: any): any;
+  'to-view'(resources?: any, element?: any, info?: any, existingInstruction?: any): any;
+  'from-view'(resources?: any, element?: any, info?: any, existingInstruction?: any): any;
   'one-way'(resources?: any, element?: any, info?: any, existingInstruction?: any): any;
   'one-time'(resources?: any, element?: any, info?: any, existingInstruction?: any): any;
 }
+
+export declare class LetExpression {
+  createBinding(): LetBinding
+}
+
+export declare class LetBinding {
+  constructor();
+  updateSource(): any;
+  call(context): any;
+  bind(source?: any): any;
+  unbind(): any;
+  connect(): any;
+}
+
+export declare class LetInterpolationBindingExpression {
+  createBinding(): LetInterpolationBinding
+}
+
+export declare class LetInterpolationBinding {
+  constructor();
+  updateSource(): any;
+  call(context): any;
+  bind(source?: any): any;
+  unbind(): any;
+  connect(): any;
+}
+
 export declare class TemplatingBindingLanguage extends BindingLanguage {
   static inject: any;
   constructor(parser?: any, observerLocator?: any, syntaxInterpreter?: any, attributeMap?: any);
   inspectAttribute(resources?: any, elementName?: any, attrName?: any, attrValue?: any): any;
+  createLetExpressions(
+    resources: ViewResources,
+    letElement: HTMLElement,
+    existingLetExpressions: (LetExpression | LetInterpolationBindingExpression)[]
+  ): (LetExpression | LetInterpolationBindingExpression)[]
   createAttributeInstruction(resources?: any, element?: any, theInfo?: any, existingInstruction?: any, context?: any): any;
   inspectTextContent(resources?: any, value?: any): any;
   parseInterpolation(resources?: any, value?: any): any;

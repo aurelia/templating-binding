@@ -31,7 +31,6 @@ export class LetInterpolationBindingExpression {
 
 export class LetInterpolationBinding {
   /**
-   * 
    * @param {ObserverLocator} observerLocator
    * @param {strign} targetProperty
    * @param {string[]} parts
@@ -50,21 +49,18 @@ export class LetInterpolationBinding {
    */
   bind(source) {
     if (this.isBound) {
-      if (this.originalSource === source) {
+      if (this.source === source) {
         return;
       }
       this.unbind();
     }
 
-    let { bindingContext, parentOverrideContext } = source.overrideContext;
-
     this.isBound = true;
-    this.originalSource = source;
-    this.source = createOverrideContext(bindingContext, parentOverrideContext);
-    this.target = bindingContext;
+    this.source = source
+    this.target = source.bindingContext;
 
     this.interpolationBinding = this.createInterpolationBinding();
-    this.interpolationBinding.bind(this.source);
+    this.interpolationBinding.bind(source);
   }
 
   unbind() {
@@ -73,7 +69,6 @@ export class LetInterpolationBinding {
     }
     this.isBound = false;
     this.source = null;
-    this.originalSource = null;
     this.target = null;
     this.interpolationBinding.unbind();
     this.interpolationBinding = null;
@@ -92,7 +87,8 @@ export class LetInterpolationBinding {
         this.parts[2]
       );
     }
-    return new InterpolationBinding(this.observerLocator,
+    return new InterpolationBinding(
+      this.observerLocator,
       this.parts,
       this.target,
       this.targetProperty,
