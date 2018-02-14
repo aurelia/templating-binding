@@ -479,7 +479,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         SyntaxInterpreter.prototype._getPrimaryPropertyName = function _getPrimaryPropertyName(resources, context) {
           var type = resources.getAttribute(context.attributeName);
           if (type && type.primaryProperty) {
-            return type.primaryProperty.name;
+            return type.primaryProperty.attribute;
           }
           return null;
         };

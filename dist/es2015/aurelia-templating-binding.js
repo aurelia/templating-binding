@@ -399,7 +399,7 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
   _getPrimaryPropertyName(resources, context) {
     let type = resources.getAttribute(context.attributeName);
     if (type && type.primaryProperty) {
-      return type.primaryProperty.name;
+      return type.primaryProperty.attribute;
     }
     return null;
   }

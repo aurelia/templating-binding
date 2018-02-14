@@ -1,3 +1,13 @@
+<a name="1.4.1"></a>
+## [1.4.1](https://github.com/aurelia/templating-binding/compare/1.4.0...v1.4.1) (2018-02-14)
+
+
+### Bug Fixes
+
+* **syntax-interpreter:** use the hyphenated name ([4e4c427](https://github.com/aurelia/templating-binding/commit/4e4c427)), closes [#122](https://github.com/aurelia/templating-binding/issues/122)
+
+
+
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/aurelia/templating-binding/compare/1.3.0...v1.4.0) (2017-10-02)
 
