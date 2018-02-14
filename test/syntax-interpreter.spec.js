@@ -273,7 +273,7 @@ describe('SyntaxInterpreter', () => {
       info.attrValue = "bar";
 
       spyOn(resources,'getAttribute').and.returnValue({
-        primaryProperty: { name: 'foo' }
+        primaryProperty: { attribute: 'foo' }
       });
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
@@ -286,7 +286,7 @@ describe('SyntaxInterpreter', () => {
       info.attrValue = "bar;";
 
       spyOn(resources,'getAttribute').and.returnValue({
-        primaryProperty: { name: 'foo' }
+        primaryProperty: { attribute: 'foo' }
       });
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
@@ -298,10 +298,6 @@ describe('SyntaxInterpreter', () => {
 
       info.attrValue = "foo: bar";
 
-      spyOn(resources,'getAttribute').and.returnValue({
-        primaryProperty: { name: 'foo' }
-      });
-
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
       expect(instruction.attributes['foo']).toBe('bar');
     });
@@ -310,10 +306,6 @@ describe('SyntaxInterpreter', () => {
       let resources = { getAttribute(name) {} };
 
       info.attrValue = "foo: bar;";
-
-      spyOn(resources,'getAttribute').and.returnValue({
-        primaryProperty: { name: 'foo' }
-      });
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
       expect(instruction.attributes['foo']).toBe('bar');
@@ -324,10 +316,6 @@ describe('SyntaxInterpreter', () => {
 
       info.attrValue = "far: boo";
 
-      spyOn(resources,'getAttribute').and.returnValue({
-        primaryProperty: { name: 'foo' }
-      });
-
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
       expect(instruction.attributes['far']).toBe('boo');
     });
@@ -336,10 +324,6 @@ describe('SyntaxInterpreter', () => {
       let resources = { getAttribute(name) {} };
 
       info.attrValue = "far: boo;";
-
-      spyOn(resources,'getAttribute').and.returnValue({
-        primaryProperty: { name: 'foo' }
-      });
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
       expect(instruction.attributes['far']).toBe('boo');
