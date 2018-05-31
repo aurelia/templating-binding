@@ -29,12 +29,12 @@
       "dist": "dist/amd"
     },
     "peerDependencies": {
-      "aurelia-binding": "^1.3.0",
+      "aurelia-binding": "^1.3.0 || ^2.0.0",
       "aurelia-logging": "^1.0.0",
       "aurelia-templating": "^1.3.0"
     },
     "dependencies": {
-      "aurelia-binding": "^1.3.0",
+      "aurelia-binding": "^1.3.0 || ^2.0.0",
       "aurelia-logging": "^1.0.0",
       "aurelia-templating": "^1.3.0"
     },
@@ -50,7 +50,7 @@
     }
   },
   "dependencies": {
-    "aurelia-binding": "^1.3.0",
+    "aurelia-binding": "^1.3.0 || ^2.0.0",
     "aurelia-logging": "^1.0.0",
     "aurelia-templating": "^1.3.0"
   },
