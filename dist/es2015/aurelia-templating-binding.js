@@ -118,7 +118,7 @@ export let InterpolationBinding = class InterpolationBinding {
       let value = '';
       let parts = this.parts;
       for (let i = 0, ii = parts.length; i < ii; i++) {
-        value += i % 2 === 0 ? parts[i] : this[`childBinding${ i }`].value;
+        value += i % 2 === 0 ? parts[i] : this[`childBinding${i}`].value;
       }
       this.targetAccessor.setValue(value, this.target, this.targetProperty);
     }
@@ -126,7 +126,7 @@ export let InterpolationBinding = class InterpolationBinding {
 
   updateOneTimeBindings() {
     for (let i = 1, ii = this.parts.length; i < ii; i += 2) {
-      let child = this[`childBinding${ i }`];
+      let child = this[`childBinding${i}`];
       if (child.mode === bindingMode.oneTime) {
         child.call();
       }
@@ -146,7 +146,7 @@ export let InterpolationBinding = class InterpolationBinding {
     for (let i = 1, ii = parts.length; i < ii; i += 2) {
       let binding = new ChildInterpolationBinding(this, this.observerLocator, parts[i], this.mode, this.lookupFunctions);
       binding.bind(source);
-      this[`childBinding${ i }`] = binding;
+      this[`childBinding${i}`] = binding;
     }
 
     this.isBound = true;
@@ -161,7 +161,7 @@ export let InterpolationBinding = class InterpolationBinding {
     this.source = null;
     let parts = this.parts;
     for (let i = 1, ii = parts.length; i < ii; i += 2) {
-      let name = `childBinding${ i }`;
+      let name = `childBinding${i}`;
       this[name].unbind();
     }
   }
