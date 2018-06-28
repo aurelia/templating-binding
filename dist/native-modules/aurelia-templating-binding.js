@@ -329,7 +329,7 @@ export var SyntaxInterpreter = (_temp2 = _class3 = function () {
   SyntaxInterpreter.prototype.bind = function bind(resources, element, info, existingInstruction, context) {
     var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context), resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), info.defaultBindingMode === undefined || info.defaultBindingMode === null ? this.determineDefaultBindingMode(element, info.attrName, context) : info.defaultBindingMode, resources.lookupFunctions);
 
     return instruction;
   };
@@ -421,7 +421,7 @@ export var SyntaxInterpreter = (_temp2 = _class3 = function () {
   SyntaxInterpreter.prototype._getPrimaryPropertyName = function _getPrimaryPropertyName(resources, context) {
     var type = resources.getAttribute(context.attributeName);
     if (type && type.primaryProperty) {
-      return type.primaryProperty.name;
+      return type.primaryProperty.attribute;
     }
     return null;
   };
@@ -464,10 +464,18 @@ export var SyntaxInterpreter = (_temp2 = _class3 = function () {
     return instruction;
   };
 
-  SyntaxInterpreter.prototype['one-way'] = function oneWay(resources, element, info, existingInstruction) {
+  SyntaxInterpreter.prototype['to-view'] = function toView(resources, element, info, existingInstruction) {
     var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.oneWay, resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.toView, resources.lookupFunctions);
+
+    return instruction;
+  };
+
+  SyntaxInterpreter.prototype['from-view'] = function fromView(resources, element, info, existingInstruction) {
+    var instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.fromView, resources.lookupFunctions);
 
     return instruction;
   };
@@ -482,6 +490,8 @@ export var SyntaxInterpreter = (_temp2 = _class3 = function () {
 
   return SyntaxInterpreter;
 }(), _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2);
+
+SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
 
 var info = {};
 

@@ -348,7 +348,9 @@ export class SyntaxInterpreter {
       this.observerLocator,
       this.attributeMap.map(element.tagName, info.attrName),
       this.parser.parse(info.attrValue),
-      info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context),
+      info.defaultBindingMode === undefined || info.defaultBindingMode === null
+        ? this.determineDefaultBindingMode(element, info.attrName, context)
+        : info.defaultBindingMode,
       resources.lookupFunctions
     );
 
@@ -471,7 +473,7 @@ export class SyntaxInterpreter {
   _getPrimaryPropertyName(resources, context) {
     let type = resources.getAttribute(context.attributeName);
     if (type && type.primaryProperty) {
-      return type.primaryProperty.name;
+      return type.primaryProperty.attribute;
     }
     return null;
   }
@@ -526,14 +528,28 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  'one-way'(resources, element, info, existingInstruction) {
+  'to-view'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
       this.observerLocator,
       this.attributeMap.map(element.tagName, info.attrName),
       this.parser.parse(info.attrValue),
-      bindingMode.oneWay,
+      bindingMode.toView,
+      resources.lookupFunctions
+    );
+
+    return instruction;
+  }
+
+  'from-view'(resources, element, info, existingInstruction) {
+    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+    instruction.attributes[info.attrName] = new BindingExpression(
+      this.observerLocator,
+      this.attributeMap.map(element.tagName, info.attrName),
+      this.parser.parse(info.attrValue),
+      bindingMode.fromView,
       resources.lookupFunctions
     );
 
@@ -554,6 +570,8 @@ export class SyntaxInterpreter {
     return instruction;
   }
 }
+
+SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
 
 /*eslint indent:0*/
 let info = {};

@@ -1,3 +1,33 @@
+<a name="1.4.2"></a>
+## [1.4.2](https://github.com/aurelia/templating-binding/compare/1.4.1...1.4.2) (2018-06-20)
+
+* Updating dependencies.
+
+<a name="1.4.1"></a>
+## [1.4.1](https://github.com/aurelia/templating-binding/compare/1.4.0...v1.4.1) (2018-02-14)
+
+
+### Bug Fixes
+
+* **syntax-interpreter:** use the hyphenated name ([4e4c427](https://github.com/aurelia/templating-binding/commit/4e4c427)), closes [#122](https://github.com/aurelia/templating-binding/issues/122)
+
+
+
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/aurelia/templating-binding/compare/1.3.0...v1.4.0) (2017-10-02)
+
+
+### Bug Fixes
+
+* **SyntaxInterpreter:** fix defaultBindingMode condition ([c1a9792](https://github.com/aurelia/templating-binding/commit/c1a9792)), closes [aurelia/binding#598](https://github.com/aurelia/binding/issues/598)
+
+
+### Features
+
+* **SyntaxInterpreter:** add from-view, to-view commands ([23938a6](https://github.com/aurelia/templating-binding/commit/23938a6)), closes [aurelia/templating-binding#33](https://github.com/aurelia/templating-binding/issues/33)
+
+
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/aurelia/templating-binding/compare/1.2.0...v1.3.0) (2017-02-26)
 

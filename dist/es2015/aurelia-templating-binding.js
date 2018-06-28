@@ -118,7 +118,7 @@ export let InterpolationBinding = class InterpolationBinding {
       let value = '';
       let parts = this.parts;
       for (let i = 0, ii = parts.length; i < ii; i++) {
-        value += i % 2 === 0 ? parts[i] : this[`childBinding${ i }`].value;
+        value += i % 2 === 0 ? parts[i] : this[`childBinding${i}`].value;
       }
       this.targetAccessor.setValue(value, this.target, this.targetProperty);
     }
@@ -126,7 +126,7 @@ export let InterpolationBinding = class InterpolationBinding {
 
   updateOneTimeBindings() {
     for (let i = 1, ii = this.parts.length; i < ii; i += 2) {
-      let child = this[`childBinding${ i }`];
+      let child = this[`childBinding${i}`];
       if (child.mode === bindingMode.oneTime) {
         child.call();
       }
@@ -146,7 +146,7 @@ export let InterpolationBinding = class InterpolationBinding {
     for (let i = 1, ii = parts.length; i < ii; i += 2) {
       let binding = new ChildInterpolationBinding(this, this.observerLocator, parts[i], this.mode, this.lookupFunctions);
       binding.bind(source);
-      this[`childBinding${ i }`] = binding;
+      this[`childBinding${i}`] = binding;
     }
 
     this.isBound = true;
@@ -161,7 +161,7 @@ export let InterpolationBinding = class InterpolationBinding {
     this.source = null;
     let parts = this.parts;
     for (let i = 1, ii = parts.length; i < ii; i += 2) {
-      let name = `childBinding${ i }`;
+      let name = `childBinding${i}`;
       this[name].unbind();
     }
   }
@@ -307,7 +307,7 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
   bind(resources, element, info, existingInstruction, context) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context), resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), info.defaultBindingMode === undefined || info.defaultBindingMode === null ? this.determineDefaultBindingMode(element, info.attrName, context) : info.defaultBindingMode, resources.lookupFunctions);
 
     return instruction;
   }
@@ -399,7 +399,7 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
   _getPrimaryPropertyName(resources, context) {
     let type = resources.getAttribute(context.attributeName);
     if (type && type.primaryProperty) {
-      return type.primaryProperty.name;
+      return type.primaryProperty.attribute;
     }
     return null;
   }
@@ -442,10 +442,18 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
     return instruction;
   }
 
-  'one-way'(resources, element, info, existingInstruction) {
+  'to-view'(resources, element, info, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.oneWay, resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.toView, resources.lookupFunctions);
+
+    return instruction;
+  }
+
+  'from-view'(resources, element, info, existingInstruction) {
+    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+
+    instruction.attributes[info.attrName] = new BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), bindingMode.fromView, resources.lookupFunctions);
 
     return instruction;
   }
@@ -458,6 +466,8 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
     return instruction;
   }
 }, _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2);
+
+SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
 
 let info = {};
 

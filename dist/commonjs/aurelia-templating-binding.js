@@ -343,7 +343,7 @@ var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class3 = function
   SyntaxInterpreter.prototype.bind = function bind(resources, element, info, existingInstruction, context) {
     var instruction = existingInstruction || _aureliaTemplating.BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), info.defaultBindingMode || this.determineDefaultBindingMode(element, info.attrName, context), resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), info.defaultBindingMode === undefined || info.defaultBindingMode === null ? this.determineDefaultBindingMode(element, info.attrName, context) : info.defaultBindingMode, resources.lookupFunctions);
 
     return instruction;
   };
@@ -435,7 +435,7 @@ var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class3 = function
   SyntaxInterpreter.prototype._getPrimaryPropertyName = function _getPrimaryPropertyName(resources, context) {
     var type = resources.getAttribute(context.attributeName);
     if (type && type.primaryProperty) {
-      return type.primaryProperty.name;
+      return type.primaryProperty.attribute;
     }
     return null;
   };
@@ -478,10 +478,18 @@ var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class3 = function
     return instruction;
   };
 
-  SyntaxInterpreter.prototype['one-way'] = function oneWay(resources, element, info, existingInstruction) {
+  SyntaxInterpreter.prototype['to-view'] = function toView(resources, element, info, existingInstruction) {
     var instruction = existingInstruction || _aureliaTemplating.BehaviorInstruction.attribute(info.attrName);
 
-    instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), _aureliaBinding.bindingMode.oneWay, resources.lookupFunctions);
+    instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), _aureliaBinding.bindingMode.toView, resources.lookupFunctions);
+
+    return instruction;
+  };
+
+  SyntaxInterpreter.prototype['from-view'] = function fromView(resources, element, info, existingInstruction) {
+    var instruction = existingInstruction || _aureliaTemplating.BehaviorInstruction.attribute(info.attrName);
+
+    instruction.attributes[info.attrName] = new _aureliaBinding.BindingExpression(this.observerLocator, this.attributeMap.map(element.tagName, info.attrName), this.parser.parse(info.attrValue), _aureliaBinding.bindingMode.fromView, resources.lookupFunctions);
 
     return instruction;
   };
@@ -496,6 +504,9 @@ var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class3 = function
 
   return SyntaxInterpreter;
 }(), _class3.inject = [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, _aureliaBinding.EventManager, AttributeMap], _temp2);
+
+
+SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
 
 var info = {};
 
