@@ -11,7 +11,7 @@ import {
 import {
   LetInterpolationBindingExpression,
   LetInterpolationBinding
-} from '../src/let-interpolation-binding-expression';
+} from '../src/let-interpolation-expression';
 
 describe('BindingLanguage', () => {
   /**@type {TemplatingBindingLanguage} */

@@ -10,14 +10,15 @@ export class LetExpression {
    * @param {ObserverLocator} observerLocator
    * @param {string} targetProperty
    * @param {Expression} sourceExpression
-   * @param {{}} lookupFunctions
+   * @param {any} lookupFunctions
+   * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
    */
-  constructor(observerLocator, targetProperty, sourceExpression, lookupFunctions) {
+  constructor(observerLocator, targetProperty, sourceExpression, lookupFunctions, toBindingContext) {
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
     this.targetProperty = targetProperty;
     this.lookupFunctions = lookupFunctions;
-    this.discrete = false;
+    this.toBindingContext = toBindingContext;
   }
 
   createBinding() {
@@ -25,7 +26,8 @@ export class LetExpression {
       this.observerLocator,
       this.sourceExpression,
       this.targetProperty,
-      this.lookupFunctions
+      this.lookupFunctions,
+      this.toBindingContext
     );
   }
 }
@@ -39,14 +41,16 @@ export class Let {
    * @param {Function | Element} target 
    * @param {string} targetProperty
    * @param {*} lookupFunctions 
+   * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
    */
-  constructor(observerLocator, sourceExpression, targetProperty, lookupFunctions) {
+  constructor(observerLocator, sourceExpression, targetProperty, lookupFunctions, toBindingContext) {
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
     this.targetProperty = targetProperty;
     this.lookupFunctions = lookupFunctions;
     this.source = null;
     this.target = null;
+    this.toBindingContext = toBindingContext;
   }
 
   updateSource() {
@@ -78,7 +82,7 @@ export class Let {
 
     this.isBound = true;
     this.source = source;
-    this.target = source.bindingContext;
+    this.target = this.toBindingContext ? source.bindingContext : source.overrideContext;
 
     if (this.sourceExpression.bind) {
       this.sourceExpression.bind(this, source, this.lookupFunctions);

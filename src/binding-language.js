@@ -5,7 +5,7 @@ import {InterpolationBindingExpression} from './interpolation-binding-expression
 import {SyntaxInterpreter} from './syntax-interpreter';
 import {AttributeMap} from './attribute-map';
 import {LetExpression} from './let-expression';
-import {LetInterpolationBindingExpression} from './let-interpolation-binding-expression';
+import {LetInterpolationBindingExpression} from './let-interpolation-expression';
 import * as LogManager from 'aurelia-logging';
 
 let info = {};
