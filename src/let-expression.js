@@ -1,7 +1,6 @@
 import {
   connectable,
   enqueueBindingConnect,
-  createOverrideContext,
   sourceContext
 } from 'aurelia-binding';
 
@@ -35,12 +34,11 @@ export class LetExpression {
 @connectable()
 export class Let {
   /**
-   * 
-   * @param {ObserverLocator} observerLocator 
-   * @param {Expression} sourceExpression 
-   * @param {Function | Element} target 
+   * @param {ObserverLocator} observerLocator
+   * @param {Expression} sourceExpression
+   * @param {Function | Element} target
    * @param {string} targetProperty
-   * @param {*} lookupFunctions 
+   * @param {*} lookupFunctions
    * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
    */
   constructor(observerLocator, sourceExpression, targetProperty, lookupFunctions, toBindingContext) {
@@ -53,7 +51,7 @@ export class Let {
     this.toBindingContext = toBindingContext;
   }
 
-  updateSource() {
+  updateTarget() {
     const value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
     this.target[this.targetProperty] = value;
   }
@@ -63,7 +61,7 @@ export class Let {
       return;
     }
     if (context === sourceContext) {
-      this.updateSource();
+      this.updateTarget();
       return;
     }
     throw new Error(`Unexpected call context ${context}`);
@@ -108,7 +106,7 @@ export class Let {
     if (!this.isBound) {
       return;
     }
-    this.updateSource();
+    this.updateTarget();
     this.sourceExpression.connect(this, this.source);
   }
 }

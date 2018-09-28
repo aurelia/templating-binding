@@ -2,6 +2,7 @@ import './setup';
 import {TemplatingBindingLanguage} from '../src/binding-language';
 import {Container} from 'aurelia-dependency-injection';
 import {NameExpression} from 'aurelia-binding';
+import {Logger} from 'aurelia-logging';
 
 import {
   LetExpression,
@@ -17,7 +18,7 @@ describe('BindingLanguage', () => {
   /**@type {TemplatingBindingLanguage} */
   let language;
 
-  beforeAll(() => {
+  beforeEach(() => {
     language = new Container().get(TemplatingBindingLanguage);
   });
 
@@ -47,19 +48,46 @@ describe('BindingLanguage', () => {
       resources = { lookupFunctions: {} };
     });
 
+    it('works with .bind command', () => {
+      let el = div();
+      el.setAttribute('foo.bind', 'bar');
+      const expressions = language.createLetExpressions(resources, el);
+      expect(expressions[0] instanceof LetExpression).toBe(true);
+    });
+
+    it('warns when binding command is not bind', () => {
+      const loggerSpy = spyOn(Logger.prototype, 'warn').and.callThrough();
+      let callCount = 0;
+      ['one-way', 'two-way', 'one-time', 'from-view'].forEach(cmd => {
+        let el = div();
+        el.setAttribute(`foo.${cmd}`, 'bar');
+        language.createLetExpressions(resources, el);
+        expect(loggerSpy.calls.count()).toBe(++callCount, `It should have had been called ${callCount} times`);
+      });
+    });
+
+    it('works with interpolation', () => {
+      let el = div();
+      el.setAttribute('foo', '${bar}');
+      const expressions = language.createLetExpressions(resources, el);
+      expect(expressions.length).toBe(1, 'It should have had 1 instruction');
+      expect(expressions[0] instanceof LetInterpolationBindingExpression).toBe(true);
+    });
+
     it('creates correct let expressions', () => {
+      let el = div();
+      el.setAttribute('foo', 'bar');
+      expect(language.createLetExpressions(resources, el)[0] instanceof LetExpression).toBe(true);
+    });
 
-      let el1 = div();
-      el1.setAttribute('foo.bind', 'bar');
-      expect(language.createLetExpressions(resources, el1)[0] instanceof LetExpression).toBe(true);
+    it('understands to-binding-context', () => {
+      let el = div();
+      el.setAttribute('foo.bind', 'bar');
+      el.setAttribute(language.toBindingContextAttr, '');
 
-      let el2 = div();
-      el2.setAttribute('foo', '${bar}');
-      expect(language.createLetExpressions(resources, el2)[0] instanceof LetInterpolationBindingExpression).toBe(true);
-
-      let el3 = div();
-      el3.setAttribute('foo', 'bar');
-      expect(language.createLetExpressions(resources, el3)[0] instanceof LetExpression).toBe(true);
+      const expressions = language.createLetExpressions(resources, el);
+      expect(expressions.length).toBe(1, 'It should have not created expression from to-binding-context');
+      expect(expressions[0].toBindingContext).toBe(true);
     });
 
     function div() {

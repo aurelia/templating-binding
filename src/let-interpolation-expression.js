@@ -1,5 +1,4 @@
-import {bindingMode, createOverrideContext} from 'aurelia-binding';
-
+import {bindingMode} from 'aurelia-binding';
 import {
   InterpolationBinding,
   ChildInterpolationBinding
@@ -61,7 +60,7 @@ export class LetInterpolationBinding {
     }
 
     this.isBound = true;
-    this.source = source
+    this.source = source;
     this.target = this.toBindingContext ? source.bindingContext : source.overrideContext;
 
     this.interpolationBinding = this.createInterpolationBinding();

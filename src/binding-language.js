@@ -21,6 +21,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.emptyStringExpression = this.parser.parse('\'\'');
     syntaxInterpreter.language = this;
     this.attributeMap = attributeMap;
+    this.toBindingContextAttr = 'to-binding-context';
   }
 
   inspectAttribute(resources, elementName, attrName, attrValue) {
@@ -92,10 +93,9 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   /**
    * @param {ViewResources} resources
    * @param {Element} letElement
-   * @param {(LetExpression | LetInterpolationBindingExpression)[]} existingLetExpressions 
    */
-  createLetExpressions(resources, letElement, existingLetExpressions) {
-    existingLetExpressions = existingLetExpressions || [];
+  createLetExpressions(resources, letElement) {
+    let expressions = [];
     let attributes = letElement.attributes;
     /**@type {Attr} */
     let attr;
@@ -104,24 +104,31 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     let attrName;
     let attrValue;
     let command;
+    let toBindingContextAttr = this.toBindingContextAttr;
+    let toBindingContext = letElement.hasAttribute(toBindingContextAttr);
     for (let i = 0, ii = attributes.length; ii > i; ++i) {
       attr = attributes[i];
       attrName = attr.name;
       attrValue = attr.nodeValue;
       parts = attrName.split('.');
 
+      if (attrName === toBindingContextAttr) {
+        continue;
+      }
+
       if (parts.length === 2) {
         command = parts[1];
         if (command !== 'bind') {
           LogManager.getLogger('templating-binding-language')
-            .warn(`Detected invalid let command. Expected "${part[0]}.bind", given "${attrName}"`);
+            .warn(`Detected invalid let command. Expected "${parts[0]}.bind", given "${attrName}"`);
           continue;
         }
-        existingLetExpressions.push(new LetExpression(
+        expressions.push(new LetExpression(
           this.observerLocator,
           camelCase(parts[0]),
           this.parser.parse(attrValue),
-          resources.lookupFunctions
+          resources.lookupFunctions,
+          toBindingContext
         ));
       } else {
         attrName = camelCase(attrName);
@@ -131,23 +138,25 @@ export class TemplatingBindingLanguage extends BindingLanguage {
             .warn(`Detected string literal in let bindings. Did you mean "${ attrName }.bind=${ attrValue }" or "${ attrName }=\${${ attrValue }}" ?`);
         }
         if (parts) {
-          existingLetExpressions.push(new LetInterpolationBindingExpression(
+          expressions.push(new LetInterpolationBindingExpression(
             this.observerLocator,
             attrName,
             parts,
-            resources.lookupFunctions
+            resources.lookupFunctions,
+            toBindingContext
           ));
         } else {
-          existingLetExpressions.push(new LetExpression(
+          expressions.push(new LetExpression(
             this.observerLocator,
             attrName,
             new LiteralString(attrValue),
-            resources.lookupFunctions
+            resources.lookupFunctions,
+            toBindingContext
           ));
         }
       }
     }
-    return existingLetExpressions;
+    return expressions;
   }
 
   inspectTextContent(resources, value) {
