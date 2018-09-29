@@ -1,3 +1,18 @@
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/aurelia/templating-binding/compare/1.4.3...1.5.0) (2018-09-29)
+
+
+### Bug Fixes
+
+* **BindingLanguage+Let:** enhance implementation ([863b6ef](https://github.com/aurelia/templating-binding/commit/863b6ef))
+
+
+### Features
+
+* **Let:** support let element ([bef80fc](https://github.com/aurelia/templating-binding/commit/bef80fc))
+
+
+
 <a name="1.4.2"></a>
 ## [1.4.2](https://github.com/aurelia/templating-binding/compare/1.4.1...1.4.2) (2018-06-20)
 

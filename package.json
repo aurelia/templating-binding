@@ -1,6 +1,6 @@
 {
   "name": "aurelia-templating-binding",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "description": "An implementation of the templating engine's Binding Language abstraction which uses a pluggable command syntax.",
   "keywords": [
     "aurelia",

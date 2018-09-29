@@ -3,7 +3,7 @@
 System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], function (_export, _context) {
   "use strict";
 
-  var LogManager, camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression, BehaviorInstruction, BindingLanguage, _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3, AttributeMap, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
+  var LogManager, camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression, LiteralString, BehaviorInstruction, BindingLanguage, _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3, AttributeMap, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
 
   function _possibleConstructorReturn(self, call) {
     if (!self) {
@@ -63,6 +63,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
       CallExpression = _aureliaBinding.CallExpression;
       delegationStrategy = _aureliaBinding.delegationStrategy;
       NameExpression = _aureliaBinding.NameExpression;
+      LiteralString = _aureliaBinding.LiteralString;
     }, function (_aureliaTemplating) {
       BehaviorInstruction = _aureliaTemplating.BehaviorInstruction;
       BindingLanguage = _aureliaTemplating.BindingLanguage;
@@ -569,6 +570,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
           _this.emptyStringExpression = _this.parser.parse('\'\'');
           syntaxInterpreter.language = _this;
           _this.attributeMap = attributeMap;
+          _this.toBindingContextAttr = 'to-binding-context';
           return _this;
         }
 
@@ -624,6 +626,51 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
           }
 
           return instruction;
+        };
+
+        TemplatingBindingLanguage.prototype.createLetExpressions = function createLetExpressions(resources, letElement) {
+          var expressions = [];
+          var attributes = letElement.attributes;
+
+          var attr = void 0;
+
+          var parts = void 0;
+          var attrName = void 0;
+          var attrValue = void 0;
+          var command = void 0;
+          var toBindingContextAttr = this.toBindingContextAttr;
+          var toBindingContext = letElement.hasAttribute(toBindingContextAttr);
+          for (var i = 0, ii = attributes.length; ii > i; ++i) {
+            attr = attributes[i];
+            attrName = attr.name;
+            attrValue = attr.nodeValue;
+            parts = attrName.split('.');
+
+            if (attrName === toBindingContextAttr) {
+              continue;
+            }
+
+            if (parts.length === 2) {
+              command = parts[1];
+              if (command !== 'bind') {
+                LogManager.getLogger('templating-binding-language').warn('Detected invalid let command. Expected "' + parts[0] + '.bind", given "' + attrName + '"');
+                continue;
+              }
+              expressions.push(new LetExpression(this.observerLocator, camelCase(parts[0]), this.parser.parse(attrValue), resources.lookupFunctions, toBindingContext));
+            } else {
+              attrName = camelCase(attrName);
+              parts = this.parseInterpolation(resources, attrValue);
+              if (parts === null) {
+                LogManager.getLogger('templating-binding-language').warn('Detected string literal in let bindings. Did you mean "' + attrName + '.bind=' + attrValue + '" or "' + attrName + '=${' + attrValue + '}" ?');
+              }
+              if (parts) {
+                expressions.push(new LetInterpolationBindingExpression(this.observerLocator, attrName, parts, resources.lookupFunctions, toBindingContext));
+              } else {
+                expressions.push(new LetExpression(this.observerLocator, attrName, new LiteralString(attrValue), resources.lookupFunctions, toBindingContext));
+              }
+            }
+          }
+          return expressions;
         };
 
         TemplatingBindingLanguage.prototype.inspectTextContent = function inspectTextContent(resources, value) {
