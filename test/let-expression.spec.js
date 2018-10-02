@@ -9,7 +9,7 @@ import {Container} from 'aurelia-dependency-injection';
 
 import {TemplatingBindingLanguage} from '../src/binding-language';
 import {
-  Let,
+  LetBinding,
   LetExpression
 } from '../src/let-expression';
 import {
@@ -42,7 +42,7 @@ describe('Let', () => {
     it('creates binding', () => {
       let letExpression = new LetExpression(observerLocator, 'foo', parser.parse('bar'), LookupFunctions);
       let binding = letExpression.createBinding();
-      expect(binding instanceof Let).toBe(true);
+      expect(binding instanceof LetBinding).toBe(true);
     });
   });
 
@@ -50,7 +50,7 @@ describe('Let', () => {
     it('binds to overrideContext', done => {
       let vm = { foo: 'bar', baz: { foo: 'baz' } };
       let scope = createScopeForTest(vm);
-      let binding = new Let(observerLocator, parser.parse('baz.foo'), 'bar', LookupFunctions);
+      let binding = new LetBinding(observerLocator, parser.parse('baz.foo'), 'bar', LookupFunctions);
 
       binding.bind(scope);
 
@@ -74,7 +74,7 @@ describe('Let', () => {
     it('binds to bindingContext', done => {
       let vm = { foo: 'bar', baz: { foo: 'baz' } };
       let scope = createScopeForTest(vm);
-      let binding = new Let(observerLocator, parser.parse('baz.foo'), 'bar', LookupFunctions, true);
+      let binding = new LetBinding(observerLocator, parser.parse('baz.foo'), 'bar', LookupFunctions, true);
 
       binding.bind(scope);
 
