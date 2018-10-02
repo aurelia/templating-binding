@@ -28,6 +28,8 @@ var paths = {
 paths.files = [
   'attribute-map.js',
   'interpolation-binding-expression.js',
+  'let-expression.js',
+  'let-interpolation-expression',
   'syntax-interpreter.js',
   'binding-language.js',
   'index.js'

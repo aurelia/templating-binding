@@ -21,7 +21,7 @@ export class LetExpression {
   }
 
   createBinding() {
-    return new Let(
+    return new LetBinding(
       this.observerLocator,
       this.sourceExpression,
       this.targetProperty,
@@ -32,7 +32,7 @@ export class LetExpression {
 }
 
 @connectable()
-export class Let {
+export class LetBinding {
   /**
    * @param {ObserverLocator} observerLocator
    * @param {Expression} sourceExpression
