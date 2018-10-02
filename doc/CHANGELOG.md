@@ -1,3 +1,8 @@
+<a name="1.5.1"></a>
+## [1.5.1](https://github.com/aurelia/templating-binding/compare/1.5.0...1.5.1) (2018-10-02)
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/aurelia/templating-binding/compare/1.4.3...1.5.0) (2018-09-29)
 

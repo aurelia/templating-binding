@@ -3,9 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TemplatingBindingLanguage = exports.SyntaxInterpreter = exports.ChildInterpolationBinding = exports.InterpolationBinding = exports.InterpolationBindingExpression = exports.AttributeMap = undefined;
+exports.TemplatingBindingLanguage = exports.SyntaxInterpreter = exports.LetBinding = exports.LetExpression = exports.ChildInterpolationBinding = exports.InterpolationBinding = exports.InterpolationBindingExpression = exports.AttributeMap = undefined;
 
-var _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3;
+var _class, _temp, _dec, _class2, _dec2, _class3, _class4, _temp2, _class5, _temp3;
 
 exports.configure = configure;
 
@@ -303,7 +303,97 @@ var ChildInterpolationBinding = exports.ChildInterpolationBinding = (_dec = (0, 
 
   return ChildInterpolationBinding;
 }()) || _class2);
-var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class3 = function () {
+
+var LetExpression = exports.LetExpression = function () {
+  function LetExpression(observerLocator, targetProperty, sourceExpression, lookupFunctions, toBindingContext) {
+    
+
+    this.observerLocator = observerLocator;
+    this.sourceExpression = sourceExpression;
+    this.targetProperty = targetProperty;
+    this.lookupFunctions = lookupFunctions;
+    this.toBindingContext = toBindingContext;
+  }
+
+  LetExpression.prototype.createBinding = function createBinding() {
+    return new LetBinding(this.observerLocator, this.sourceExpression, this.targetProperty, this.lookupFunctions, this.toBindingContext);
+  };
+
+  return LetExpression;
+}();
+
+var LetBinding = exports.LetBinding = (_dec2 = (0, _aureliaBinding.connectable)(), _dec2(_class3 = function () {
+  function LetBinding(observerLocator, sourceExpression, targetProperty, lookupFunctions, toBindingContext) {
+    
+
+    this.observerLocator = observerLocator;
+    this.sourceExpression = sourceExpression;
+    this.targetProperty = targetProperty;
+    this.lookupFunctions = lookupFunctions;
+    this.source = null;
+    this.target = null;
+    this.toBindingContext = toBindingContext;
+  }
+
+  LetBinding.prototype.updateTarget = function updateTarget() {
+    var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+    this.target[this.targetProperty] = value;
+  };
+
+  LetBinding.prototype.call = function call(context) {
+    if (!this.isBound) {
+      return;
+    }
+    if (context === _aureliaBinding.sourceContext) {
+      this.updateTarget();
+      return;
+    }
+    throw new Error('Unexpected call context ' + context);
+  };
+
+  LetBinding.prototype.bind = function bind(source) {
+    if (this.isBound) {
+      if (this.source === source) {
+        return;
+      }
+      this.unbind();
+    }
+
+    this.isBound = true;
+    this.source = source;
+    this.target = this.toBindingContext ? source.bindingContext : source.overrideContext;
+
+    if (this.sourceExpression.bind) {
+      this.sourceExpression.bind(this, source, this.lookupFunctions);
+    }
+
+    (0, _aureliaBinding.enqueueBindingConnect)(this);
+  };
+
+  LetBinding.prototype.unbind = function unbind() {
+    if (!this.isBound) {
+      return;
+    }
+    this.isBound = false;
+    if (this.sourceExpression.unbind) {
+      this.sourceExpression.unbind(this, this.source);
+    }
+    this.source = null;
+    this.target = null;
+    this.unobserve(true);
+  };
+
+  LetBinding.prototype.connect = function connect() {
+    if (!this.isBound) {
+      return;
+    }
+    this.updateTarget();
+    this.sourceExpression.connect(this, this.source);
+  };
+
+  return LetBinding;
+}()) || _class3);
+var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class4 = function () {
   function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
     
 
@@ -503,14 +593,14 @@ var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class3 = function
   };
 
   return SyntaxInterpreter;
-}(), _class3.inject = [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, _aureliaBinding.EventManager, AttributeMap], _temp2);
+}(), _class4.inject = [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, _aureliaBinding.EventManager, AttributeMap], _temp2);
 
 
 SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
 
 var info = {};
 
-var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (_temp3 = _class4 = function (_BindingLanguage) {
+var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (_temp3 = _class5 = function (_BindingLanguage) {
   _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
   function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap) {
@@ -709,7 +799,7 @@ var TemplatingBindingLanguage = exports.TemplatingBindingLanguage = (_temp3 = _c
   };
 
   return TemplatingBindingLanguage;
-}(_aureliaTemplating.BindingLanguage), _class4.inject = [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3);
+}(_aureliaTemplating.BindingLanguage), _class5.inject = [_aureliaBinding.Parser, _aureliaBinding.ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3);
 function configure(config) {
   config.container.registerSingleton(_aureliaTemplating.BindingLanguage, TemplatingBindingLanguage);
   config.container.registerAlias(_aureliaTemplating.BindingLanguage, TemplatingBindingLanguage);

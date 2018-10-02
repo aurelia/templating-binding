@@ -5,6 +5,7 @@ import {
   bindingMode,
   connectable,
   enqueueBindingConnect,
+  sourceContext,
   Parser,
   ObserverLocator,
   EventManager,
@@ -58,6 +59,39 @@ export declare class ChildInterpolationBinding {
   bind(source?: any): any;
   unbind(): any;
   connect(evaluate?: any): any;
+}
+export declare class LetExpression {
+  
+  /**
+     * @param {ObserverLocator} observerLocator
+     * @param {string} targetProperty
+     * @param {Expression} sourceExpression
+     * @param {any} lookupFunctions
+     * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
+     */
+  constructor(observerLocator?: any, targetProperty?: any, sourceExpression?: any, lookupFunctions?: any, toBindingContext?: any);
+  createBinding(): any;
+}
+export declare class LetBinding {
+  
+  /**
+     * @param {ObserverLocator} observerLocator
+     * @param {Expression} sourceExpression
+     * @param {Function | Element} target
+     * @param {string} targetProperty
+     * @param {*} lookupFunctions
+     * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
+     */
+  constructor(observerLocator?: any, sourceExpression?: any, targetProperty?: any, lookupFunctions?: any, toBindingContext?: any);
+  updateTarget(): any;
+  call(context?: any): any;
+  
+  /**
+     * @param {Scope} source Binding context
+     */
+  bind(source?: any): any;
+  unbind(): any;
+  connect(): any;
 }
 
 /*eslint dot-notation:0*/

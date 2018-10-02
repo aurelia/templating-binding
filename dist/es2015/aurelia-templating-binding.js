@@ -1,7 +1,7 @@
-var _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3;
+var _class, _temp, _dec, _class2, _dec2, _class3, _class4, _temp2, _class5, _temp3;
 
 import * as LogManager from 'aurelia-logging';
-import { camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression, LiteralString } from 'aurelia-binding';
+import { camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, sourceContext, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression, LiteralString } from 'aurelia-binding';
 import { BehaviorInstruction, BindingLanguage } from 'aurelia-templating';
 
 export let AttributeMap = (_temp = _class = class AttributeMap {
@@ -268,7 +268,89 @@ export let ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = cla
   }
 }) || _class2);
 
-export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
+export let LetExpression = class LetExpression {
+  constructor(observerLocator, targetProperty, sourceExpression, lookupFunctions, toBindingContext) {
+    this.observerLocator = observerLocator;
+    this.sourceExpression = sourceExpression;
+    this.targetProperty = targetProperty;
+    this.lookupFunctions = lookupFunctions;
+    this.toBindingContext = toBindingContext;
+  }
+
+  createBinding() {
+    return new LetBinding(this.observerLocator, this.sourceExpression, this.targetProperty, this.lookupFunctions, this.toBindingContext);
+  }
+};
+
+export let LetBinding = (_dec2 = connectable(), _dec2(_class3 = class LetBinding {
+  constructor(observerLocator, sourceExpression, targetProperty, lookupFunctions, toBindingContext) {
+    this.observerLocator = observerLocator;
+    this.sourceExpression = sourceExpression;
+    this.targetProperty = targetProperty;
+    this.lookupFunctions = lookupFunctions;
+    this.source = null;
+    this.target = null;
+    this.toBindingContext = toBindingContext;
+  }
+
+  updateTarget() {
+    const value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+    this.target[this.targetProperty] = value;
+  }
+
+  call(context) {
+    if (!this.isBound) {
+      return;
+    }
+    if (context === sourceContext) {
+      this.updateTarget();
+      return;
+    }
+    throw new Error(`Unexpected call context ${context}`);
+  }
+
+  bind(source) {
+    if (this.isBound) {
+      if (this.source === source) {
+        return;
+      }
+      this.unbind();
+    }
+
+    this.isBound = true;
+    this.source = source;
+    this.target = this.toBindingContext ? source.bindingContext : source.overrideContext;
+
+    if (this.sourceExpression.bind) {
+      this.sourceExpression.bind(this, source, this.lookupFunctions);
+    }
+
+    enqueueBindingConnect(this);
+  }
+
+  unbind() {
+    if (!this.isBound) {
+      return;
+    }
+    this.isBound = false;
+    if (this.sourceExpression.unbind) {
+      this.sourceExpression.unbind(this, this.source);
+    }
+    this.source = null;
+    this.target = null;
+    this.unobserve(true);
+  }
+
+  connect() {
+    if (!this.isBound) {
+      return;
+    }
+    this.updateTarget();
+    this.sourceExpression.connect(this, this.source);
+  }
+}) || _class3);
+
+export let SyntaxInterpreter = (_temp2 = _class4 = class SyntaxInterpreter {
 
   constructor(parser, observerLocator, eventManager, attributeMap) {
     this.parser = parser;
@@ -465,13 +547,13 @@ export let SyntaxInterpreter = (_temp2 = _class3 = class SyntaxInterpreter {
 
     return instruction;
   }
-}, _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2);
+}, _class4.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2);
 
 SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
 
 let info = {};
 
-export let TemplatingBindingLanguage = (_temp3 = _class4 = class TemplatingBindingLanguage extends BindingLanguage {
+export let TemplatingBindingLanguage = (_temp3 = _class5 = class TemplatingBindingLanguage extends BindingLanguage {
 
   constructor(parser, observerLocator, syntaxInterpreter, attributeMap) {
     super();
@@ -663,7 +745,7 @@ export let TemplatingBindingLanguage = (_temp3 = _class4 = class TemplatingBindi
     parts[partIndex] = value.substr(pos);
     return parts;
   }
-}, _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3);
+}, _class5.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3);
 
 export function configure(config) {
   config.container.registerSingleton(BindingLanguage, TemplatingBindingLanguage);

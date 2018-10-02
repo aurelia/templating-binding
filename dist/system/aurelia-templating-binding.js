@@ -3,7 +3,7 @@
 System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], function (_export, _context) {
   "use strict";
 
-  var LogManager, camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression, LiteralString, BehaviorInstruction, BindingLanguage, _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3, AttributeMap, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
+  var LogManager, camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, sourceContext, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression, LiteralString, BehaviorInstruction, BindingLanguage, _class, _temp, _dec, _class2, _dec2, _class3, _class4, _temp2, _class5, _temp3, AttributeMap, InterpolationBindingExpression, InterpolationBinding, ChildInterpolationBinding, LetExpression, LetBinding, SyntaxInterpreter, info, TemplatingBindingLanguage;
 
   function _possibleConstructorReturn(self, call) {
     if (!self) {
@@ -55,6 +55,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
       bindingMode = _aureliaBinding.bindingMode;
       connectable = _aureliaBinding.connectable;
       enqueueBindingConnect = _aureliaBinding.enqueueBindingConnect;
+      sourceContext = _aureliaBinding.sourceContext;
       Parser = _aureliaBinding.Parser;
       ObserverLocator = _aureliaBinding.ObserverLocator;
       EventManager = _aureliaBinding.EventManager;
@@ -348,7 +349,101 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
       _export('ChildInterpolationBinding', ChildInterpolationBinding);
 
-      _export('SyntaxInterpreter', SyntaxInterpreter = (_temp2 = _class3 = function () {
+      _export('LetExpression', LetExpression = function () {
+        function LetExpression(observerLocator, targetProperty, sourceExpression, lookupFunctions, toBindingContext) {
+          
+
+          this.observerLocator = observerLocator;
+          this.sourceExpression = sourceExpression;
+          this.targetProperty = targetProperty;
+          this.lookupFunctions = lookupFunctions;
+          this.toBindingContext = toBindingContext;
+        }
+
+        LetExpression.prototype.createBinding = function createBinding() {
+          return new LetBinding(this.observerLocator, this.sourceExpression, this.targetProperty, this.lookupFunctions, this.toBindingContext);
+        };
+
+        return LetExpression;
+      }());
+
+      _export('LetExpression', LetExpression);
+
+      _export('LetBinding', LetBinding = (_dec2 = connectable(), _dec2(_class3 = function () {
+        function LetBinding(observerLocator, sourceExpression, targetProperty, lookupFunctions, toBindingContext) {
+          
+
+          this.observerLocator = observerLocator;
+          this.sourceExpression = sourceExpression;
+          this.targetProperty = targetProperty;
+          this.lookupFunctions = lookupFunctions;
+          this.source = null;
+          this.target = null;
+          this.toBindingContext = toBindingContext;
+        }
+
+        LetBinding.prototype.updateTarget = function updateTarget() {
+          var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+          this.target[this.targetProperty] = value;
+        };
+
+        LetBinding.prototype.call = function call(context) {
+          if (!this.isBound) {
+            return;
+          }
+          if (context === sourceContext) {
+            this.updateTarget();
+            return;
+          }
+          throw new Error('Unexpected call context ' + context);
+        };
+
+        LetBinding.prototype.bind = function bind(source) {
+          if (this.isBound) {
+            if (this.source === source) {
+              return;
+            }
+            this.unbind();
+          }
+
+          this.isBound = true;
+          this.source = source;
+          this.target = this.toBindingContext ? source.bindingContext : source.overrideContext;
+
+          if (this.sourceExpression.bind) {
+            this.sourceExpression.bind(this, source, this.lookupFunctions);
+          }
+
+          enqueueBindingConnect(this);
+        };
+
+        LetBinding.prototype.unbind = function unbind() {
+          if (!this.isBound) {
+            return;
+          }
+          this.isBound = false;
+          if (this.sourceExpression.unbind) {
+            this.sourceExpression.unbind(this, this.source);
+          }
+          this.source = null;
+          this.target = null;
+          this.unobserve(true);
+        };
+
+        LetBinding.prototype.connect = function connect() {
+          if (!this.isBound) {
+            return;
+          }
+          this.updateTarget();
+          this.sourceExpression.connect(this, this.source);
+        };
+
+        return LetBinding;
+      }()) || _class3));
+
+      _export('LetBinding', LetBinding);
+
+      _export('SyntaxInterpreter', SyntaxInterpreter = (_temp2 = _class4 = function () {
         function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
           
 
@@ -548,7 +643,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         return SyntaxInterpreter;
-      }(), _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2));
+      }(), _class4.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2));
 
       _export('SyntaxInterpreter', SyntaxInterpreter);
 
@@ -556,7 +651,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
 
       info = {};
 
-      _export('TemplatingBindingLanguage', TemplatingBindingLanguage = (_temp3 = _class4 = function (_BindingLanguage) {
+      _export('TemplatingBindingLanguage', TemplatingBindingLanguage = (_temp3 = _class5 = function (_BindingLanguage) {
         _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
         function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap) {
@@ -755,7 +850,7 @@ System.register(['aurelia-logging', 'aurelia-binding', 'aurelia-templating'], fu
         };
 
         return TemplatingBindingLanguage;
-      }(BindingLanguage), _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3));
+      }(BindingLanguage), _class5.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3));
 
       _export('TemplatingBindingLanguage', TemplatingBindingLanguage);
     }

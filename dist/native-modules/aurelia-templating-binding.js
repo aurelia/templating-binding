@@ -1,4 +1,4 @@
-var _class, _temp, _dec, _class2, _class3, _temp2, _class4, _temp3;
+var _class, _temp, _dec, _class2, _dec2, _class3, _class4, _temp2, _class5, _temp3;
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
@@ -7,7 +7,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 import * as LogManager from 'aurelia-logging';
-import { camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression, LiteralString } from 'aurelia-binding';
+import { camelCase, SVGAnalyzer, bindingMode, connectable, enqueueBindingConnect, sourceContext, Parser, ObserverLocator, EventManager, ListenerExpression, BindingExpression, CallExpression, delegationStrategy, NameExpression, LiteralString } from 'aurelia-binding';
 import { BehaviorInstruction, BindingLanguage } from 'aurelia-templating';
 
 export var AttributeMap = (_temp = _class = function () {
@@ -289,7 +289,97 @@ export var ChildInterpolationBinding = (_dec = connectable(), _dec(_class2 = fun
   return ChildInterpolationBinding;
 }()) || _class2);
 
-export var SyntaxInterpreter = (_temp2 = _class3 = function () {
+export var LetExpression = function () {
+  function LetExpression(observerLocator, targetProperty, sourceExpression, lookupFunctions, toBindingContext) {
+    
+
+    this.observerLocator = observerLocator;
+    this.sourceExpression = sourceExpression;
+    this.targetProperty = targetProperty;
+    this.lookupFunctions = lookupFunctions;
+    this.toBindingContext = toBindingContext;
+  }
+
+  LetExpression.prototype.createBinding = function createBinding() {
+    return new LetBinding(this.observerLocator, this.sourceExpression, this.targetProperty, this.lookupFunctions, this.toBindingContext);
+  };
+
+  return LetExpression;
+}();
+
+export var LetBinding = (_dec2 = connectable(), _dec2(_class3 = function () {
+  function LetBinding(observerLocator, sourceExpression, targetProperty, lookupFunctions, toBindingContext) {
+    
+
+    this.observerLocator = observerLocator;
+    this.sourceExpression = sourceExpression;
+    this.targetProperty = targetProperty;
+    this.lookupFunctions = lookupFunctions;
+    this.source = null;
+    this.target = null;
+    this.toBindingContext = toBindingContext;
+  }
+
+  LetBinding.prototype.updateTarget = function updateTarget() {
+    var value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
+    this.target[this.targetProperty] = value;
+  };
+
+  LetBinding.prototype.call = function call(context) {
+    if (!this.isBound) {
+      return;
+    }
+    if (context === sourceContext) {
+      this.updateTarget();
+      return;
+    }
+    throw new Error('Unexpected call context ' + context);
+  };
+
+  LetBinding.prototype.bind = function bind(source) {
+    if (this.isBound) {
+      if (this.source === source) {
+        return;
+      }
+      this.unbind();
+    }
+
+    this.isBound = true;
+    this.source = source;
+    this.target = this.toBindingContext ? source.bindingContext : source.overrideContext;
+
+    if (this.sourceExpression.bind) {
+      this.sourceExpression.bind(this, source, this.lookupFunctions);
+    }
+
+    enqueueBindingConnect(this);
+  };
+
+  LetBinding.prototype.unbind = function unbind() {
+    if (!this.isBound) {
+      return;
+    }
+    this.isBound = false;
+    if (this.sourceExpression.unbind) {
+      this.sourceExpression.unbind(this, this.source);
+    }
+    this.source = null;
+    this.target = null;
+    this.unobserve(true);
+  };
+
+  LetBinding.prototype.connect = function connect() {
+    if (!this.isBound) {
+      return;
+    }
+    this.updateTarget();
+    this.sourceExpression.connect(this, this.source);
+  };
+
+  return LetBinding;
+}()) || _class3);
+
+export var SyntaxInterpreter = (_temp2 = _class4 = function () {
   function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
     
 
@@ -489,13 +579,13 @@ export var SyntaxInterpreter = (_temp2 = _class3 = function () {
   };
 
   return SyntaxInterpreter;
-}(), _class3.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2);
+}(), _class4.inject = [Parser, ObserverLocator, EventManager, AttributeMap], _temp2);
 
 SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
 
 var info = {};
 
-export var TemplatingBindingLanguage = (_temp3 = _class4 = function (_BindingLanguage) {
+export var TemplatingBindingLanguage = (_temp3 = _class5 = function (_BindingLanguage) {
   _inherits(TemplatingBindingLanguage, _BindingLanguage);
 
   function TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, attributeMap) {
@@ -694,7 +784,7 @@ export var TemplatingBindingLanguage = (_temp3 = _class4 = function (_BindingLan
   };
 
   return TemplatingBindingLanguage;
-}(BindingLanguage), _class4.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3);
+}(BindingLanguage), _class5.inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap], _temp3);
 
 export function configure(config) {
   config.container.registerSingleton(BindingLanguage, TemplatingBindingLanguage);
