@@ -23,8 +23,8 @@ export class LetInterpolationBindingExpression {
   createBinding() {
     return new LetInterpolationBinding(
       this.observerLocator,
-      this.parts,
       this.targetProperty,
+      this.parts,
       this.lookupFunctions,
       this.toBindingContext
     );
