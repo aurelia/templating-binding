@@ -29,7 +29,7 @@ paths.files = [
   'attribute-map.js',
   'interpolation-binding-expression.js',
   'let-expression.js',
-  'let-interpolation-expression',
+  'let-interpolation-expression.js',
   'syntax-interpreter.js',
   'binding-language.js',
   'index.js'
