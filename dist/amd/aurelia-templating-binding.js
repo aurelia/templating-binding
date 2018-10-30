@@ -4,7 +4,7 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.TemplatingBindingLanguage = exports.SyntaxInterpreter = exports.LetBinding = exports.LetExpression = exports.ChildInterpolationBinding = exports.InterpolationBinding = exports.InterpolationBindingExpression = exports.AttributeMap = undefined;
+  exports.TemplatingBindingLanguage = exports.SyntaxInterpreter = exports.LetInterpolationBinding = exports.LetInterpolationBindingExpression = exports.LetBinding = exports.LetExpression = exports.ChildInterpolationBinding = exports.InterpolationBinding = exports.InterpolationBindingExpression = exports.AttributeMap = undefined;
   exports.configure = configure;
 
   var LogManager = _interopRequireWildcard(_aureliaLogging);
@@ -422,6 +422,74 @@ define(['exports', 'aurelia-logging', 'aurelia-binding', 'aurelia-templating'], 
 
     return LetBinding;
   }()) || _class3);
+
+  var LetInterpolationBindingExpression = exports.LetInterpolationBindingExpression = function () {
+    function LetInterpolationBindingExpression(observerLocator, targetProperty, parts, lookupFunctions, toBindingContext) {
+      
+
+      this.observerLocator = observerLocator;
+      this.targetProperty = targetProperty;
+      this.parts = parts;
+      this.lookupFunctions = lookupFunctions;
+      this.toBindingContext = toBindingContext;
+    }
+
+    LetInterpolationBindingExpression.prototype.createBinding = function createBinding() {
+      return new LetInterpolationBinding(this.observerLocator, this.targetProperty, this.parts, this.lookupFunctions, this.toBindingContext);
+    };
+
+    return LetInterpolationBindingExpression;
+  }();
+
+  var LetInterpolationBinding = exports.LetInterpolationBinding = function () {
+    function LetInterpolationBinding(observerLocator, targetProperty, parts, lookupFunctions, toBindingContext) {
+      
+
+      this.observerLocator = observerLocator;
+      this.parts = parts;
+      this.targetProperty = targetProperty;
+      this.lookupFunctions = lookupFunctions;
+      this.toBindingContext = toBindingContext;
+      this.target = null;
+    }
+
+    LetInterpolationBinding.prototype.bind = function bind(source) {
+      if (this.isBound) {
+        if (this.source === source) {
+          return;
+        }
+        this.unbind();
+      }
+
+      this.isBound = true;
+      this.source = source;
+      this.target = this.toBindingContext ? source.bindingContext : source.overrideContext;
+
+      this.interpolationBinding = this.createInterpolationBinding();
+      this.interpolationBinding.bind(source);
+    };
+
+    LetInterpolationBinding.prototype.unbind = function unbind() {
+      if (!this.isBound) {
+        return;
+      }
+      this.isBound = false;
+      this.source = null;
+      this.target = null;
+      this.interpolationBinding.unbind();
+      this.interpolationBinding = null;
+    };
+
+    LetInterpolationBinding.prototype.createInterpolationBinding = function createInterpolationBinding() {
+      if (this.parts.length === 3) {
+        return new ChildInterpolationBinding(this.target, this.observerLocator, this.parts[1], _aureliaBinding.bindingMode.oneWay, this.lookupFunctions, this.targetProperty, this.parts[0], this.parts[2]);
+      }
+      return new InterpolationBinding(this.observerLocator, this.parts, this.target, this.targetProperty, _aureliaBinding.bindingMode.oneWay, this.lookupFunctions);
+    };
+
+    return LetInterpolationBinding;
+  }();
+
   var SyntaxInterpreter = exports.SyntaxInterpreter = (_temp2 = _class4 = function () {
     function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
       

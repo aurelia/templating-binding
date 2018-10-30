@@ -379,6 +379,73 @@ export var LetBinding = (_dec2 = connectable(), _dec2(_class3 = function () {
   return LetBinding;
 }()) || _class3);
 
+export var LetInterpolationBindingExpression = function () {
+  function LetInterpolationBindingExpression(observerLocator, targetProperty, parts, lookupFunctions, toBindingContext) {
+    
+
+    this.observerLocator = observerLocator;
+    this.targetProperty = targetProperty;
+    this.parts = parts;
+    this.lookupFunctions = lookupFunctions;
+    this.toBindingContext = toBindingContext;
+  }
+
+  LetInterpolationBindingExpression.prototype.createBinding = function createBinding() {
+    return new LetInterpolationBinding(this.observerLocator, this.targetProperty, this.parts, this.lookupFunctions, this.toBindingContext);
+  };
+
+  return LetInterpolationBindingExpression;
+}();
+
+export var LetInterpolationBinding = function () {
+  function LetInterpolationBinding(observerLocator, targetProperty, parts, lookupFunctions, toBindingContext) {
+    
+
+    this.observerLocator = observerLocator;
+    this.parts = parts;
+    this.targetProperty = targetProperty;
+    this.lookupFunctions = lookupFunctions;
+    this.toBindingContext = toBindingContext;
+    this.target = null;
+  }
+
+  LetInterpolationBinding.prototype.bind = function bind(source) {
+    if (this.isBound) {
+      if (this.source === source) {
+        return;
+      }
+      this.unbind();
+    }
+
+    this.isBound = true;
+    this.source = source;
+    this.target = this.toBindingContext ? source.bindingContext : source.overrideContext;
+
+    this.interpolationBinding = this.createInterpolationBinding();
+    this.interpolationBinding.bind(source);
+  };
+
+  LetInterpolationBinding.prototype.unbind = function unbind() {
+    if (!this.isBound) {
+      return;
+    }
+    this.isBound = false;
+    this.source = null;
+    this.target = null;
+    this.interpolationBinding.unbind();
+    this.interpolationBinding = null;
+  };
+
+  LetInterpolationBinding.prototype.createInterpolationBinding = function createInterpolationBinding() {
+    if (this.parts.length === 3) {
+      return new ChildInterpolationBinding(this.target, this.observerLocator, this.parts[1], bindingMode.oneWay, this.lookupFunctions, this.targetProperty, this.parts[0], this.parts[2]);
+    }
+    return new InterpolationBinding(this.observerLocator, this.parts, this.target, this.targetProperty, bindingMode.oneWay, this.lookupFunctions);
+  };
+
+  return LetInterpolationBinding;
+}();
+
 export var SyntaxInterpreter = (_temp2 = _class4 = function () {
   function SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap) {
     

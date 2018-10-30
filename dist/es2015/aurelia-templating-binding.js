@@ -350,6 +350,65 @@ export let LetBinding = (_dec2 = connectable(), _dec2(_class3 = class LetBinding
   }
 }) || _class3);
 
+export let LetInterpolationBindingExpression = class LetInterpolationBindingExpression {
+  constructor(observerLocator, targetProperty, parts, lookupFunctions, toBindingContext) {
+    this.observerLocator = observerLocator;
+    this.targetProperty = targetProperty;
+    this.parts = parts;
+    this.lookupFunctions = lookupFunctions;
+    this.toBindingContext = toBindingContext;
+  }
+
+  createBinding() {
+    return new LetInterpolationBinding(this.observerLocator, this.targetProperty, this.parts, this.lookupFunctions, this.toBindingContext);
+  }
+};
+
+export let LetInterpolationBinding = class LetInterpolationBinding {
+  constructor(observerLocator, targetProperty, parts, lookupFunctions, toBindingContext) {
+    this.observerLocator = observerLocator;
+    this.parts = parts;
+    this.targetProperty = targetProperty;
+    this.lookupFunctions = lookupFunctions;
+    this.toBindingContext = toBindingContext;
+    this.target = null;
+  }
+
+  bind(source) {
+    if (this.isBound) {
+      if (this.source === source) {
+        return;
+      }
+      this.unbind();
+    }
+
+    this.isBound = true;
+    this.source = source;
+    this.target = this.toBindingContext ? source.bindingContext : source.overrideContext;
+
+    this.interpolationBinding = this.createInterpolationBinding();
+    this.interpolationBinding.bind(source);
+  }
+
+  unbind() {
+    if (!this.isBound) {
+      return;
+    }
+    this.isBound = false;
+    this.source = null;
+    this.target = null;
+    this.interpolationBinding.unbind();
+    this.interpolationBinding = null;
+  }
+
+  createInterpolationBinding() {
+    if (this.parts.length === 3) {
+      return new ChildInterpolationBinding(this.target, this.observerLocator, this.parts[1], bindingMode.oneWay, this.lookupFunctions, this.targetProperty, this.parts[0], this.parts[2]);
+    }
+    return new InterpolationBinding(this.observerLocator, this.parts, this.target, this.targetProperty, bindingMode.oneWay, this.lookupFunctions);
+  }
+};
+
 export let SyntaxInterpreter = (_temp2 = _class4 = class SyntaxInterpreter {
 
   constructor(parser, observerLocator, eventManager, attributeMap) {

@@ -1,3 +1,10 @@
+<a name="1.5.2"></a>
+## [1.5.2](https://github.com/aurelia/templating-binding/compare/1.5.1...1.5.2) (2018-10-30)
+
+### Bug Fixes
+
+* Various fixes to `let` bindings.
+
 <a name="1.5.1"></a>
 ## [1.5.1](https://github.com/aurelia/templating-binding/compare/1.5.0...1.5.1) (2018-10-02)
 

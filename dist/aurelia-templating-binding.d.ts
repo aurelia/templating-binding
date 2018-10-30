@@ -93,6 +93,36 @@ export declare class LetBinding {
   unbind(): any;
   connect(): any;
 }
+export declare class LetInterpolationBindingExpression {
+  
+  /**
+     * @param {ObserverLocator} observerLocator
+     * @param {string} targetProperty
+     * @param {string[]} parts
+     * @param {Lookups} lookupFunctions
+     * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
+     */
+  constructor(observerLocator?: any, targetProperty?: any, parts?: any, lookupFunctions?: any, toBindingContext?: any);
+  createBinding(): any;
+}
+export declare class LetInterpolationBinding {
+  
+  /**
+     * @param {ObserverLocator} observerLocator
+     * @param {strign} targetProperty
+     * @param {string[]} parts
+     * @param {Lookups} lookupFunctions
+     * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
+     */
+  constructor(observerLocator?: any, targetProperty?: any, parts?: any, lookupFunctions?: any, toBindingContext?: any);
+  
+  /**
+     * @param {Scope} source
+     */
+  bind(source?: any): any;
+  unbind(): any;
+  createInterpolationBinding(): any;
+}
 
 /*eslint dot-notation:0*/
 export declare class SyntaxInterpreter {
