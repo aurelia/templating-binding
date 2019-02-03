@@ -1,3 +1,13 @@
+<a name="1.5.3"></a>
+## [1.5.3](https://github.com/aurelia/templating-binding/compare/1.5.2...1.5.3) (2019-02-03)
+
+
+### Bug Fixes
+
+* **all:** change es2015 back to native-modules ([d4f5514](https://github.com/aurelia/templating-binding/commit/d4f5514))
+
+
+
 <a name="1.5.2"></a>
 ## [1.5.2](https://github.com/aurelia/templating-binding/compare/1.5.1...1.5.2) (2018-10-30)
 
