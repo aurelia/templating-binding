@@ -15,12 +15,20 @@
   "license": "MIT",
   "author": "Rob Eisenberg <rob@bluespire.com> (http://robeisenberg.com/)",
   "main": "dist/commonjs/aurelia-templating-binding.js",
-  "module": "dist/es2015/aurelia-templating-binding.js",
+  "module": "dist/native-modules/aurelia-templating-binding.js",
   "typings": "dist/aurelia-templating-binding.d.ts",
   "repository": {
     "type": "git",
     "url": "http://github.com/aurelia/templating-binding"
   },
+  "files": [
+    "dist",
+    "doc",
+    "src",
+    "typings.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "karma start"
   },
