@@ -1,5 +1,5 @@
 <a name="1.5.3"></a>
-## [1.5.3](https://github.com/aurelia/templating-binding/compare/1.5.2...1.5.3) (2019-02-03)
+## [1.5.3](https://github.com/aurelia/templating-binding/compare/1.5.2...1.5.3) (2019-02-04)
 
 
 ### Bug Fixes
