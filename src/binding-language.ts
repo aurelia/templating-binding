@@ -1,31 +1,48 @@
 /*eslint indent:0*/
-import {BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
-import {Parser, ObserverLocator, NameExpression, bindingMode, camelCase, LiteralString} from 'aurelia-binding';
+import {BindingLanguage, BehaviorInstruction, ViewResources, HtmlBehaviorResource} from 'aurelia-templating';
+import {Parser, ObserverLocator, NameExpression, bindingMode, camelCase, LiteralString, Expression} from 'aurelia-binding';
+import * as AureliaBinding from 'aurelia-binding';
 import {InterpolationBindingExpression} from './interpolation-binding-expression';
 import {SyntaxInterpreter} from './syntax-interpreter';
 import {AttributeMap} from './attribute-map';
 import {LetExpression} from './let-expression';
 import {LetInterpolationBindingExpression} from './let-interpolation-expression';
 import * as LogManager from 'aurelia-logging';
+import { IAttributeInfo } from './interfaces';
 
-let info = {};
+let info = {} as IAttributeInfo;
 
 export class TemplatingBindingLanguage extends BindingLanguage {
+  /**@internal*/
   static inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap];
+  /**@internal*/
+  parser: Parser;
+  /**@internal*/
+  observerLocator: ObserverLocator;
+  /**@internal*/
+  syntaxInterpreter: SyntaxInterpreter;
+  /**@internal*/
+  emptyStringExpression: Expression;
+  /**@internal*/
+  attributeMap: AttributeMap;
+  /**@internal*/
+  toBindingContextAttr: string;
 
-  constructor(parser, observerLocator, syntaxInterpreter, attributeMap) {
+  constructor(parser: Parser, observerLocator: ObserverLocator, syntaxInterpreter: SyntaxInterpreter, attributeMap: AttributeMap) {
     super();
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.syntaxInterpreter = syntaxInterpreter;
-    this.emptyStringExpression = this.parser.parse('\'\'');
+    this.emptyStringExpression = parser.parse('\'\'');
     syntaxInterpreter.language = this;
     this.attributeMap = attributeMap;
     this.toBindingContextAttr = 'to-binding-context';
   }
 
   inspectAttribute(resources, elementName, attrName, attrValue) {
+    let NameExpression = (AureliaBinding as any).NameExpression;
     let parts = attrName.split('.');
+    let parser = this.parser;
 
     info.defaultBindingMode = null;
 
@@ -35,7 +52,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       info.command = parts[1].trim();
 
       if (info.command === 'ref') {
-        info.expression = new NameExpression(this.parser.parse(attrValue), info.attrName, resources.lookupFunctions);
+        info.expression = new NameExpression(parser.parse(attrValue), info.attrName, resources.lookupFunctions);
         info.command = null;
         info.attrName = 'ref';
       } else {
@@ -45,7 +62,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       info.attrName = attrName;
       info.attrValue = attrValue;
       info.command = null;
-      info.expression = new NameExpression(this.parser.parse(attrValue), 'element', resources.lookupFunctions);
+      info.expression = new NameExpression(parser.parse(attrValue), 'element', resources.lookupFunctions);
     } else {
       info.attrName = attrName;
       info.attrValue = attrValue;
@@ -58,7 +75,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
           this.observerLocator,
           this.attributeMap.map(elementName, attrName),
           interpolationParts,
-          bindingMode.oneWay,
+          bindingMode.toView,
           resources.lookupFunctions,
           attrName
         );
@@ -68,21 +85,28 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return info;
   }
 
-	createAttributeInstruction(resources, element, theInfo, existingInstruction, context) {
-    let instruction;
+	createAttributeInstruction(
+    resources: ViewResources,
+    element: Element,
+    theInfo: /** IAttributeInfo */ any,
+    existingInstruction: BehaviorInstruction,
+    context?: HtmlBehaviorResource): /** Expression | BehaviorInstruction */ any {
+    // having strong typing with out changing public API
+    let $theInfo = theInfo as IAttributeInfo;
+    let instruction: BehaviorInstruction;
 
-    if (theInfo.expression) {
-      if (theInfo.attrName === 'ref') {
-        return theInfo.expression;
+    if ($theInfo.expression) {
+      if ($theInfo.attrName === 'ref') {
+        return $theInfo.expression;
       }
 
-      instruction = existingInstruction || BehaviorInstruction.attribute(theInfo.attrName);
-      instruction.attributes[theInfo.attrName] = theInfo.expression;
-    } else if (theInfo.command) {
+      instruction = existingInstruction || BehaviorInstruction.attribute($theInfo.attrName);
+      instruction.attributes[$theInfo.attrName] = $theInfo.expression;
+    } else if ($theInfo.command) {
       instruction = this.syntaxInterpreter.interpret(
         resources,
         element,
-        theInfo,
+        $theInfo,
         existingInstruction,
         context);
     }
@@ -90,22 +114,19 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return instruction;
   }
 
-  /**
-   * @param {ViewResources} resources
-   * @param {Element} letElement
-   */
-  createLetExpressions(resources, letElement) {
-    let expressions = [];
+  createLetExpressions(resources: ViewResources, letElement: Element) {
+    let expressions: (LetExpression | LetInterpolationBindingExpression)[] = [];
     let attributes = letElement.attributes;
-    /**@type {Attr} */
-    let attr;
-    /**@type {string[]} */
-    let parts;
-    let attrName;
-    let attrValue;
-    let command;
+    let attr: Attr;
+    let parts: Array<string | Expression>;
+    let attrName: string;
+    let attrValue: string;
+    let command: string;
+    let observerLocator = this.observerLocator;
+    let lookupFunctions = resources.lookupFunctions;
     let toBindingContextAttr = this.toBindingContextAttr;
     let toBindingContext = letElement.hasAttribute(toBindingContextAttr);
+
     for (let i = 0, ii = attributes.length; ii > i; ++i) {
       attr = attributes[i];
       attrName = attr.name;
@@ -117,7 +138,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       }
 
       if (parts.length === 2) {
-        command = parts[1];
+        command = parts[1] as string;
         if (command !== 'bind') {
           LogManager.getLogger('templating-binding-language')
             .warn(`Detected invalid let command. Expected "${parts[0]}.bind", given "${attrName}"`);
@@ -125,9 +146,9 @@ export class TemplatingBindingLanguage extends BindingLanguage {
         }
         expressions.push(new LetExpression(
           this.observerLocator,
-          camelCase(parts[0]),
+          camelCase(parts[0] as string),
           this.parser.parse(attrValue),
-          resources.lookupFunctions,
+          lookupFunctions,
           toBindingContext
         ));
       } else {
@@ -139,18 +160,18 @@ export class TemplatingBindingLanguage extends BindingLanguage {
         }
         if (parts) {
           expressions.push(new LetInterpolationBindingExpression(
-            this.observerLocator,
+            observerLocator,
             attrName,
             parts,
-            resources.lookupFunctions,
+            lookupFunctions,
             toBindingContext
           ));
         } else {
           expressions.push(new LetExpression(
-            this.observerLocator,
+            observerLocator,
             attrName,
             new LiteralString(attrValue),
-            resources.lookupFunctions,
+            lookupFunctions,
             toBindingContext
           ));
         }
@@ -159,7 +180,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return expressions;
   }
 
-  inspectTextContent(resources, value) {
+  inspectTextContent(resources: ViewResources, value: string) {
     const parts = this.parseInterpolation(resources, value);
     if (parts === null) {
       return null;
@@ -168,20 +189,20 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       this.observerLocator,
       'textContent',
       parts,
-      bindingMode.oneWay,
+      bindingMode.toView,
       resources.lookupFunctions,
       'textContent');
   }
 
-  parseInterpolation(resources, value) {
-    let i = value.indexOf('${', 0);
-    let ii = value.length;
-    let char;
+  parseInterpolation(resources: ViewResources, value: string): Array<string | Expression> {
+    let i: number = value.indexOf('${', 0);
+    let ii: number = value.length;
+    let char: string;
     let pos = 0;
     let open = 0;
     let quote = null;
-    let interpolationStart;
-    let parts;
+    let interpolationStart: number;
+    let parts: any[];
     let partIndex = 0;
 
     while (i >= 0 && i < ii - 2) {
