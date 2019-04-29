@@ -1,30 +1,40 @@
-/*eslint dot-notation:0*/
-import {
-  Parser,
-  ObserverLocator,
-  EventManager,
-  ListenerExpression,
-  BindingExpression,
-  CallExpression,
-  bindingMode,
-  delegationStrategy
-} from 'aurelia-binding';
-
-import {BehaviorInstruction} from 'aurelia-templating';
+import * as AureliaBinding from 'aurelia-binding';
+import { bindingMode, delegationStrategy, BindingExpression, EventManager, ObserverLocator, Parser } from 'aurelia-binding';
 import * as LogManager from 'aurelia-logging';
-import {AttributeMap} from './attribute-map';
+import { BehaviorInstruction, HtmlBehaviorResource, ViewResources } from 'aurelia-templating';
+import { AttributeMap } from './attribute-map';
+import { TemplatingBindingLanguage } from './binding-language';
+import './interfaces';
+import { IAttributeInfo } from './interfaces';
 
+const { ListenerExpression, BindingExpression, CallExpression } = AureliaBinding as any;
+
+/**
+ * A helper class for TemplatingBindingLanguage to inspect and analyze attributes, determine binding mode based on attribute expression
+ */
 export class SyntaxInterpreter {
-  static inject = [Parser, ObserverLocator, EventManager, AttributeMap];
 
-  constructor(parser, observerLocator, eventManager, attributeMap) {
+  /**@internal*/
+  static inject = [Parser, ObserverLocator, EventManager, AttributeMap];
+  /**@internal*/
+  parser: Parser;
+  /**@internal*/
+  observerLocator: ObserverLocator;
+  /**@internal*/
+  eventManager: EventManager;
+  /**@internal*/
+  attributeMap: AttributeMap;
+  /**@internal*/
+  language: TemplatingBindingLanguage;
+
+  constructor(parser: Parser, observerLocator: ObserverLocator, eventManager: EventManager, attributeMap: AttributeMap) {
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.eventManager = eventManager;
     this.attributeMap = attributeMap;
   }
 
-  interpret(resources, element, info, existingInstruction, context) {
+  interpret(resources: ViewResources, element: Element, info: IAttributeInfo, existingInstruction: BehaviorInstruction, context?: HtmlBehaviorResource) {
     if (info.command in this) {
       return this[info.command](resources, element, info, existingInstruction, context);
     }
@@ -32,18 +42,19 @@ export class SyntaxInterpreter {
     return this.handleUnknownCommand(resources, element, info, existingInstruction, context);
   }
 
-  handleUnknownCommand(resources, element, info, existingInstruction, context) {
+  handleUnknownCommand(resources: ViewResources, element: Element, info: IAttributeInfo, existingInstruction: BehaviorInstruction, context?: HtmlBehaviorResource) {
     LogManager.getLogger('templating-binding').warn('Unknown binding command.', info);
     return existingInstruction;
   }
 
-  determineDefaultBindingMode(element, attrName, context) {
-    let tagName = element.tagName.toLowerCase();
+  determineDefaultBindingMode(element: Element, attrName: string, context: HtmlBehaviorResource): bindingMode {
+    let $element = element as HTMLElement & HTMLInputElement;
+    let tagName = $element.tagName.toLowerCase();
 
-    if (tagName === 'input' && (attrName === 'value' || attrName === 'files') && element.type !== 'checkbox' && element.type !== 'radio'
-      || tagName === 'input' && attrName === 'checked' && (element.type === 'checkbox' || element.type === 'radio')
+    if (tagName === 'input' && (attrName === 'value' || attrName === 'files') && $element.type !== 'checkbox' && $element.type !== 'radio'
+      || tagName === 'input' && attrName === 'checked' && ($element.type === 'checkbox' || $element.type === 'radio')
       || (tagName === 'textarea' || tagName === 'select') && attrName === 'value'
-      || (attrName === 'textcontent' || attrName === 'innerhtml') && element.contentEditable === 'true'
+      || (attrName === 'textcontent' || attrName === 'innerhtml') && $element.contentEditable === 'true'
       || attrName === 'scrolltop'
       || attrName === 'scrollleft') {
       return bindingMode.twoWay;
@@ -56,10 +67,10 @@ export class SyntaxInterpreter {
       return context.attributes[attrName].defaultBindingMode;
     }
 
-    return bindingMode.oneWay;
+    return bindingMode.toView;
   }
 
-  bind(resources, element, info, existingInstruction, context) {
+  bind(resources: ViewResources, element: Element, info: IAttributeInfo, existingInstruction: BehaviorInstruction, context?: HtmlBehaviorResource) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
@@ -75,7 +86,7 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  trigger(resources, element, info) {
+  trigger(resources: ViewResources, element: Element, info: IAttributeInfo) {
     return new ListenerExpression(
       this.eventManager,
       info.attrName,
@@ -86,7 +97,7 @@ export class SyntaxInterpreter {
     );
   }
 
-  capture(resources, element, info) {
+  capture(resources: ViewResources, element: Element, info: IAttributeInfo) {
     return new ListenerExpression(
       this.eventManager,
       info.attrName,
@@ -97,7 +108,7 @@ export class SyntaxInterpreter {
     );
   }
 
-  delegate(resources, element, info) {
+  delegate(resources: ViewResources, element: Element, info: IAttributeInfo) {
     return new ListenerExpression(
       this.eventManager,
       info.attrName,
@@ -108,7 +119,7 @@ export class SyntaxInterpreter {
     );
   }
 
-  call(resources, element, info, existingInstruction) {
+  call(resources: ViewResources, element: Element, info: IAttributeInfo, existingInstruction: BehaviorInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new CallExpression(
@@ -121,15 +132,15 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  options(resources, element, info, existingInstruction, context) {
+  options(resources: ViewResources, element: Element, info: IAttributeInfo, existingInstruction: BehaviorInstruction, context?: HtmlBehaviorResource) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
     let attrValue = info.attrValue;
     let language = this.language;
     let name = null;
     let target = '';
-    let current;
-    let i;
-    let ii;
+    let current: string;
+    let i: number;
+    let ii: number;
     let inString = false;
     let inEscape = false;
     let foundName = false;
@@ -188,7 +199,10 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  _getPrimaryPropertyName(resources, context) {
+  /**
+   * @internal
+   */
+  _getPrimaryPropertyName(resources: ViewResources, context: HtmlBehaviorResource): string {
     let type = resources.getAttribute(context.attributeName);
     if (type && type.primaryProperty) {
       return type.primaryProperty.attribute;
@@ -196,12 +210,12 @@ export class SyntaxInterpreter {
     return null;
   }
 
-  'for'(resources, element, info, existingInstruction) {
-    let parts;
-    let keyValue;
-    let instruction;
-    let attrValue;
-    let isDestructuring;
+  'for'(resources: ViewResources, element: Element, info: IAttributeInfo, existingInstruction: BehaviorInstruction) {
+    let parts: string[];
+    let keyValue: string[];
+    let instruction: BehaviorInstruction;
+    let attrValue: string;
+    let isDestructuring: RegExpMatchArray;
 
     attrValue = info.attrValue;
     isDestructuring = attrValue.match(/^ *[[].+[\]]/);
@@ -212,27 +226,28 @@ export class SyntaxInterpreter {
     }
 
     instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+    let attributes = instruction.attributes as { key?: string; value?: string; local?: string; items?: BindingExpression }
 
     if (isDestructuring) {
       keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
-      instruction.attributes.key = keyValue[0];
-      instruction.attributes.value = keyValue[1];
+      attributes.key = keyValue[0];
+      attributes.value = keyValue[1];
     } else {
-      instruction.attributes.local = parts[0];
+      attributes.local = parts[0];
     }
 
-    instruction.attributes.items = new BindingExpression(
+    attributes.items = new BindingExpression(
       this.observerLocator,
       'items',
       this.parser.parse(parts[1]),
-      bindingMode.oneWay,
+      bindingMode.toView,
       resources.lookupFunctions
     );
 
     return instruction;
   }
 
-  'two-way'(resources, element, info, existingInstruction) {
+  'two-way'(resources: ViewResources, element: Element, info: IAttributeInfo, existingInstruction: BehaviorInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
@@ -246,12 +261,13 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  'to-view'(resources, element, info, existingInstruction) {
-    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  'to-view'(resources: ViewResources, element: Element, info: IAttributeInfo, existingInstruction: BehaviorInstruction) {
+    let attrName = info.attrName;
+    let instruction = existingInstruction || BehaviorInstruction.attribute(attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(
+    instruction.attributes[attrName] = new BindingExpression(
       this.observerLocator,
-      this.attributeMap.map(element.tagName, info.attrName),
+      this.attributeMap.map(element.tagName, attrName),
       this.parser.parse(info.attrValue),
       bindingMode.toView,
       resources.lookupFunctions
@@ -260,12 +276,13 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  'from-view'(resources, element, info, existingInstruction) {
-    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  'from-view'(resources: ViewResources, element: Element, info: IAttributeInfo, existingInstruction: BehaviorInstruction) {
+    let attrName = info.attrName;
+    let instruction = existingInstruction || BehaviorInstruction.attribute(attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(
+    instruction.attributes[attrName] = new BindingExpression(
       this.observerLocator,
-      this.attributeMap.map(element.tagName, info.attrName),
+      this.attributeMap.map(element.tagName, attrName),
       this.parser.parse(info.attrValue),
       bindingMode.fromView,
       resources.lookupFunctions
@@ -274,12 +291,13 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  'one-time'(resources, element, info, existingInstruction) {
-    let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
+  'one-time'(resources: ViewResources, element: Element, info: IAttributeInfo, existingInstruction: BehaviorInstruction) {
+    let attrName = info.attrName;
+    let instruction = existingInstruction || BehaviorInstruction.attribute(attrName);
 
-    instruction.attributes[info.attrName] = new BindingExpression(
+    instruction.attributes[attrName] = new BindingExpression(
       this.observerLocator,
-      this.attributeMap.map(element.tagName, info.attrName),
+      this.attributeMap.map(element.tagName, attrName),
       this.parser.parse(info.attrValue),
       bindingMode.oneTime,
       resources.lookupFunctions
