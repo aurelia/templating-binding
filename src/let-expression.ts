@@ -1,18 +1,33 @@
 import {
   connectable,
   enqueueBindingConnect,
-  sourceContext
+  sourceContext,
+  Expression,
+  ObserverLocator,
+  Scope
 } from 'aurelia-binding';
 
 export class LetExpression {
+
+  /**@internal*/
+  observerLocator: ObserverLocator;
+  /**@internal*/
+  sourceExpression: Expression;
+  /**@internal*/
+  targetProperty: string;
+  /**@internal*/
+  lookupFunctions: any;
+  /**@internal*/
+  toBindingContext: boolean;
+
   /**
-   * @param {ObserverLocator} observerLocator
-   * @param {string} targetProperty
-   * @param {Expression} sourceExpression
-   * @param {any} lookupFunctions
-   * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
+   * @param observerLocator
+   * @param targetProperty
+   * @param sourceExpression
+   * @param lookupFunctions
+   * @param toBindingContext indicates let binding result should be assigned to binding context
    */
-  constructor(observerLocator, targetProperty, sourceExpression, lookupFunctions, toBindingContext) {
+  constructor(observerLocator: ObserverLocator, targetProperty: string, sourceExpression: Expression, lookupFunctions: any, toBindingContext: boolean) {
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
     this.targetProperty = targetProperty;
@@ -31,17 +46,34 @@ export class LetExpression {
   }
 }
 
-@connectable()
 export class LetBinding {
+
+  /**@internal*/
+  observerLocator: ObserverLocator;
+  /**@internal*/
+  sourceExpression: Expression & { bind?(binding: any, scope: Scope, lookupFunctions?: any): void; unbind?(binding: any, scope: Scope, lookupFunctions?: any): void; };
+  /**@internal*/
+  targetProperty: string;
+  /**@internal*/
+  lookupFunctions: any;
+  /**@internal*/
+  source: Scope;
+  /**@internal*/
+  target: any;
+  /**@internal*/
+  toBindingContext: boolean;
+  /**@internal*/
+  isBound: boolean;
+
   /**
-   * @param {ObserverLocator} observerLocator
-   * @param {Expression} sourceExpression
-   * @param {Function | Element} target
-   * @param {string} targetProperty
-   * @param {*} lookupFunctions
-   * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
+   * @param observerLocator
+   * @param sourceExpression
+   * @param target
+   * @param targetProperty
+   * @param lookupFunctions
+   * @param toBindingContext indicates let binding result should be assigned to binding context
    */
-  constructor(observerLocator, sourceExpression, targetProperty, lookupFunctions, toBindingContext) {
+  constructor(observerLocator: ObserverLocator, sourceExpression: Expression, targetProperty: string, lookupFunctions: any, toBindingContext: boolean) {
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
     this.targetProperty = targetProperty;
@@ -51,12 +83,12 @@ export class LetBinding {
     this.toBindingContext = toBindingContext;
   }
 
-  updateTarget() {
+  updateTarget(): void {
     const value = this.sourceExpression.evaluate(this.source, this.lookupFunctions);
     this.target[this.targetProperty] = value;
   }
 
-  call(context) {
+  call(context: any): void {
     if (!this.isBound) {
       return;
     }
@@ -68,9 +100,9 @@ export class LetBinding {
   }
 
   /**
-   * @param {Scope} source Binding context
+   * @param source Binding context
    */
-  bind(source) {
+  bind(source: Scope): void {
     if (this.isBound) {
       if (this.source === source) {
         return;
@@ -89,7 +121,7 @@ export class LetBinding {
     enqueueBindingConnect(this);
   }
 
-  unbind() {
+  unbind(): void {
     if (!this.isBound) {
       return;
     }
@@ -102,7 +134,11 @@ export class LetBinding {
     this.unobserve(true);
   }
 
-  connect() {
+  unobserve(arg0: boolean): void {
+    throw new Error("Method not implemented.");
+  }
+
+  connect(): void {
     if (!this.isBound) {
       return;
     }
@@ -110,3 +146,5 @@ export class LetBinding {
     this.sourceExpression.connect(this, this.source);
   }
 }
+
+(connectable() as any)(LetBinding);
