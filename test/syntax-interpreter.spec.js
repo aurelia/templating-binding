@@ -32,16 +32,16 @@ describe('SyntaxInterpreter', () => {
 
     it('handles checkbox input', () => {
       let el = createElement('<input type="checkbox">');
-      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.toView);
       expect(interpreter.determineDefaultBindingMode(el, 'checked')).toBe(bindingMode.twoWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.toView);
     });
 
     it('handles radio input', () => {
       let el = createElement('<input type="radio">');
-      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.toView);
       expect(interpreter.determineDefaultBindingMode(el, 'checked')).toBe(bindingMode.twoWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.toView);
     });
 
     it('handles file input', () => {
@@ -52,8 +52,8 @@ describe('SyntaxInterpreter', () => {
     it('handles unspecified input', () => {
       let el = createElement('<input>');
       expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.twoWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'checked')).toBe(bindingMode.oneWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'checked')).toBe(bindingMode.toView);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.toView);
 
       el = createElement('<input type="file">');
       expect(interpreter.determineDefaultBindingMode(el, 'files')).toBe(bindingMode.twoWay);
@@ -62,34 +62,34 @@ describe('SyntaxInterpreter', () => {
     it('handles textarea', () => {
       let el = createElement('<textarea></textarea>');
       expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.twoWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.toView);
     });
 
     it('handles textarea', () => {
       let el = createElement('<select></select>');
       expect(interpreter.determineDefaultBindingMode(el, 'value')).toBe(bindingMode.twoWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.toView);
     });
 
     it('handles contenteditable="true"', () => {
       let el = createElement('<div contenteditable="true"></div>');
       expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(bindingMode.twoWay);
       expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(bindingMode.twoWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.toView);
     });
 
     it('handles contenteditable="false"', () => {
       let el = createElement('<div contenteditable="false"></div>');
-      expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(bindingMode.oneWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(bindingMode.oneWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(bindingMode.toView);
+      expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(bindingMode.toView);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.toView);
     });
 
     it('handles inherited contenteditable', () => {
       let el = createElement('<div></div>');
-      expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(bindingMode.oneWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(bindingMode.oneWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'textcontent')).toBe(bindingMode.toView);
+      expect(interpreter.determineDefaultBindingMode(el, 'innerhtml')).toBe(bindingMode.toView);
+      expect(interpreter.determineDefaultBindingMode(el, 'foo')).toBe(bindingMode.toView);
     });
 
     it('handles scrolltop/scrollleft', () => {
@@ -103,18 +103,18 @@ describe('SyntaxInterpreter', () => {
       let context = {
         attributes: {
           foo: { defaultBindingMode: bindingMode.oneTime },
-          bar: { defaultBindingMode: bindingMode.oneWay },
+          bar: { defaultBindingMode: bindingMode.toView },
           baz: { defaultBindingMode: bindingMode.twoWay },
           null: null,
           undefined: undefined
         }
       };
       expect(interpreter.determineDefaultBindingMode(el, 'foo', context)).toBe(bindingMode.oneTime);
-      expect(interpreter.determineDefaultBindingMode(el, 'bar', context)).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'bar', context)).toBe(bindingMode.toView);
       expect(interpreter.determineDefaultBindingMode(el, 'baz', context)).toBe(bindingMode.twoWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'null', context)).toBe(bindingMode.oneWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'undefined', context)).toBe(bindingMode.oneWay);
-      expect(interpreter.determineDefaultBindingMode(el, 'missing', context)).toBe(bindingMode.oneWay);
+      expect(interpreter.determineDefaultBindingMode(el, 'null', context)).toBe(bindingMode.toView);
+      expect(interpreter.determineDefaultBindingMode(el, 'undefined', context)).toBe(bindingMode.toView);
+      expect(interpreter.determineDefaultBindingMode(el, 'missing', context)).toBe(bindingMode.toView);
     });
     
     it('uses specified defaultBindingMode in `bind` method', () => {

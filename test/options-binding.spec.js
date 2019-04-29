@@ -133,7 +133,7 @@ describe('Custom Attribute', () => {
         const behavior = new HtmlBehaviorResource();
         behavior.attributeName = attrName;
         behavior.properties.push(new BindableProperty({ name: 'foo', primaryProperty: true, defaultBindingMode: bindingMode.twoWay }));
-        behavior.attributeDefaultBindingMode = bindingMode.oneWay;
+        behavior.attributeDefaultBindingMode = bindingMode.toView;
 
         behavior.initialize(container, function() { return { foo: "viewModelValueForFoo" } });
 
@@ -160,7 +160,7 @@ describe('Custom Attribute', () => {
         expect(instruction).not.toBeNull();
         expect(instruction.attributes['foo'] instanceof BindingExpression).toBeTruthy();
         expect(instruction.attributes['foo'].targetProperty).toBe('foo');
-        expect(instruction.attributes['foo'].mode).toBe(bindingMode.oneWay);
+        expect(instruction.attributes['foo'].mode).toBe(bindingMode.toView);
     });
 
     /* named options */
@@ -179,7 +179,7 @@ describe('Custom Attribute', () => {
         expect(instruction).not.toBeNull();
         expect(instruction.attributes['foo'] instanceof BindingExpression).toBeTruthy();
         expect(instruction.attributes['foo'].targetProperty).toBe('foo');
-        expect(instruction.attributes['foo'].mode).toBe(bindingMode.oneWay);
+        expect(instruction.attributes['foo'].mode).toBe(bindingMode.toView);
     });
 
     /* end: use default binding of primary property */
