@@ -80,16 +80,18 @@ function validateTarget(target: Element, propertyName: string) {
 }
 
 export class InterpolationBinding {
-  observerLocator: any;
-  parts: any;
-  target: any;
-  targetProperty: any;
-  targetAccessor: any;
-  mode: any;
-  lookupFunctions: any;
+
   isBound: any;
   source: any;
-  constructor(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
+  observerLocator: ObserverLocator;
+  parts: (string | Expression)[];
+  target: Element;
+  targetProperty: string;
+  targetAccessor: any;
+  mode: bindingMode;
+  lookupFunctions: any;
+
+  constructor(observerLocator: ObserverLocator, parts: Array<string | Expression>, target: Element, targetProperty: string, mode: bindingMode, lookupFunctions: any) {
     validateTarget(target, targetProperty);
     this.observerLocator = observerLocator;
     this.parts = parts;
@@ -134,7 +136,7 @@ export class InterpolationBinding {
       let binding = new ChildInterpolationBinding(
         this,
         this.observerLocator,
-        parts[i],
+        parts[i] as Expression,
         this.mode,
         this.lookupFunctions);
 
@@ -162,20 +164,35 @@ export class InterpolationBinding {
 
 export class ChildInterpolationBinding {
 
+  /**@internal*/
   parent: InterpolationBinding;
+  /**@internal*/
   target: Element;
-  targetProperty: any;
+  /**@internal*/
+  targetProperty: string;
+  /**@internal*/
   targetAccessor: any;
-  observerLocator: any;
+  /**@internal*/
+  observerLocator: ObserverLocator;
+  /**@internal*/
   sourceExpression: any;
-  mode: any;
+  /**@internal*/
+  mode: bindingMode;
+  /**@internal*/
   lookupFunctions: any;
+  /**@internal*/
   left: string;
+  /**@internal*/
   right: string;
+  /**@internal*/
   value: any;
+  /**@internal*/
   isBound: boolean;
+  /**@internal*/
   rawValue: any;
+  /**@internal*/
   _version: any;
+  /**@internal*/
   source: Scope;
 
   constructor(
@@ -295,4 +312,5 @@ export class ChildInterpolationBinding {
   }
 }
 
+// avoid generating excessive code
 (connectable() as any)(ChildInterpolationBinding);

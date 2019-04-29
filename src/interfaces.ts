@@ -9,13 +9,22 @@ declare module 'aurelia-templating' {
 
   interface HtmlBehaviorResource {
     attributeName: string;
+    attributeDefaultBindingMode: bindingMode | string;
     attributes: Record<string, BindableProperty>;
+    properties: BindableProperty[];
     primaryProperty: BindableProperty;
   }
   
   interface BindableProperty {
     attribute: string;
     defaultBindingMode: bindingMode;
+  }
+
+  interface ViewCompiler {
+    resources: ViewResources;
+    // for tests
+    _configureProperties(...args: any[]): any;
+    _compileElement(...args: any[]): any;
   }
 }
 

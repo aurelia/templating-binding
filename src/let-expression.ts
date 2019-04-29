@@ -147,4 +147,5 @@ export class LetBinding {
   }
 }
 
+// avoid generating excessive code
 (connectable() as any)(LetBinding);
