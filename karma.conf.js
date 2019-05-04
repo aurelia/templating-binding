@@ -1,81 +1,82 @@
-// Karma configuration
-// Generated on Fri Dec 05 2014 16:49:29 GMT-0500 (EST)
+const path = require('path');
+const { AureliaPlugin } = require('aurelia-webpack-plugin');
 
 module.exports = function(config) {
+  const browsers = config.browsers;
   config.set({
 
-    // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
-
-
-    // frameworks to use
-    // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jspm', 'jasmine'],
-
-    jspm: {
-      // Edit this to your needs
-      loadFiles: ['src/**/*.js', 'test/**/*.js']
-    },
-
-
-    // list of files / patterns to load in the browser
-    files: [],
-
-
-    // list of files to exclude
-    exclude: [
-    ],
-
-
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-      'test/**/*.js': ['babel'],
-      'src/**/*.js': ['babel']
-    },
-    'babelPreprocessor': {
-      options: {
-        sourceMap: 'inline',
-        presets: [ 'es2015-loose', 'stage-1'],
-        plugins: [
-          'syntax-flow',
-          'transform-decorators-legacy',
-          'transform-flow-strip-types'
-        ]
+    frameworks: ["jasmine"],
+    client: {
+      jasmine: {
+        random: false
       }
     },
-
-
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
-
-
-    // web server port
-    port: 9876,
-
-
-    // enable / disable colors in the output (reporters and logs)
-    colors: true,
-
-
-    // level of logging
-    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
-
-
-    // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
-
-
-    // start these browsers
-    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
-
-
-    // Continuous Integration mode
-    // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false
+    files: ["test/**/*.spec.ts"],
+    preprocessors: {
+      "test/**/*.spec.ts": ["webpack", 'sourcemap']
+    },
+    webpack: {
+      mode: "development",
+      entry: 'test/setup.ts',
+      resolve: {
+        extensions: [".ts", ".js"],
+        modules: ["node_modules"],
+        alias: {
+          src: path.resolve(__dirname, 'src'),
+          test: path.resolve(__dirname, 'test'),
+          'aurelia-binding': path.resolve(__dirname, 'node_modules/aurelia-binding'),
+          'aurelia-templating-binding': path.resolve(__dirname, 'src/aurelia-templating-binding.ts')
+        }
+      },
+      devtool: browsers.includes('ChromeDebugging') ? 'eval-source-map' : 'inline-source-map',
+      module: {
+        rules: [
+          {
+            test: /\.ts$/,
+            loader: "ts-loader",
+            exclude: /node_modules/
+          },
+          {
+            test: /\.html$/i,
+            loader: 'html-loader'
+          }
+        ]
+      },
+      plugins: [
+        new AureliaPlugin({
+          aureliaApp: undefined,
+          // dist: 'es2015',
+          features: { 
+            ie: false,
+            // true for attribute map tests
+            svg: true,
+            unparser: false
+          }
+        })
+      ]
+    },
+    mime: {
+      "text/x-typescript": ["ts"]
+    },
+    reporters: ["mocha"],
+    webpackServer: { noInfo: config.noInfo },
+    browsers: Array.isArray(browsers) && browsers.length > 0 ? browsers : ['ChromeHeadless'],
+    customLaunchers: {
+      ChromeDebugging: {
+        base: 'Chrome',
+        flags: [
+          '--remote-debugging-port=9333'
+        ],
+        debug: true
+      }
+    },
+    mochaReporter: {
+      ignoreSkipped: true
+    },
+    singleRun: false,
+    webpackMiddleware: {
+      logLevel: 'silent'
+    },
   });
 };
