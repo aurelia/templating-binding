@@ -36,7 +36,8 @@
     "test": "karma start --single-run",
     "test:watch": "karma start",
     "test:debugger": "karma start --browsers ChromeDebugging",
-    "cut-release": "gulp prepare-release",
+    "precut-release": "npm run test && npm run lint",
+    "cut-release": "npm run build && npm run build:dts && gulp prepare-release",
     "ci": "gulp ci"
   },
   "jspm": {
