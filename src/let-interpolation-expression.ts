@@ -1,3 +1,4 @@
+// tslint:disable:max-line-length
 import {bindingMode, ObserverLocator, Scope, Expression} from 'aurelia-binding';
 import {
   InterpolationBinding,
@@ -44,7 +45,7 @@ export class LetInterpolationBindingExpression {
 }
 
 export class LetInterpolationBinding {
-  
+
   /**@internal*/
   target: any;
   /**@internal*/

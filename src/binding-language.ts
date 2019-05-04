@@ -1,11 +1,11 @@
 /*eslint indent:0*/
-import {BindingLanguage, BehaviorInstruction, ViewResources, HtmlBehaviorResource} from 'aurelia-templating';
+import {BindingLanguage, BehaviorInstruction, ViewResources, HtmlBehaviorResource, LetExpression} from 'aurelia-templating';
 import {Parser, ObserverLocator, NameExpression, bindingMode, camelCase, LiteralString, Expression} from 'aurelia-binding';
 import * as AureliaBinding from 'aurelia-binding';
 import {InterpolationBindingExpression} from './interpolation-binding-expression';
 import {SyntaxInterpreter} from './syntax-interpreter';
 import {AttributeMap} from './attribute-map';
-import {LetExpression} from './let-expression';
+import {LetExpression as LetExpressionImpl} from './let-expression';
 import {LetInterpolationBindingExpression} from './let-interpolation-expression';
 import * as LogManager from 'aurelia-logging';
 import { IAttributeInfo } from './interfaces';
@@ -91,7 +91,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return info;
   }
 
-	createAttributeInstruction(
+  createAttributeInstruction(
     resources: ViewResources,
     element: Element,
     theInfo: IAttributeInfo,
@@ -150,7 +150,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
             .warn(`Detected invalid let command. Expected "${parts[0]}.bind", given "${attrName}"`);
           continue;
         }
-        expressions.push(new LetExpression(
+        expressions.push(new LetExpressionImpl(
           this.observerLocator,
           camelCase(parts[0] as string),
           this.parser.parse(attrValue),
@@ -174,7 +174,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
             toBindingContext
           ));
         } else {
-          expressions.push(new LetExpression(
+          expressions.push(new LetExpressionImpl(
             observerLocator,
             attrName,
             new LiteralString(attrValue),

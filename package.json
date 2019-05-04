@@ -32,6 +32,7 @@
   "scripts": {
     "build": "gulp build",
     "build:dts": "dts-bundle-generator -o dist/aurelia-templating-binding.d.ts src/aurelia-templating-binding.ts",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "test": "karma start --single-run",
     "test:watch": "karma start",
     "test:debugger": "karma start --browsers ChromeDebugging",
@@ -73,6 +74,7 @@
     "aurelia-loader-webpack": "^2.2.1",
     "aurelia-pal-browser": "^1.8.1",
     "aurelia-webpack-plugin": "^3.0.0",
+    "dts-bundle-generator": "^2.1.0",
     "gulp": "^3.9.1",
     "gulp-bump": "^2.2.0",
     "gulp-concat": "^2.6.0",

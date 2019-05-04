@@ -13,14 +13,14 @@ const { DirtyChecker, ObserverLocator, SVGAnalyzer } = AureliaBinding as any;
 
 
 function createElement(html) {
-  var div = DOM.createElement('div');
+  let div = DOM.createElement('div');
   div.innerHTML = html;
   return div.firstChild;
 }
 
 describe('InterpolationBinding', () => {
 
-  var checkDelay = 40,
+  let checkDelay = 40,
       parser, eventManager, dirtyChecker, observerLocator, syntaxInterpreter, language, resources;
 
   beforeAll(() => {
@@ -36,7 +36,7 @@ describe('InterpolationBinding', () => {
   });
 
   function getBinding(model, view, attrName) {
-    var attrValue, info, binding;
+    let attrValue, info, binding;
     attrValue = view.getAttribute(attrName);
     info = language.inspectAttribute(resources, view.tagName, attrName, attrValue);
     binding = info.expression.createBinding(view);
@@ -44,8 +44,8 @@ describe('InterpolationBinding', () => {
   }
 
   function prepareTestData() {
-    const array1: any[] = [1,2,3];
-    const array2: any[] = ['a','b','c'];
+    const array1: any[] = [1, 2, 3];
+    const array2: any[] = ['a', 'b', 'c'];
     const tests = [
       { change: (m, p) => m[p] = '',        result: () => '' },
       { change: (m, p) => m[p] = null,      result: () => '' },
@@ -63,7 +63,7 @@ describe('InterpolationBinding', () => {
       { change: (m, p) => array1.splice(2, 0, array2), result: () => array1.toString() },
       { change: (m, p) => m[p] = array2,       result: () => array2.toString() },
       { change: (m, p) => array2.push('d'),    result: () => array2.toString() },
-      { change: (m, p) => m[p] = array1,       result: () => array1.toString() },
+      { change: (m, p) => m[p] = array1,       result: () => array1.toString() }
     ];
 
     return [array1, array2, tests];
@@ -71,7 +71,7 @@ describe('InterpolationBinding', () => {
 
   describe('single expression', () => {
     const [array1, array2, tests] = prepareTestData();
-    var viewModel, view, binding, targetAccessor, observer1, observer2;
+    let viewModel, view, binding, targetAccessor, observer1, observer2;
 
     beforeEach(() => {
       prepareTestData();
@@ -90,9 +90,9 @@ describe('InterpolationBinding', () => {
 
     it('handles changes', done => {
       binding.bind(createScopeForTest(viewModel));
-      var next = () => {
-        var test = tests.splice(0, 1)[0];
-        var result;
+      let next = () => {
+        let test = tests.splice(0, 1)[0];
+        let result;
         if (test) {
           test.change(viewModel, 'foo');
           result = test.result();
@@ -127,7 +127,7 @@ describe('InterpolationBinding', () => {
 
   describe('multiple expressions', () => {
     const [array1, array2, tests] = prepareTestData();
-    var viewModel, view, binding, targetAccessor, observer1, observer2;
+    let viewModel, view, binding, targetAccessor, observer1, observer2;
 
     beforeAll(() => {
       prepareTestData();
@@ -145,9 +145,9 @@ describe('InterpolationBinding', () => {
     });
 
     it('handles changes', done => {
-      var next = () => {
-        var test = tests.splice(0, 1)[0];
-        var result;
+      let next = () => {
+        let test = tests.splice(0, 1)[0];
+        let result;
         if (test) {
           test.change(viewModel, 'foo');
           test.change(viewModel, 'bar');
@@ -182,7 +182,7 @@ describe('InterpolationBinding', () => {
 
   describe('repeated expressions', () => {
     const [array1, array2, tests] = prepareTestData();
-    var viewModel, view, binding, targetAccessor, observer1, observer2;
+    let viewModel, view, binding, targetAccessor, observer1, observer2;
 
     beforeAll(() => {
       prepareTestData();
@@ -200,9 +200,9 @@ describe('InterpolationBinding', () => {
     });
 
     it('handles changes', done => {
-      var next = () => {
-        var test = tests.splice(0, 1)[0];
-        var result;
+      let next = () => {
+        let test = tests.splice(0, 1)[0];
+        let result;
         if (test) {
           test.change(viewModel, 'foo');
           result = test.result();
