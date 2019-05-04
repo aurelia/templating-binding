@@ -5,14 +5,17 @@ import {NameExpression} from 'aurelia-binding';
 import {Logger} from 'aurelia-logging';
 
 import {
-  LetExpression,
-  Let
+  LetExpression
 } from '../src/let-expression';
 
 import {
   LetInterpolationBindingExpression,
   LetInterpolationBinding
 } from '../src/let-interpolation-expression';
+
+import * as AureliaBinding from 'aurelia-binding';
+
+const { ListenerExpression, BindingExpression, CallExpression, NameExpression } = AureliaBinding as any;
 
 describe('BindingLanguage', () => {
   /**@type {TemplatingBindingLanguage} */

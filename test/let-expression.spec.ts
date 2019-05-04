@@ -1,8 +1,10 @@
+import './setup';
 import {
   ObserverLocator,
   Parser,
   createOverrideContext,
-  createScopeForTest
+  createScopeForTest,
+  Scope
 } from 'aurelia-binding';
 
 import {Container} from 'aurelia-dependency-injection';
@@ -40,7 +42,7 @@ describe('Let', () => {
 
   describe('LetExpression', () => {
     it('creates binding', () => {
-      let letExpression = new LetExpression(observerLocator, 'foo', parser.parse('bar'), LookupFunctions);
+      let letExpression = new LetExpression(observerLocator, 'foo', parser.parse('bar'), LookupFunctions, false);
       let binding = letExpression.createBinding();
       expect(binding instanceof LetBinding).toBe(true);
     });
@@ -49,8 +51,8 @@ describe('Let', () => {
   describe('Let binding', () => {
     it('binds to overrideContext', done => {
       let vm = { foo: 'bar', baz: { foo: 'baz' } };
-      let scope = createScopeForTest(vm);
-      let binding = new LetBinding(observerLocator, parser.parse('baz.foo'), 'bar', LookupFunctions);
+      let scope = createScopeForTest(vm) as Scope & { overrideContext: any };
+      let binding = new LetBinding(observerLocator, parser.parse('baz.foo'), 'bar', LookupFunctions, false);
 
       binding.bind(scope);
 
@@ -73,7 +75,7 @@ describe('Let', () => {
 
     it('binds to bindingContext', done => {
       let vm = { foo: 'bar', baz: { foo: 'baz' } };
-      let scope = createScopeForTest(vm);
+      let scope = createScopeForTest(vm) as Scope & { overrideContext: any };
       let binding = new LetBinding(observerLocator, parser.parse('baz.foo'), 'bar', LookupFunctions, true);
 
       binding.bind(scope);
@@ -99,7 +101,7 @@ describe('Let', () => {
 
   describe('[interpolation]', () => {
     it('gets created correctly', () => {
-      let letInterExpression = new LetInterpolationBindingExpression(observerLocator, 'foo', ['', 'bar', ''], LookupFunctions);
+      let letInterExpression = new LetInterpolationBindingExpression(observerLocator, 'foo', ['', 'bar', ''], LookupFunctions, false);
       let letInterBinding = letInterExpression.createBinding();
 
       expect(letInterBinding instanceof LetInterpolationBinding).toBe(true);
@@ -109,9 +111,9 @@ describe('Let', () => {
 
       it('binds to overrideContext', done => {
         let vm = { foo: 'bar', baz: { foo: 'baz' } };
-        let scope = createScopeForTest(vm);
+        let scope = createScopeForTest(vm) as Scope & { overrideContext: any };
   
-        let binding = new LetInterpolationBinding(observerLocator, 'bar', ['', parser.parse('baz.foo'), ''], LookupFunctions);
+        let binding = new LetInterpolationBinding(observerLocator, 'bar', ['', parser.parse('baz.foo'), ''], LookupFunctions, false);
         binding.bind(scope);
   
         expect(binding.target).toBe(scope.overrideContext);
@@ -134,7 +136,7 @@ describe('Let', () => {
 
       it('binds to bindingContext', done => {
         let vm = { foo: 'bar', baz: { foo: 'baz' } };
-        let scope = createScopeForTest(vm);
+        let scope = createScopeForTest(vm) as Scope & { overrideContext: any };
   
         let binding = new LetInterpolationBinding(observerLocator, 'bar', ['', parser.parse('baz.foo'), ''], LookupFunctions, true);
         binding.bind(scope);
@@ -162,8 +164,8 @@ describe('Let', () => {
     describe('InterpolationBinding', () => {
       it('binds to overrideContext', done => {
         let vm = { foo: 'bar', baz: { foo: 'baz' } };
-        let scope = createScopeForTest(vm);
-        let binding = new LetInterpolationBinding(observerLocator, 'bar', ['foo is: ', parser.parse('foo'), '. And baz.foo is ', parser.parse('baz.foo'), ''], LookupFunctions);
+        let scope = createScopeForTest(vm) as Scope & { overrideContext: typeof vm & { bar: any } };
+        let binding = new LetInterpolationBinding(observerLocator, 'bar', ['foo is: ', parser.parse('foo'), '. And baz.foo is ', parser.parse('baz.foo'), ''], LookupFunctions, false);
         binding.bind(scope);
 
         expect(binding.target).toBe(scope.overrideContext);
@@ -184,8 +186,8 @@ describe('Let', () => {
       });
 
       it('binds to bindingContext', done => {
-        let vm = { foo: 'bar', baz: { foo: 'baz' } };
-        let scope = createScopeForTest(vm);
+        let vm = { foo: 'bar', baz: { foo: 'baz' } } as any;
+        let scope = createScopeForTest(vm) as Scope & { overrideContext: any };
         let binding = new LetInterpolationBinding(
           observerLocator,
           'bar',

@@ -3,16 +3,21 @@ import {TemplatingBindingLanguage} from '../src/binding-language';
 import {InterpolationBindingExpression} from '../src/interpolation-binding-expression';
 import {AttributeMap} from '../src/attribute-map';
 import * as LogManager from 'aurelia-logging';
-import {SVGAnalyzer} from 'aurelia-binding';
+import { Parser, ObserverLocator} from 'aurelia-binding';
+import { SyntaxInterpreter } from '../src/syntax-interpreter';
+import * as AureliaBinding from 'aurelia-binding';
+
+const { SVGAnalyzer } = AureliaBinding as any;
 var logger = LogManager.getLogger('templating-binding');
+
 
 describe('TemplatingBindingLanguage', () => {
   describe('inspectTextContent', () => {
     var language, resources;
     beforeAll(() => {
-      var parser = { parse: expression => '!' + expression },
-          observerLocator = { getObserver: () => null, getAccessor: () => null },
-          syntaxInterpreter = {};
+      var parser = { parse: expression => '!' + expression } as any as Parser,
+          observerLocator = { getObserver: () => null, getAccessor: () => null } as any as ObserverLocator,
+          syntaxInterpreter = {} as any as SyntaxInterpreter;
       language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, new AttributeMap(new SVGAnalyzer()));
       resources = { lookupFunctions: { valueConverters: name => null, bindingBehaviors: name => null } };
     });

@@ -1,9 +1,10 @@
-import {SVGAnalyzer} from 'aurelia-binding';
-import {AttributeMap} from '../src/attribute-map';
+import './setup';
+import * as AureliaBinding from 'aurelia-binding';
+import { AttributeMap } from '../src/attribute-map';
 
 describe('AttributeMap', () => {
   it('maps attributes', () => {
-    let attributeMap = new AttributeMap(new SVGAnalyzer());
+    let attributeMap = new AttributeMap(new (AureliaBinding as any).SVGAnalyzer());
 
     expect(attributeMap.map('foo', 'accesskey')).toBe('accessKey');
     expect(attributeMap.map('div', 'accesskey')).toBe('accessKey');

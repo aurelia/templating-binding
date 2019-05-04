@@ -1,27 +1,16 @@
 import './setup';
-import {
-  TemplatingBindingLanguage,
-  InterpolationBindingExpression
-} from '../src/binding-language';
+import { createScopeForTest, EventManager, Parser } from 'aurelia-binding';
+import { DOM } from 'aurelia-pal';
+import { TaskQueue } from 'aurelia-task-queue';
+import { ViewResources } from 'aurelia-templating';
+import { AttributeMap } from '../src/attribute-map';
+import { TemplatingBindingLanguage } from '../src/binding-language';
+import { SyntaxInterpreter } from '../src/syntax-interpreter';
+import * as AureliaBinding from 'aurelia-binding';
+import { InterpolationBinding, ChildInterpolationBinding } from '../src/interpolation-binding-expression';
 
-import {AttributeMap} from '../src/attribute-map';
+const { DirtyChecker, ObserverLocator, SVGAnalyzer } = AureliaBinding as any;
 
-import {
-  SyntaxInterpreter
-} from '../src/syntax-interpreter';
-
-import {
-  ObserverLocator,
-  EventManager,
-  DirtyChecker,
-  Parser,
-  createScopeForTest,
-  SVGAnalyzer
-} from 'aurelia-binding';
-
-import {ViewResources} from 'aurelia-templating';
-import {TaskQueue} from 'aurelia-task-queue';
-import {DOM} from 'aurelia-pal';
 
 function createElement(html) {
   var div = DOM.createElement('div');
@@ -30,8 +19,8 @@ function createElement(html) {
 }
 
 describe('InterpolationBinding', () => {
+
   var checkDelay = 40,
-      array1, array2, tests,
       parser, eventManager, dirtyChecker, observerLocator, syntaxInterpreter, language, resources;
 
   beforeAll(() => {
@@ -54,10 +43,10 @@ describe('InterpolationBinding', () => {
     return binding;
   }
 
-  function reset() {
-    array1 = [1,2,3];
-    array2 = ['a','b','c'];
-    tests = [
+  function prepareTestData() {
+    const array1: any[] = [1,2,3];
+    const array2: any[] = ['a','b','c'];
+    const tests = [
       { change: (m, p) => m[p] = '',        result: () => '' },
       { change: (m, p) => m[p] = null,      result: () => '' },
       { change: (m, p) => m[p] = undefined, result: () => '' },
@@ -76,14 +65,17 @@ describe('InterpolationBinding', () => {
       { change: (m, p) => array2.push('d'),    result: () => array2.toString() },
       { change: (m, p) => m[p] = array1,       result: () => array1.toString() },
     ];
+
+    return [array1, array2, tests];
   }
 
   describe('single expression', () => {
+    const [array1, array2, tests] = prepareTestData();
     var viewModel, view, binding, targetAccessor, observer1, observer2;
 
-    beforeAll(() => {
-      reset();
-      viewModel = { foo: [1,2] };
+    beforeEach(() => {
+      prepareTestData();
+      viewModel = { foo: [1, 2] };
       view = createElement('<test foo="${foo}"></test>');
       binding = getBinding(viewModel, view, 'foo');
       targetAccessor = binding.targetAccessor;
@@ -91,22 +83,25 @@ describe('InterpolationBinding', () => {
       observer2 = observerLocator.getArrayObserver(array2);
     });
 
-    it('binds', () => {
-      binding.bind(createScopeForTest(viewModel));
-      expect(targetAccessor.getValue(view, 'foo')).toBe(viewModel.foo.toString());
-    });
+    // it('binds', () => {
+    //   binding.bind(createScopeForTest(viewModel));
+    //   expect(targetAccessor.getValue(view, 'foo')).toBe(viewModel.foo.toString());
+    // });
 
     it('handles changes', done => {
+      binding.bind(createScopeForTest(viewModel));
       var next = () => {
-        var test = tests.splice(0, 1)[0], result;
+        var test = tests.splice(0, 1)[0];
+        var result;
         if (test) {
           test.change(viewModel, 'foo');
           result = test.result();
-          setTimeout(() => {
-            expect(targetAccessor.getValue(view, 'foo')).toBe(result);
+          window.setTimeout(() => {
+            expect(targetAccessor.getValue(view, 'foo')).toBe(result, `${test}.foo === ${result}`);
             next();
           }, checkDelay);
         } else {
+          binding.unbind();
           done();
         }
       };
@@ -114,22 +109,28 @@ describe('InterpolationBinding', () => {
       next();
     });
 
-    it('unbinds', () => {
-      expect(observer1.hasSubscribers()).toBe(true);
-      expect(observer2.hasSubscribers()).toBe(false);
+    it('unbinds', async () => {
+      viewModel.foo = array1;
+      binding.bind(createScopeForTest(viewModel));
+      expect(binding instanceof ChildInterpolationBinding).toBe(true, 'binding is ChildInterpolationBinding');
+      expect(targetAccessor.getValue(view, 'foo')).toBe(viewModel.foo.toString());
+
+      expect(observer1.hasSubscribers()).toBe(true, 'array1.hasSubscribers === true');
+      expect(observer2.hasSubscribers()).toBe(false, 'array2.hasSubscribers === false');
 
       binding.unbind();
 
-      expect(observer1.hasSubscribers()).toBe(false);
+      expect(observer1.hasSubscribers()).toBe(false, 'array1.hasSubscribers === false');
       expect(binding.source).toBe(null);
     });
   });
 
   describe('multiple expressions', () => {
+    const [array1, array2, tests] = prepareTestData();
     var viewModel, view, binding, targetAccessor, observer1, observer2;
 
     beforeAll(() => {
-      reset();
+      prepareTestData();
       viewModel = { foo: 'foo', bar: 'bar', baz: 'baz' };
       view = createElement('<test foo=" ${foo} hello ${bar} world ${baz} "></test>');
       binding = getBinding(viewModel, view, 'foo');
@@ -145,13 +146,14 @@ describe('InterpolationBinding', () => {
 
     it('handles changes', done => {
       var next = () => {
-        var test = tests.splice(0, 1)[0], result;
+        var test = tests.splice(0, 1)[0];
+        var result;
         if (test) {
           test.change(viewModel, 'foo');
           test.change(viewModel, 'bar');
           test.change(viewModel, 'baz');
           result = test.result();
-          setTimeout(() => {
+          window.setTimeout(() => {
             expect(targetAccessor.getValue(view, 'foo')).toBe(' ' + result + ' hello ' + result + ' world ' + result + ' ');
             next();
           }, checkDelay);
@@ -179,10 +181,11 @@ describe('InterpolationBinding', () => {
   });
 
   describe('repeated expressions', () => {
+    const [array1, array2, tests] = prepareTestData();
     var viewModel, view, binding, targetAccessor, observer1, observer2;
 
     beforeAll(() => {
-      reset();
+      prepareTestData();
       viewModel = { foo: 'foo' };
       view = createElement('<test foo=" ${foo} hello ${foo} world ${foo} "></test>');
       binding = getBinding(viewModel, view, 'foo');
@@ -198,11 +201,12 @@ describe('InterpolationBinding', () => {
 
     it('handles changes', done => {
       var next = () => {
-        var test = tests.splice(0, 1)[0], result;
+        var test = tests.splice(0, 1)[0];
+        var result;
         if (test) {
           test.change(viewModel, 'foo');
           result = test.result();
-          setTimeout(() => {
+          window.setTimeout(() => {
             expect(targetAccessor.getValue(view, 'foo')).toBe(' ' + result + ' hello ' + result + ' world ' + result + ' ');
             next();
           }, checkDelay);

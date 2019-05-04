@@ -27,7 +27,7 @@ describe('SyntaxInterpreter', () => {
     let interpreter;
 
     beforeAll(() => {
-      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager());
+      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager(), undefined);
     });
 
     it('handles checkbox input', () => {
@@ -118,7 +118,7 @@ describe('SyntaxInterpreter', () => {
     });
     
     it('uses specified defaultBindingMode in `bind` method', () => {
-      interpreter.attributeMap = new AttributeMap();
+      interpreter.attributeMap = new AttributeMap(undefined);
       interpreter.attributeMap.svg = {
         isStandardSvgAttribute: () => false
       }
@@ -138,7 +138,7 @@ describe('SyntaxInterpreter', () => {
     let interpreter, info;
 
     beforeAll(() => {
-      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager());
+      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager(), undefined);
       info = {
         attrName: 'repeat',
         command: 'for',
@@ -217,7 +217,7 @@ describe('SyntaxInterpreter', () => {
     let interpreter, info;
 
     beforeAll(() => {
-      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager());
+      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager(), undefined);
 
       interpreter.language = {
         inspectAttribute(resources, elementName, attrName, attrValue) {
@@ -274,7 +274,7 @@ describe('SyntaxInterpreter', () => {
 
       spyOn(resources,'getAttribute').and.returnValue({
         primaryProperty: { attribute: 'foo' }
-      });
+      } as any);
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
       expect(instruction.attributes['foo']).toBe('bar');
@@ -287,7 +287,7 @@ describe('SyntaxInterpreter', () => {
 
       spyOn(resources,'getAttribute').and.returnValue({
         primaryProperty: { attribute: 'foo' }
-      });
+      } as any);
 
       let instruction = interpreter.options(resources, null, info, null, { attributeName: 'foo' });
       expect(instruction.attributes['foo']).toBe('bar');
