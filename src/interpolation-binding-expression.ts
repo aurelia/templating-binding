@@ -1,8 +1,11 @@
-import {bindingMode, connectable, enqueueBindingConnect, Expression, ObserverLocator, Binding, Scope} from 'aurelia-binding';
+import { Binding, bindingMode, connectable, enqueueBindingConnect, Expression, ObserverLocator, Scope } from 'aurelia-binding';
 import * as LogManager from 'aurelia-logging';
 
 export interface InterpolationBindingExpression extends Expression {}
 
+/**
+ * A class to express instruction for an interpolation binding in Aurelia template
+ */
 export class InterpolationBindingExpression {
 
   /**@internal*/
@@ -39,6 +42,9 @@ export class InterpolationBindingExpression {
     this.discrete = false;
   }
 
+  /**
+   * Create a binding based on this expression instrcution and a given target
+   */
   createBinding(target) {
     let observerLocator = this.observerLocator;
     let targetProperty = this.targetProperty;
@@ -75,23 +81,40 @@ function validateTarget(target: Element, propertyName: string) {
     LogManager.getLogger('templating-binding')
       .info('Internet Explorer does not support interpolation in "style" attributes.  Use the style attribute\'s alias, "css" instead.');
   } else if (target.parentElement && target.parentElement.nodeName === 'TEXTAREA' && propertyName === 'textContent') {
+    // tslint:disable-next-line:max-line-length
     throw new Error('Interpolation binding cannot be used in the content of a textarea element.  Use <textarea value.bind="expression"></textarea> instead.');
   }
 }
 
 export class InterpolationBinding {
 
+  /**@internal*/
   isBound: any;
+  /**@internal*/
   source: any;
+  /**@internal*/
   observerLocator: ObserverLocator;
-  parts: (string | Expression)[];
+  /**@internal*/
+  parts: Array<string | Expression>;
+  /**@internal*/
   target: Element;
+  /**@internal*/
   targetProperty: string;
+  /**@internal*/
   targetAccessor: any;
+  /**@internal*/
   mode: bindingMode;
+  /**@internal*/
   lookupFunctions: any;
 
-  constructor(observerLocator: ObserverLocator, parts: Array<string | Expression>, target: Element, targetProperty: string, mode: bindingMode, lookupFunctions: any) {
+  constructor(
+    observerLocator: ObserverLocator,
+    parts: Array<string | Expression>,
+    target: Element,
+    targetProperty: string,
+    mode: bindingMode,
+    lookupFunctions: any
+  ) {
     validateTarget(target, targetProperty);
     this.observerLocator = observerLocator;
     this.parts = parts;
@@ -113,6 +136,9 @@ export class InterpolationBinding {
     }
   }
 
+  /**
+   * Semi internal method used by aurelia templating to update binding in one time fashion
+   */
   updateOneTimeBindings() {
     for (let i = 1, ii = this.parts.length; i < ii; i += 2) {
       let child = this[`childBinding${i}`];
@@ -122,7 +148,7 @@ export class InterpolationBinding {
     }
   }
 
-  bind(source) {
+  bind(source: Scope) {
     if (this.isBound) {
       if (this.source === source) {
         return;
@@ -252,11 +278,11 @@ export class ChildInterpolationBinding {
   }
 
   observeArray(rawValue: any) {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   unobserve(all: boolean) {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   bind(source: Scope): void {
@@ -297,7 +323,7 @@ export class ChildInterpolationBinding {
     this.unobserve(true);
   }
 
-  connect(evaluate) {
+  connect(evaluate?: boolean) {
     if (!this.isBound) {
       return;
     }

@@ -9,14 +9,25 @@ export class AttributeMap {
   /**@internal */
   static inject = [(AureliaBinding as any).SVGAnalyzer];
 
-  elements = Object.create(null);
-  allElements = Object.create(null);
+  /**
+   * A record storing all configuration for specific elements and their corresponding attribute mapping
+   * @internal
+   */
+  elements: Record<string, Record<string, any>>;
+
+  /**
+   * A record storing all configuration for attribute mapping for all elements
+   * @internal
+   */
+  allElements: Record<string, string>;
 
   /**@internal */
   svg: SVGAnalyzer;
 
   constructor(svg: any) {
     this.svg = svg;
+    this.elements = Object.create(null);
+    this.allElements = Object.create(null);
 
     // for minification friendliness
     let self = this;
@@ -54,9 +65,10 @@ export class AttributeMap {
    * Maps a specific HTML element attribute to a javascript property.
    */
   register(elementName: string, attributeName: string, propertyName: string) {
+    let elementMappings = this.elements;
     elementName = elementName.toLowerCase();
     attributeName = attributeName.toLowerCase();
-    const element = this.elements[elementName] = (this.elements[elementName] || Object.create(null));
+    const element = elementMappings[elementName] = (elementMappings[elementName] || Object.create(null));
     element[attributeName] = propertyName;
   }
 
@@ -94,8 +106,8 @@ export class AttributeMap {
 
 const registerUniversalAttrMapping = (attrMap: AttributeMap, attributeName: string, propertyName: string) => {
   attrMap.registerUniversal(attributeName, propertyName);
-}
+};
 
 const registerElementAttrMapping = (attrMap: AttributeMap, elementName: string, attributeName: string, propertyName: string) => {
   attrMap.register(elementName, attributeName, propertyName);
-}
+};

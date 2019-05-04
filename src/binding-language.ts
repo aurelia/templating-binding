@@ -10,8 +10,14 @@ import {LetInterpolationBindingExpression} from './let-interpolation-expression'
 import * as LogManager from 'aurelia-logging';
 import { IAttributeInfo } from './interfaces';
 
+/**
+ * a reusable object for all attributes inspection
+ */
 let info = {} as IAttributeInfo;
 
+/**
+ * An implementation of binding language that supports human-readable syntax
+ */
 export class TemplatingBindingLanguage extends BindingLanguage {
   /**@internal*/
   static inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap];
@@ -39,7 +45,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.toBindingContextAttr = 'to-binding-context';
   }
 
-  inspectAttribute(resources, elementName, attrName, attrValue) {
+  inspectAttribute(resources: ViewResources, elementName: string, attrName: string, attrValue: string) {
     let NameExpression = (AureliaBinding as any).NameExpression;
     let parts = attrName.split('.');
     let parser = this.parser;
@@ -88,7 +94,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
 	createAttributeInstruction(
     resources: ViewResources,
     element: Element,
-    theInfo: /** IAttributeInfo */ any,
+    theInfo: IAttributeInfo,
     existingInstruction: BehaviorInstruction,
     context?: HtmlBehaviorResource): /** Expression | BehaviorInstruction */ any {
     // having strong typing with out changing public API
@@ -114,7 +120,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return instruction;
   }
 
-  createLetExpressions(resources: ViewResources, letElement: Element) {
+  createLetExpressions(resources: ViewResources, letElement: Element): LetExpression[] {
     let expressions: (LetExpression | LetInterpolationBindingExpression)[] = [];
     let attributes = letElement.attributes;
     let attr: Attr;
@@ -156,6 +162,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
         parts = this.parseInterpolation(resources, attrValue);
         if (parts === null) {
           LogManager.getLogger('templating-binding-language')
+            // tslint:disable-next-line:max-line-length
             .warn(`Detected string literal in let bindings. Did you mean "${ attrName }.bind=${ attrValue }" or "${ attrName }=\${${ attrValue }}" ?`);
         }
         if (parts) {
@@ -177,7 +184,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
         }
       }
     }
-    return expressions;
+    return expressions as LetExpression[];
   }
 
   inspectTextContent(resources: ViewResources, value: string) {
@@ -214,7 +221,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
         char = value[i];
         i++;
 
-        if (char === "'" || char === '"') {
+        if (char === '\'' || char === '"') {
           if (quote === null) {
             quote = char;
           } else if (quote === char) {

@@ -1,5 +1,5 @@
 import { BindableProperty } from 'aurelia-templating';
-import { bindingMode, Expression } from 'aurelia-binding';
+import { bindingMode, Expression, Binding, Scope } from 'aurelia-binding';
 
 /**@internal */
 declare module 'aurelia-templating' {
@@ -14,7 +14,7 @@ declare module 'aurelia-templating' {
     properties: BindableProperty[];
     primaryProperty: BindableProperty;
   }
-  
+
   interface BindableProperty {
     attribute: string;
     defaultBindingMode: bindingMode;
@@ -40,5 +40,10 @@ export interface IAttributeInfo {
 declare module 'aurelia-binding' {
   interface ObserverLocator {
     getAccessor(obj: any, propertyName: string): any;
-  }  
+  }
+
+  interface Expression {
+    bind(binding: Binding, scope: Scope, lookupFunctions?: any): void;
+    unbind(binding: Binding, scope: Scope, lookupFunctions?: any): void;
+  }
 }

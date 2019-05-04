@@ -27,7 +27,13 @@ export class LetExpression {
    * @param lookupFunctions
    * @param toBindingContext indicates let binding result should be assigned to binding context
    */
-  constructor(observerLocator: ObserverLocator, targetProperty: string, sourceExpression: Expression, lookupFunctions: any, toBindingContext: boolean) {
+  constructor(
+    observerLocator: ObserverLocator,
+    targetProperty: string,
+    sourceExpression: Expression,
+    lookupFunctions: any,
+    toBindingContext: boolean
+  ) {
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
     this.targetProperty = targetProperty;
@@ -51,7 +57,7 @@ export class LetBinding {
   /**@internal*/
   observerLocator: ObserverLocator;
   /**@internal*/
-  sourceExpression: Expression & { bind?(binding: any, scope: Scope, lookupFunctions?: any): void; unbind?(binding: any, scope: Scope, lookupFunctions?: any): void; };
+  sourceExpression: Expression;
   /**@internal*/
   targetProperty: string;
   /**@internal*/
@@ -73,7 +79,13 @@ export class LetBinding {
    * @param lookupFunctions
    * @param toBindingContext indicates let binding result should be assigned to binding context
    */
-  constructor(observerLocator: ObserverLocator, sourceExpression: Expression, targetProperty: string, lookupFunctions: any, toBindingContext: boolean) {
+  constructor(
+    observerLocator: ObserverLocator,
+    sourceExpression: Expression,
+    targetProperty: string,
+    lookupFunctions: any,
+    toBindingContext: boolean
+  ) {
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
     this.targetProperty = targetProperty;
@@ -135,7 +147,7 @@ export class LetBinding {
   }
 
   unobserve(arg0: boolean): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   connect(): void {

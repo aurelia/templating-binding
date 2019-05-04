@@ -1,3 +1,4 @@
+// tslint:disable:max-line-length
 import * as AureliaBinding from 'aurelia-binding';
 import { bindingMode, delegationStrategy, BindingExpression, EventManager, ObserverLocator, Parser } from 'aurelia-binding';
 import * as LogManager from 'aurelia-logging';
@@ -226,7 +227,7 @@ export class SyntaxInterpreter {
     }
 
     instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
-    let attributes = instruction.attributes as { key?: string; value?: string; local?: string; items?: BindingExpression }
+    let attributes = instruction.attributes as { key?: string; value?: string; local?: string; items?: BindingExpression };
 
     if (isDestructuring) {
       keyValue = parts[0].replace(/[[\]]/g, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
