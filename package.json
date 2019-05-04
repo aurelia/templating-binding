@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "build": "gulp build",
-    "build:dts": "dts-bundle-generator -o dist/aurelia-router.d.ts src/aurelia-router.ts",
+    "build:dts": "dts-bundle-generator -o dist/aurelia-templating-binding.d.ts src/aurelia-templating-binding.ts",
     "test": "karma start --single-run",
     "test:watch": "karma start",
     "test:debugger": "karma start --browsers ChromeDebugging",
