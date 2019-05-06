@@ -93,6 +93,7 @@
     "rollup-plugin-typescript2": "^0.21.0",
     "run-sequence": "^1.2.2",
     "ts-loader": "^5.4.4",
+    "tslint": "^5.16.0",
     "typescript": "^3.3.4000",
     "webpack": "^4.30.0",
     "webpack-cli": "^3.3.1",
