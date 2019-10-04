@@ -9,6 +9,7 @@ describe('AttributeMap', () => {
     expect(attributeMap.map('foo', 'accesskey')).toBe('accessKey');
     expect(attributeMap.map('div', 'accesskey')).toBe('accessKey');
     expect(attributeMap.map('input', 'accesskey')).toBe('accessKey');
+    expect(attributeMap.map('input', 'inputmode')).toBe('inputMode');
 
     expect(attributeMap.map('label', 'for')).toBe('htmlFor');
     expect(attributeMap.map('foo', 'for')).toBe('for');

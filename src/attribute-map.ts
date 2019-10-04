@@ -47,6 +47,7 @@ export class AttributeMap {
 
     registerElementAttrMapping(self, 'input', 'maxlength', 'maxLength');
     registerElementAttrMapping(self, 'input', 'minlength', 'minLength');
+    registerElementAttrMapping(self, 'input', 'inputmode', 'inputMode');
     registerElementAttrMapping(self, 'input', 'formaction', 'formAction');
     registerElementAttrMapping(self, 'input', 'formenctype', 'formEncType');
     registerElementAttrMapping(self, 'input', 'formmethod', 'formMethod');
