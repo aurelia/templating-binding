@@ -1,4 +1,3 @@
-/*eslint dot-notation:0*/
 import {
   Parser,
   ObserverLocator,
@@ -10,21 +9,37 @@ import {
   delegationStrategy
 } from 'aurelia-binding';
 
-import {BehaviorInstruction} from 'aurelia-templating';
+import { BehaviorInstruction, BindingLanguage, HtmlBehaviorResource } from 'aurelia-templating';
 import * as LogManager from 'aurelia-logging';
 import {AttributeMap} from './attribute-map';
+import { AttributeInfo } from './types';
 
 export class SyntaxInterpreter {
+  /** @internal */
   static inject = [Parser, ObserverLocator, EventManager, AttributeMap];
 
-  constructor(parser, observerLocator, eventManager, attributeMap) {
+  language: BindingLanguage;
+
+  /** @internal */
+  private parser: Parser;
+
+  /** @internal */
+  private observerLocator: ObserverLocator;
+
+  /** @internal */
+  private eventManager: EventManager;
+
+  /** @internal */
+  private attributeMap: AttributeMap;
+
+  constructor(parser: Parser, observerLocator: ObserverLocator, eventManager: EventManager, attributeMap: AttributeMap) {
     this.parser = parser;
     this.observerLocator = observerLocator;
     this.eventManager = eventManager;
     this.attributeMap = attributeMap;
   }
 
-  interpret(resources, element, info, existingInstruction, context) {
+  interpret(resources, element, info: AttributeInfo, existingInstruction, context) {
     if (info.command in this) {
       return this[info.command](resources, element, info, existingInstruction, context);
     }
@@ -32,7 +47,7 @@ export class SyntaxInterpreter {
     return this.handleUnknownCommand(resources, element, info, existingInstruction, context);
   }
 
-  handleUnknownCommand(resources, element, info, existingInstruction, context) {
+  handleUnknownCommand(resources, element, info: AttributeInfo, existingInstruction, context) {
     LogManager.getLogger('templating-binding').warn('Unknown binding command.', info);
     return existingInstruction;
   }
@@ -56,10 +71,10 @@ export class SyntaxInterpreter {
       return context.attributes[attrName].defaultBindingMode;
     }
 
-    return bindingMode.oneWay;
+    return bindingMode.toView;
   }
 
-  bind(resources, element, info, existingInstruction, context) {
+  bind(resources, element, info: AttributeInfo, existingInstruction, context: HtmlBehaviorResource) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
@@ -75,7 +90,7 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  trigger(resources, element, info) {
+  trigger(resources, element, info: AttributeInfo) {
     return new ListenerExpression(
       this.eventManager,
       info.attrName,
@@ -86,7 +101,7 @@ export class SyntaxInterpreter {
     );
   }
 
-  capture(resources, element, info) {
+  capture(resources, element, info: AttributeInfo) {
     return new ListenerExpression(
       this.eventManager,
       info.attrName,
@@ -97,7 +112,7 @@ export class SyntaxInterpreter {
     );
   }
 
-  delegate(resources, element, info) {
+  delegate(resources, element, info: AttributeInfo) {
     return new ListenerExpression(
       this.eventManager,
       info.attrName,
@@ -108,7 +123,7 @@ export class SyntaxInterpreter {
     );
   }
 
-  call(resources, element, info, existingInstruction) {
+  call(resources, element, info: AttributeInfo, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new CallExpression(
@@ -121,7 +136,7 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  options(resources, element, info, existingInstruction, context) {
+  options(resources, element, info: AttributeInfo, existingInstruction, context) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
     let attrValue = info.attrValue;
     let language = this.language;
@@ -188,6 +203,7 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
+  /** @internal */
   _getPrimaryPropertyName(resources, context) {
     let type = resources.getAttribute(context.attributeName);
     if (type && type.primaryProperty) {
@@ -196,7 +212,7 @@ export class SyntaxInterpreter {
     return null;
   }
 
-  'for'(resources, element, info, existingInstruction) {
+  'for'(resources, element, info: AttributeInfo, existingInstruction) {
     let parts;
     let keyValue;
     let instruction;
@@ -225,14 +241,14 @@ export class SyntaxInterpreter {
       this.observerLocator,
       'items',
       this.parser.parse(parts[1]),
-      bindingMode.oneWay,
+      bindingMode.toView,
       resources.lookupFunctions
     );
 
     return instruction;
   }
 
-  'two-way'(resources, element, info, existingInstruction) {
+  'two-way'(resources, element, info: AttributeInfo, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
@@ -246,7 +262,7 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  'to-view'(resources, element, info, existingInstruction) {
+  'to-view'(resources, element, info: AttributeInfo, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
@@ -260,7 +276,7 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  'from-view'(resources, element, info, existingInstruction) {
+  'from-view'(resources, element, info: AttributeInfo, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
@@ -274,7 +290,7 @@ export class SyntaxInterpreter {
     return instruction;
   }
 
-  'one-time'(resources, element, info, existingInstruction) {
+  'one-time'(resources, element, info: AttributeInfo, existingInstruction) {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
@@ -289,4 +305,37 @@ export class SyntaxInterpreter {
   }
 }
 
-SyntaxInterpreter.prototype['one-way'] = SyntaxInterpreter.prototype['to-view'];
+Object.defineProperty(SyntaxInterpreter.prototype, 'one-way', Object.getOwnPropertyDescriptor(SyntaxInterpreter.prototype, 'to-view'));
+
+/** @internal */
+declare module 'aurelia-binding' {
+  export class BindingExpression {
+    constructor(
+      observerLocator: ObserverLocator,
+      prop: string,
+      expression: Expression,
+      mode: bindingMode,
+      lookupFunctions: LookupFunctions
+    );
+  }
+
+  export class ListenerExpression {
+    constructor(
+      eventManager: EventManager,
+      prop: string,
+      expression: Expression,
+      delegationStrategy: delegationStrategy,
+      capture: boolean,
+      lookupFunctions: LookupFunctions
+    );
+  }
+
+  export class CallExpression {
+    constructor(
+      observerLocator: ObserverLocator,
+      prop: string,
+      expression: Expression,
+      lookupFunctions: LookupFunctions
+    );
+  }
+}
