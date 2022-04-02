@@ -269,6 +269,7 @@ declare module 'aurelia-binding' {
   }
 }
 
+/** @internal */
 declare module 'aurelia-templating' {
   interface ViewResources {
     lookupFunctions: LookupFunctions;
