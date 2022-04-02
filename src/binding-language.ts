@@ -1,19 +1,33 @@
-/*eslint indent:0*/
-import {BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
-import {Parser, ObserverLocator, NameExpression, bindingMode, camelCase, LiteralString} from 'aurelia-binding';
-import {InterpolationBindingExpression} from './interpolation-binding-expression';
-import {SyntaxInterpreter} from './syntax-interpreter';
-import {AttributeMap} from './attribute-map';
-import {LetExpression} from './let-expression';
-import {LetInterpolationBindingExpression} from './let-interpolation-expression';
+import { bindingMode, camelCase, Expression, LiteralString, LookupFunctions, NameExpression, ObserverLocator, Parser } from 'aurelia-binding';
 import * as LogManager from 'aurelia-logging';
+import { BehaviorInstruction, BindingLanguage, HtmlBehaviorResource, ViewResources } from 'aurelia-templating';
+import { AttributeMap } from './attribute-map';
+import { InterpolationBindingExpression } from './interpolation-binding-expression';
+import { LetExpression } from './let-expression';
+import { LetInterpolationBindingExpression } from './let-interpolation-expression';
+import { SyntaxInterpreter } from './syntax-interpreter';
+import { AttributeInfo } from './types';
 
-let info = {};
+let info: AttributeInfo = {};
 
 export class TemplatingBindingLanguage extends BindingLanguage {
+  /** @internal */
   static inject = [Parser, ObserverLocator, SyntaxInterpreter, AttributeMap];
 
-  constructor(parser, observerLocator, syntaxInterpreter, attributeMap) {
+  /** @internal */
+  private parser: Parser;
+  /** @internal */
+  private observerLocator: ObserverLocator;
+  /** @internal */
+  private syntaxInterpreter: SyntaxInterpreter;
+  /** @internal */
+  private emptyStringExpression: Expression;
+  /** @internal */
+  private attributeMap: AttributeMap;
+  /** @internal */
+  private toBindingContextAttr: string;
+
+  constructor(parser: Parser, observerLocator: ObserverLocator, syntaxInterpreter: SyntaxInterpreter, attributeMap: AttributeMap) {
     super();
     this.parser = parser;
     this.observerLocator = observerLocator;
@@ -24,7 +38,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.toBindingContextAttr = 'to-binding-context';
   }
 
-  inspectAttribute(resources, elementName, attrName, attrValue) {
+  inspectAttribute(resources: ViewResources, elementName: string, attrName: string, attrValue: string): AttributeInfo {
     let parts = attrName.split('.');
 
     info.defaultBindingMode = null;
@@ -58,7 +72,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
           this.observerLocator,
           this.attributeMap.map(elementName, attrName),
           interpolationParts,
-          bindingMode.oneWay,
+          bindingMode.toView,
           resources.lookupFunctions,
           attrName
         );
@@ -68,7 +82,8 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return info;
   }
 
-	createAttributeInstruction(resources, element, theInfo, existingInstruction, context) {
+  // todo(templating): the return type of createAttributeInstruction should be string | BindingExpression | BehaviorInstruction
+  createAttributeInstruction(resources: ViewResources, element: Element, theInfo: AttributeInfo, existingInstruction: BehaviorInstruction, context: HtmlBehaviorResource) {
     let instruction;
 
     if (theInfo.expression) {
@@ -90,20 +105,14 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return instruction;
   }
 
-  /**
-   * @param {ViewResources} resources
-   * @param {Element} letElement
-   */
-  createLetExpressions(resources, letElement) {
+  createLetExpressions(resources: ViewResources, letElement: Element) {
     let expressions = [];
     let attributes = letElement.attributes;
-    /**@type {Attr} */
-    let attr;
-    /**@type {string[]} */
-    let parts;
-    let attrName;
-    let attrValue;
-    let command;
+    let attr: Attr;
+    let parts: string[];
+    let attrName: string;
+    let attrValue: string;
+    let command: string;
     let toBindingContextAttr = this.toBindingContextAttr;
     let toBindingContext = letElement.hasAttribute(toBindingContextAttr);
     for (let i = 0, ii = attributes.length; ii > i; ++i) {
@@ -159,7 +168,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     return expressions;
   }
 
-  inspectTextContent(resources, value) {
+  inspectTextContent(resources: ViewResources, value: string) {
     const parts = this.parseInterpolation(resources, value);
     if (parts === null) {
       return null;
@@ -168,12 +177,13 @@ export class TemplatingBindingLanguage extends BindingLanguage {
       this.observerLocator,
       'textContent',
       parts,
-      bindingMode.oneWay,
+      bindingMode.toView,
       resources.lookupFunctions,
-      'textContent');
+      'textContent'
+    );
   }
 
-  parseInterpolation(resources, value) {
+  parseInterpolation(resources: ViewResources, value: string) {
     let i = value.indexOf('${', 0);
     let ii = value.length;
     let char;
@@ -249,5 +259,19 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     // literal.
     parts[partIndex] = value.substr(pos);
     return parts;
+  }
+}
+
+/** @internal */
+declare module 'aurelia-binding' {
+  export class NameExpression {
+    constructor(expression: Expression, name: string, lookup: Record<string, any>)
+  }
+}
+
+/** @internal */
+declare module 'aurelia-templating' {
+  interface ViewResources {
+    lookupFunctions: LookupFunctions;
   }
 }

@@ -1,18 +1,33 @@
 import {
   connectable,
   enqueueBindingConnect,
+  Expression,
+  LookupFunctions,
+  ObserverLocator,
+  Scope,
   sourceContext
 } from 'aurelia-binding';
 
 export class LetExpression {
+  /** @internal */
+  private observerLocator: ObserverLocator;
+  /** @internal */
+  private sourceExpression: Expression;
+  /** @internal */
+  private targetProperty: string;
+  /** @internal */
+  private lookupFunctions: LookupFunctions;
+  /** @internal */
+  private toBindingContext: boolean;
+
   /**
-   * @param {ObserverLocator} observerLocator
-   * @param {string} targetProperty
-   * @param {Expression} sourceExpression
-   * @param {any} lookupFunctions
-   * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
+   * @param observerLocator
+   * @param targetProperty
+   * @param sourceExpression
+   * @param lookupFunctions
+   * @param toBindingContext indicates let binding result should be assigned to binding context
    */
-  constructor(observerLocator, targetProperty, sourceExpression, lookupFunctions, toBindingContext) {
+  constructor(observerLocator: ObserverLocator, targetProperty: string, sourceExpression: Expression, lookupFunctions: LookupFunctions, toBindingContext: boolean) {
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
     this.targetProperty = targetProperty;
@@ -33,15 +48,39 @@ export class LetExpression {
 
 @connectable()
 export class LetBinding {
+
+  /** @internal */
+  private observerLocator: ObserverLocator;
+
+  /** @internal */
+  sourceExpression: Expression;
+
+  /** @internal */
+  private targetProperty: string;
+
+  /** @internal */
+  private lookupFunctions: LookupFunctions;
+
+  /** @internal */
+  source: Scope;
+
+  /** @internal */
+  target: any;
+
+  /** @internal */
+  private toBindingContext: boolean;
+
+  /** @internal */
+  isBound: boolean;
+
   /**
-   * @param {ObserverLocator} observerLocator
-   * @param {Expression} sourceExpression
-   * @param {Function | Element} target
-   * @param {string} targetProperty
-   * @param {*} lookupFunctions
-   * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
+   * @param observerLocator
+   * @param sourceExpression
+   * @param targetProperty
+   * @param lookupFunctions
+   * @param toBindingContext indicates let binding result should be assigned to binding context
    */
-  constructor(observerLocator, sourceExpression, targetProperty, lookupFunctions, toBindingContext) {
+  constructor(observerLocator: ObserverLocator, sourceExpression: Expression, targetProperty: string, lookupFunctions: LookupFunctions, toBindingContext: boolean) {
     this.observerLocator = observerLocator;
     this.sourceExpression = sourceExpression;
     this.targetProperty = targetProperty;
@@ -100,6 +139,11 @@ export class LetBinding {
     this.source = null;
     this.target = null;
     this.unobserve(true);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  unobserve(arg0: boolean) {
+    throw new Error('Method not implemented.');
   }
 
   connect() {

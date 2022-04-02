@@ -1,18 +1,29 @@
-import {bindingMode} from 'aurelia-binding';
+import {bindingMode, Expression, LookupFunctions, ObserverLocator, Scope} from 'aurelia-binding';
 import {
   InterpolationBinding,
   ChildInterpolationBinding
 } from './interpolation-binding-expression';
 
 export class LetInterpolationBindingExpression {
+  /** @internal */
+  private observerLocator: ObserverLocator;
+  /** @internal */
+  private targetProperty: string;
+  /** @internal */
+  private parts: string[];
+  /** @internal */
+  private lookupFunctions: LookupFunctions;
+  /** @internal */
+  private toBindingContext: boolean;
+
   /**
    * @param {ObserverLocator} observerLocator
    * @param {string} targetProperty
    * @param {string[]} parts
-   * @param {Lookups} lookupFunctions
+   * @param {LookupFunctions} lookupFunctions
    * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
    */
-  constructor(observerLocator, targetProperty, parts, lookupFunctions, toBindingContext) {
+  constructor(observerLocator: ObserverLocator, targetProperty: string, parts: string[], lookupFunctions: LookupFunctions, toBindingContext: boolean) {
     this.observerLocator = observerLocator;
     this.targetProperty = targetProperty;
     this.parts = parts;
@@ -32,14 +43,42 @@ export class LetInterpolationBindingExpression {
 }
 
 export class LetInterpolationBinding {
+
+  /** @internal */
+  private observerLocator: ObserverLocator;
+
+  /** @internal */
+  private parts: (string | Expression)[];
+
+  /** @internal */
+  private targetProperty: string;
+
+  /** @internal */
+  private lookupFunctions: LookupFunctions;
+
+  /** @internal */
+  private toBindingContext: boolean;
+
+  /** @internal */
+  target: any;
+
+  /** @internal */
+  isBound: boolean;
+
+  /** @internal */
+  source: Scope;
+
+  /** @internal */
+  interpolationBinding: ChildInterpolationBinding | InterpolationBinding;
+
   /**
-   * @param {ObserverLocator} observerLocator
-   * @param {strign} targetProperty
-   * @param {string[]} parts
-   * @param {Lookups} lookupFunctions
-   * @param {boolean} toBindingContext indicates let binding result should be assigned to binding context
+   * @param observerLocator
+   * @param targetProperty
+   * @param parts
+   * @param lookupFunctions
+   * @param toBindingContext indicates let binding result should be assigned to binding context
    */
-  constructor(observerLocator, targetProperty, parts, lookupFunctions, toBindingContext) {
+  constructor(observerLocator: ObserverLocator, targetProperty: string, parts: (string | Expression)[], lookupFunctions: LookupFunctions, toBindingContext: boolean) {
     this.observerLocator = observerLocator;
     this.parts = parts;
     this.targetProperty = targetProperty;
@@ -83,12 +122,12 @@ export class LetInterpolationBinding {
       return new ChildInterpolationBinding(
         this.target,
         this.observerLocator,
-        this.parts[1],
-        bindingMode.oneWay,
+        this.parts[1] as unknown as Expression,
+        bindingMode.toView,
         this.lookupFunctions,
         this.targetProperty,
-        this.parts[0],
-        this.parts[2]
+        this.parts[0] as string,
+        this.parts[2] as string
       );
     }
     return new InterpolationBinding(
@@ -96,7 +135,7 @@ export class LetInterpolationBinding {
       this.parts,
       this.target,
       this.targetProperty,
-      bindingMode.oneWay,
+      bindingMode.toView,
       this.lookupFunctions
     );
   }

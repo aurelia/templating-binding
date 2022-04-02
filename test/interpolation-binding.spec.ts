@@ -1,44 +1,50 @@
-import './setup';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  TemplatingBindingLanguage,
-  InterpolationBindingExpression
+  BindingExpression,
+  createScopeForTest, DirtyChecker, EventManager, ObserverLocator, Parser, SVGAnalyzer
+} from 'aurelia-binding';
+import { DOM } from 'aurelia-pal';
+import { TaskQueue } from 'aurelia-task-queue';
+import { ViewResources } from 'aurelia-templating';
+import { AttributeMap } from '../src/attribute-map';
+import {
+  TemplatingBindingLanguage
 } from '../src/binding-language';
-
-import {AttributeMap} from '../src/attribute-map';
-
+import { InterpolationBinding } from '../src/interpolation-binding-expression';
 import {
   SyntaxInterpreter
 } from '../src/syntax-interpreter';
+import { AttributeInfo } from '../src/types';
+import './setup';
 
-import {
-  ObserverLocator,
-  EventManager,
-  DirtyChecker,
-  Parser,
-  createScopeForTest,
-  SVGAnalyzer
-} from 'aurelia-binding';
-
-import {ViewResources} from 'aurelia-templating';
-import {TaskQueue} from 'aurelia-task-queue';
-import {DOM} from 'aurelia-pal';
+declare module 'aurelia-binding' {
+  export class DirtyChecker { }
+}
 
 function createElement(html) {
-  var div = DOM.createElement('div');
+  let div = DOM.createElement('div');
   div.innerHTML = html;
   return div.firstChild;
 }
 
 describe('InterpolationBinding', () => {
-  var checkDelay = 40,
-      array1, array2, tests,
-      parser, eventManager, dirtyChecker, observerLocator, syntaxInterpreter, language, resources;
+  let checkDelay = 40;
+  let array1;
+  let array2;
+  let tests;
+  let parser;
+  let eventManager;
+  let dirtyChecker;
+  let observerLocator;
+  let syntaxInterpreter;
+  let language;
+  let resources;
 
   beforeAll(() => {
     eventManager = new EventManager();
     dirtyChecker = new DirtyChecker();
     dirtyChecker.checkDelay = checkDelay / 2;
-    observerLocator = new ObserverLocator(new TaskQueue(), eventManager, dirtyChecker, []);
+    observerLocator = new (ObserverLocator as any)(new TaskQueue(), eventManager, dirtyChecker, []);
     parser = new Parser();
     let attributeMap = new AttributeMap(new SVGAnalyzer());
     syntaxInterpreter = new SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap);
@@ -46,11 +52,13 @@ describe('InterpolationBinding', () => {
     resources = new ViewResources();
   });
 
-  function getBinding(model, view, attrName) {
-    var attrValue, info, binding;
+  function getBinding(model, view: Element, attrName: string) {
+    let attrValue: string;
+    let info: AttributeInfo;
+    let binding: InterpolationBinding;
     attrValue = view.getAttribute(attrName);
     info = language.inspectAttribute(resources, view.tagName, attrName, attrValue);
-    binding = info.expression.createBinding(view);
+    binding = (info.expression as BindingExpression).createBinding(view) as InterpolationBinding;
     return binding;
   }
 
@@ -78,8 +86,15 @@ describe('InterpolationBinding', () => {
     ];
   }
 
-  describe('single expression', () => {
-    var viewModel, view, binding, targetAccessor, observer1, observer2;
+  describe('single expression', function() {
+    let viewModel
+    let view
+    let binding: InterpolationBinding;
+    let targetAccessor
+    let observer1
+    let observer2;
+
+
 
     beforeAll(() => {
       reset();
@@ -97,8 +112,9 @@ describe('InterpolationBinding', () => {
     });
 
     it('handles changes', done => {
-      var next = () => {
-        var test = tests.splice(0, 1)[0], result;
+      let next = () => {
+        let test = tests.splice(0, 1)[0];
+        let result;
         if (test) {
           test.change(viewModel, 'foo');
           result = test.result();
@@ -126,7 +142,12 @@ describe('InterpolationBinding', () => {
   });
 
   describe('multiple expressions', () => {
-    var viewModel, view, binding, targetAccessor, observer1, observer2;
+    let viewModel;
+    let view;
+    let binding;
+    let targetAccessor;
+    let observer1;
+    let observer2;
 
     beforeAll(() => {
       reset();
@@ -144,8 +165,9 @@ describe('InterpolationBinding', () => {
     });
 
     it('handles changes', done => {
-      var next = () => {
-        var test = tests.splice(0, 1)[0], result;
+      let next = () => {
+        let test = tests.splice(0, 1)[0];
+        let result;
         if (test) {
           test.change(viewModel, 'foo');
           test.change(viewModel, 'bar');
@@ -179,7 +201,12 @@ describe('InterpolationBinding', () => {
   });
 
   describe('repeated expressions', () => {
-    var viewModel, view, binding, targetAccessor, observer1, observer2;
+    let viewModel;
+    let view;
+    let binding;
+    let targetAccessor;
+    let observer1;
+    let observer2;
 
     beforeAll(() => {
       reset();
@@ -197,8 +224,9 @@ describe('InterpolationBinding', () => {
     });
 
     it('handles changes', done => {
-      var next = () => {
-        var test = tests.splice(0, 1)[0], result;
+      let next = () => {
+        let test = tests.splice(0, 1)[0];
+        let result;
         if (test) {
           test.change(viewModel, 'foo');
           result = test.result();

@@ -1,12 +1,21 @@
 import {camelCase, SVGAnalyzer} from 'aurelia-binding';
 
+/** @internal */
+declare module 'aurelia-binding' {
+  export class SVGAnalyzer {}
+}
+
 export class AttributeMap {
+  /** @internal */
   static inject = [SVGAnalyzer];
 
   elements = Object.create(null);
   allElements = Object.create(null);
 
-  constructor(svg) {
+  /** @internal */
+  svg: SVGAnalyzer;
+
+  constructor(svg: SVGAnalyzer) {
     this.svg = svg;
 
     this.registerUniversal('accesskey', 'accessKey');
@@ -41,7 +50,7 @@ export class AttributeMap {
   /**
    * Maps a specific HTML element attribute to a javascript property.
    */
-  register(elementName, attributeName, propertyName) {
+  register(elementName: string, attributeName: string, propertyName: string) {
     elementName = elementName.toLowerCase();
     attributeName = attributeName.toLowerCase();
     const element = this.elements[elementName] = (this.elements[elementName] || Object.create(null));
@@ -51,7 +60,7 @@ export class AttributeMap {
   /**
    * Maps an HTML attribute to a javascript property.
    */
-  registerUniversal(attributeName, propertyName) {
+  registerUniversal(attributeName: string, propertyName: string) {
     attributeName = attributeName.toLowerCase();
     this.allElements[attributeName] = propertyName;
   }
@@ -59,7 +68,7 @@ export class AttributeMap {
   /**
    * Returns the javascript property name for a particlar HTML attribute.
    */
-  map(elementName, attributeName) {
+  map(elementName: string, attributeName: string) {
     if (this.svg.isStandardSvgAttribute(elementName, attributeName)) {
       return attributeName;
     }

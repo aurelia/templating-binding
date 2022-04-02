@@ -1,20 +1,14 @@
-import './setup';
-import {AttributeMap} from '../src/attribute-map';
-import {SyntaxInterpreter} from '../src/syntax-interpreter';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  Parser,
-  ObserverLocator,
-  EventManager,
-  ListenerExpression,
-  BindingExpression,
-  NameExpression,
-  CallExpression,
-  bindingMode
+  bindingMode, EventManager, ObserverLocator, Parser
 } from 'aurelia-binding';
-import {DOM} from 'aurelia-pal';
+import { DOM } from 'aurelia-pal';
 import {
   ViewResources
 } from 'aurelia-templating';
+import { AttributeMap } from '../src/attribute-map';
+import { SyntaxInterpreter } from '../src/syntax-interpreter';
+import './setup';
 
 export function createElement(html) {
   let div = DOM.createElement('div');
@@ -27,7 +21,7 @@ describe('SyntaxInterpreter', () => {
     let interpreter;
 
     beforeAll(() => {
-      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager());
+      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager(), null);
     });
 
     it('handles checkbox input', () => {
@@ -116,9 +110,9 @@ describe('SyntaxInterpreter', () => {
       expect(interpreter.determineDefaultBindingMode(el, 'undefined', context)).toBe(bindingMode.oneWay);
       expect(interpreter.determineDefaultBindingMode(el, 'missing', context)).toBe(bindingMode.oneWay);
     });
-    
+
     it('uses specified defaultBindingMode in `bind` method', () => {
-      interpreter.attributeMap = new AttributeMap();
+      interpreter.attributeMap = new (AttributeMap as any)();
       interpreter.attributeMap.svg = {
         isStandardSvgAttribute: () => false
       }
@@ -135,10 +129,11 @@ describe('SyntaxInterpreter', () => {
   });
 
   describe('for', () => {
-    let interpreter, info;
+    let interpreter; let
+      info;
 
     beforeAll(() => {
-      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager());
+      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager(), null);
       info = {
         attrName: 'repeat',
         command: 'for',
@@ -214,10 +209,11 @@ describe('SyntaxInterpreter', () => {
   });
 
   describe('options attributes', () => {
-    let interpreter, info;
+    let interpreter; let
+      info;
 
     beforeAll(() => {
-      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager());
+      interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager(), null);
 
       interpreter.language = {
         inspectAttribute(resources, elementName, attrName, attrValue) {
@@ -268,7 +264,7 @@ describe('SyntaxInterpreter', () => {
      * options with a default
      */
     it('handles single unnamed option with default property', () => {
-      let resources = { getAttribute(name) {} };
+      let resources = { getAttribute(name): any {} };
 
       info.attrValue = "bar";
 
@@ -281,7 +277,7 @@ describe('SyntaxInterpreter', () => {
     });
 
     it('handles single unnamed option with default property and semicolon', () => {
-      let resources = { getAttribute(name) {} };
+      let resources = { getAttribute(name): any {} };
 
       info.attrValue = "bar;";
 

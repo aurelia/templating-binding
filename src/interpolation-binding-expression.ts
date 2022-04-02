@@ -1,9 +1,40 @@
-import {bindingMode, connectable, enqueueBindingConnect} from 'aurelia-binding';
+import { Binding, bindingMode, connectable, enqueueBindingConnect, Expression, LookupFunctions, ObserverLocator, Scope } from 'aurelia-binding';
 import * as LogManager from 'aurelia-logging';
 
 export class InterpolationBindingExpression {
-  constructor(observerLocator, targetProperty, parts,
-    mode, lookupFunctions, attribute) {
+
+  /** @internal */
+  private observerLocator: ObserverLocator;
+
+  /** @internal */
+  private targetProperty: string;
+
+  /** @internal */
+  parts: (string | Expression)[];
+
+  /** @internal */
+  mode: bindingMode;
+
+  /** @internal */
+  private lookupFunctions: LookupFunctions;
+
+  /** @internal */
+  private attribute: string;
+
+  /** @internal */
+  attrToRemove: string;
+
+  /** @internal */
+  discrete: boolean;
+
+  constructor(
+    observerLocator: ObserverLocator,
+    targetProperty: string,
+    parts: (string | Expression)[],
+    mode: bindingMode,
+    lookupFunctions: LookupFunctions,
+    attribute: string
+  ) {
     this.observerLocator = observerLocator;
     this.targetProperty = targetProperty;
     this.parts = parts;
@@ -18,12 +49,12 @@ export class InterpolationBindingExpression {
       return new ChildInterpolationBinding(
         target,
         this.observerLocator,
-        this.parts[1],
+        this.parts[1] as Expression,
         this.mode,
         this.lookupFunctions,
         this.targetProperty,
-        this.parts[0],
-        this.parts[2]
+        this.parts[0] as string,
+        this.parts[2] as string
       );
     }
     return new InterpolationBinding(
@@ -33,7 +64,7 @@ export class InterpolationBindingExpression {
       this.targetProperty,
       this.mode,
       this.lookupFunctions
-      );
+    );
   }
 }
 
@@ -47,7 +78,26 @@ function validateTarget(target, propertyName) {
 }
 
 export class InterpolationBinding {
-  constructor(observerLocator, parts, target, targetProperty, mode, lookupFunctions) {
+  /** @internal */
+  private observerLocator: ObserverLocator;
+  /** @internal */
+  private parts: (string | Expression)[];
+  /** @internal */
+  private target: any;
+  /** @internal */
+  private targetProperty: string;
+  /** @internal */
+  targetAccessor: InternalPropertyAccessor;
+  /** @internal */
+  mode: bindingMode;
+  /** @internal */
+  private lookupFunctions: LookupFunctions;
+  /** @internal */
+  isBound: boolean;
+  /** @internal */
+  source: Scope;
+
+  constructor(observerLocator: ObserverLocator, parts: (string | Expression)[], target: any, targetProperty: string, mode: bindingMode, lookupFunctions: LookupFunctions) {
     validateTarget(target, targetProperty);
     this.observerLocator = observerLocator;
     this.parts = parts;
@@ -89,7 +139,7 @@ export class InterpolationBinding {
 
     let parts = this.parts;
     for (let i = 1, ii = parts.length; i < ii; i += 2) {
-      let binding = new ChildInterpolationBinding(this, this.observerLocator, parts[i], this.mode, this.lookupFunctions);
+      let binding = new ChildInterpolationBinding(this, this.observerLocator, parts[i] as Expression, this.mode, this.lookupFunctions);
       binding.bind(source);
       this[`childBinding${i}`] = binding;
     }
@@ -112,9 +162,58 @@ export class InterpolationBinding {
   }
 }
 
+/** @internal */
+export interface ChildInterpolationBinding extends Binding {
+  observeArray(arr: any[]): void;
+  unobserve(all?: boolean): void;
+}
+
 @connectable()
 export class ChildInterpolationBinding {
-  constructor(target, observerLocator, sourceExpression, mode, lookupFunctions, targetProperty, left, right) {
+  /** @internal */
+  private parent: InterpolationBinding;
+  /** @internal */
+  private target: any;
+  /** @internal */
+  private targetProperty: string;
+  /** @internal */
+  private targetAccessor: InternalPropertyAccessor;
+  /** @internal */
+  private observerLocator: ObserverLocator;
+  /** @internal */
+  sourceExpression: Expression;
+  /** @internal */
+  mode: bindingMode;
+  /** @internal */
+  private lookupFunctions: LookupFunctions;
+  /** @internal */
+  private left: string;
+  /** @internal */
+  private right: string;
+  /** @internal */
+  private value: any;
+  /** @internal */
+  isBound: boolean;
+  /** @internal */
+  private rawValue: any;
+  /**
+   * From @connectable decorator
+   * @internal
+   */
+  private _version: any;
+  /** @internal */
+  source: Scope;
+
+  constructor(
+    target: InterpolationBinding,
+    observerLocator: ObserverLocator,
+    sourceExpression: Expression,
+    mode: bindingMode,
+    lookupFunctions: LookupFunctions,
+    targetProperty?: string,
+    left?: string,
+    right?: string
+  ) {
     if (target instanceof InterpolationBinding) {
       this.parent = target;
     } else {
@@ -211,5 +310,23 @@ export class ChildInterpolationBinding {
     if (this.rawValue instanceof Array) {
       this.observeArray(this.rawValue);
     }
+  }
+}
+
+interface InternalPropertyAccessor {
+  setValue(value: any, obj: object, prop: string): void;
+}
+
+/** @internal */
+declare module 'aurelia-binding' {
+  export function connectable(...args: unknown[]): (...args: unknown[]) => any;
+
+  interface ObserverLocator {
+    getAccessor(obj: object, prop: string): InternalPropertyAccessor;
+  }
+
+  interface Expression {
+    bind?(binding: Binding, source: Scope, lookup?: LookupFunctions): void;
+    unbind?(binding: Binding, source: Scope, lookup?: LookupFunctions): void;
   }
 }

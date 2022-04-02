@@ -1,24 +1,31 @@
-import './setup';
-import {TemplatingBindingLanguage} from '../src/binding-language';
-import {InterpolationBindingExpression} from '../src/interpolation-binding-expression';
-import {AttributeMap} from '../src/attribute-map';
+import { BindingExpression, SVGAnalyzer } from 'aurelia-binding';
 import * as LogManager from 'aurelia-logging';
-import {SVGAnalyzer} from 'aurelia-binding';
-var logger = LogManager.getLogger('templating-binding');
+import { ViewResources } from 'aurelia-templating';
+import { AttributeMap } from '../src/attribute-map';
+import { TemplatingBindingLanguage } from '../src/binding-language';
+import { SyntaxInterpreter } from '../src/syntax-interpreter';
+import './setup';
+
+let logger = LogManager.getLogger('templating-binding');
 
 describe('TemplatingBindingLanguage', () => {
   describe('inspectTextContent', () => {
-    var language, resources;
+    let language: TemplatingBindingLanguage;
+    let resources: ViewResources;
     beforeAll(() => {
-      var parser = { parse: expression => '!' + expression },
-          observerLocator = { getObserver: () => null, getAccessor: () => null },
-          syntaxInterpreter = {};
+      let parser = { parse: expression => '!' + expression } as any;
+      let observerLocator = { getObserver: () => null, getAccessor: () => null } as any;
+      let syntaxInterpreter = {} as SyntaxInterpreter;
       language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, new AttributeMap(new SVGAnalyzer()));
-      resources = { lookupFunctions: { valueConverters: name => null, bindingBehaviors: name => null } };
+      resources = { lookupFunctions: { valueConverters: () => null, bindingBehaviors: () => null } } as any as ViewResources;
     });
 
     it('parses interpolation expressions', () => {
-      var i, ii, aggregate, test, tests = [
+      let i: number;
+      let ii: number
+      let aggregate;
+      let test;
+      let tests = [
         { attrValue: '${name}', parts: ['', '!name', ''] },
         { attrValue: '${\'foo\\\'\'}', parts: ['', '!\'foo\\\'\'', ''] },
         { attrValue: '${name}', parts: ['', '!name', ''] },
@@ -67,7 +74,7 @@ describe('TemplatingBindingLanguage', () => {
     it('warns on interpolation in style attribute', () => {
       let expression = language.inspectAttribute(resources, 'div', 'style', '${name}').expression;
       spyOn(logger, 'info').and.callThrough();
-      expression.createBinding(document.createElement('div'));
+      (expression as BindingExpression).createBinding(document.createElement('div'));
       expect(logger.info).toHaveBeenCalled();
     });
   });
