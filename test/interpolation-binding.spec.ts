@@ -1,4 +1,5 @@
 import {
+  BindingExpression,
   createScopeForTest, DirtyChecker, EventManager, ObserverLocator, Parser, SVGAnalyzer
 } from 'aurelia-binding';
 import { DOM } from 'aurelia-pal';
@@ -8,9 +9,11 @@ import { AttributeMap } from '../src/attribute-map';
 import {
   TemplatingBindingLanguage
 } from '../src/binding-language';
+import { InterpolationBinding } from '../src/interpolation-binding-expression';
 import {
   SyntaxInterpreter
 } from '../src/syntax-interpreter';
+import { AttributeInfo } from '../src/types';
 import './setup';
 
 declare module 'aurelia-binding' {
@@ -40,11 +43,13 @@ describe('InterpolationBinding', () => {
     resources = new ViewResources();
   });
 
-  function getBinding(model, view, attrName) {
-    var attrValue, info, binding;
+  function getBinding(model, view: Element, attrName: string) {
+    let attrValue: string;
+    let info: AttributeInfo;
+    let binding: InterpolationBinding;
     attrValue = view.getAttribute(attrName);
     info = language.inspectAttribute(resources, view.tagName, attrName, attrValue);
-    binding = info.expression.createBinding(view);
+    binding = (info.expression as BindingExpression).createBinding(view) as InterpolationBinding;
     return binding;
   }
 
@@ -72,8 +77,15 @@ describe('InterpolationBinding', () => {
     ];
   }
 
-  describe('single expression', () => {
-    var viewModel, view, binding, targetAccessor, observer1, observer2;
+  describe('single expression', function() {
+    let viewModel
+    let view
+    let binding: InterpolationBinding;
+    let targetAccessor
+    let observer1
+    let observer2;
+
+    
 
     beforeAll(() => {
       reset();
@@ -91,8 +103,8 @@ describe('InterpolationBinding', () => {
     });
 
     it('handles changes', done => {
-      var next = () => {
-        var test = tests.splice(0, 1)[0], result;
+      let next = () => {
+        let test = tests.splice(0, 1)[0], result;
         if (test) {
           test.change(viewModel, 'foo');
           result = test.result();

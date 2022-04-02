@@ -87,7 +87,7 @@ export class InterpolationBinding {
   /** @internal */
   private targetProperty: string;
   /** @internal */
-  private targetAccessor: InternalPropertyAccessor;
+  targetAccessor: InternalPropertyAccessor;
   /** @internal */
   mode: bindingMode;
   /** @internal */
