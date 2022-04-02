@@ -23,7 +23,8 @@
   },
   "files": [
     "dist",
-    "doc",
+    "doc/api.json",
+    "doc/CHANGELOG.md",
     "src",
     "typings.json",
     "README.md",
