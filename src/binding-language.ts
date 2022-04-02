@@ -1,4 +1,4 @@
-import { BindingExpression, bindingMode, camelCase, Expression, LiteralString, LookupFunctions, NameExpression, ObserverLocator, Parser } from 'aurelia-binding';
+import { bindingMode, camelCase, Expression, LiteralString, LookupFunctions, NameExpression, ObserverLocator, Parser } from 'aurelia-binding';
 import * as LogManager from 'aurelia-logging';
 import { BehaviorInstruction, BindingLanguage, HtmlBehaviorResource, ViewResources } from 'aurelia-templating';
 import { AttributeMap } from './attribute-map';
@@ -38,7 +38,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
     this.toBindingContextAttr = 'to-binding-context';
   }
 
-	inspectAttribute(resources: ViewResources, elementName: string, attrName: string, attrValue: string): AttributeInfo {
+  inspectAttribute(resources: ViewResources, elementName: string, attrName: string, attrValue: string): AttributeInfo {
     let parts = attrName.split('.');
 
     info.defaultBindingMode = null;
@@ -83,7 +83,7 @@ export class TemplatingBindingLanguage extends BindingLanguage {
   }
 
   // todo(templating): the return type of createAttributeInstruction should be string | BindingExpression | BehaviorInstruction
-	createAttributeInstruction(resources: ViewResources, element: Element, theInfo: AttributeInfo, existingInstruction: BehaviorInstruction, context: HtmlBehaviorResource) {
+  createAttributeInstruction(resources: ViewResources, element: Element, theInfo: AttributeInfo, existingInstruction: BehaviorInstruction, context: HtmlBehaviorResource) {
     let instruction;
 
     if (theInfo.expression) {

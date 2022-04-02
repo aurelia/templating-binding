@@ -140,6 +140,8 @@ export class LetBinding {
     this.target = null;
     this.unobserve(true);
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   unobserve(arg0: boolean) {
     throw new Error('Method not implemented.');
   }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   bindingMode, EventManager, ObserverLocator, Parser
 } from 'aurelia-binding';
@@ -109,7 +110,7 @@ describe('SyntaxInterpreter', () => {
       expect(interpreter.determineDefaultBindingMode(el, 'undefined', context)).toBe(bindingMode.oneWay);
       expect(interpreter.determineDefaultBindingMode(el, 'missing', context)).toBe(bindingMode.oneWay);
     });
-    
+
     it('uses specified defaultBindingMode in `bind` method', () => {
       interpreter.attributeMap = new (AttributeMap as any)();
       interpreter.attributeMap.svg = {
@@ -128,7 +129,8 @@ describe('SyntaxInterpreter', () => {
   });
 
   describe('for', () => {
-    let interpreter, info;
+    let interpreter; let
+      info;
 
     beforeAll(() => {
       interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager(), null);
@@ -207,7 +209,8 @@ describe('SyntaxInterpreter', () => {
   });
 
   describe('options attributes', () => {
-    let interpreter, info;
+    let interpreter; let
+      info;
 
     beforeAll(() => {
       interpreter = new SyntaxInterpreter(new Parser(), new ObserverLocator(), new EventManager(), null);

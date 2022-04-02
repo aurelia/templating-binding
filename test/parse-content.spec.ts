@@ -17,7 +17,7 @@ describe('TemplatingBindingLanguage', () => {
       let observerLocator = { getObserver: () => null, getAccessor: () => null } as any;
       let syntaxInterpreter = {} as SyntaxInterpreter;
       language = new TemplatingBindingLanguage(parser, observerLocator, syntaxInterpreter, new AttributeMap(new SVGAnalyzer()));
-      resources = { lookupFunctions: { valueConverters: name => null, bindingBehaviors: name => null } } as ViewResources;
+      resources = { lookupFunctions: { valueConverters: () => null, bindingBehaviors: () => null } } as any as ViewResources;
     });
 
     it('parses interpolation expressions', () => {

@@ -64,7 +64,7 @@ export class InterpolationBindingExpression {
       this.targetProperty,
       this.mode,
       this.lookupFunctions
-      );
+    );
   }
 }
 

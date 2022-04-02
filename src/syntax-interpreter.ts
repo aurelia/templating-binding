@@ -47,6 +47,7 @@ export class SyntaxInterpreter {
     return this.handleUnknownCommand(resources, element, info, existingInstruction, context);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleUnknownCommand(resources, element, info: AttributeInfo, existingInstruction, context) {
     LogManager.getLogger('templating-binding').warn('Unknown binding command.', info);
     return existingInstruction;
@@ -252,12 +253,12 @@ export class SyntaxInterpreter {
     let instruction = existingInstruction || BehaviorInstruction.attribute(info.attrName);
 
     instruction.attributes[info.attrName] = new BindingExpression(
-        this.observerLocator,
-        this.attributeMap.map(element.tagName, info.attrName),
-        this.parser.parse(info.attrValue),
-        bindingMode.twoWay,
-        resources.lookupFunctions
-      );
+      this.observerLocator,
+      this.attributeMap.map(element.tagName, info.attrName),
+      this.parser.parse(info.attrValue),
+      bindingMode.twoWay,
+      resources.lookupFunctions
+    );
 
     return instruction;
   }

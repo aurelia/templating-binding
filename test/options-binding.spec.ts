@@ -23,32 +23,32 @@ describe('Custom Attribute', () => {
   let container;
 
   let setupCommonCustomAttributeTest = function(attrRootName, attrSpecification, attrValue ): BehaviorInstruction & { attributes: Record<string, any> } {
-      const behavior = new HtmlBehaviorResource();
-      behavior.attributeName = attrRootName;
-      behavior.properties.push(new BindableProperty({ name: 'foo' }));
-      behavior.properties.push(new BindableProperty({ name: 'bar', primaryProperty: true }));
-      behavior.initialize(container, function() { this.foo = "fooValue"; this.bar = "barValue"; });
+    const behavior = new HtmlBehaviorResource();
+    behavior.attributeName = attrRootName;
+    behavior.properties.push(new BindableProperty({ name: 'foo' }));
+    behavior.properties.push(new BindableProperty({ name: 'bar', primaryProperty: true }));
+    behavior.initialize(container, function() { this.foo = "fooValue"; this.bar = "barValue"; });
 
-      return setupSpecificCustomAttributeTest(behavior, attrRootName, attrSpecification, attrValue);
-    }  
+    return setupSpecificCustomAttributeTest(behavior, attrRootName, attrSpecification, attrValue);
+  }
 
 
   let setupSpecificCustomAttributeTest = function(behavior /* HtmlBehaviorResource */, attrRootName, attrSpecification, attrValue): any {
 
-      viewCompiler.resources.registerAttribute(attrRootName, behavior, attrRootName);
-      
-      const template = document.createElement('template');
-      const div = document.createElement('div');
-      template.appendChild(div);
+    viewCompiler.resources.registerAttribute(attrRootName, behavior, attrRootName);
 
-      div.setAttribute(attrSpecification, attrValue);
+    const template = document.createElement('template');
+    const div = document.createElement('div');
+    template.appendChild(div);
 
-      let configurePropertiesSpy = spyOn(viewCompiler, '_configureProperties').and.callThrough();
+    div.setAttribute(attrSpecification, attrValue);
 
-      viewCompiler._compileElement(div, viewCompiler.resources, template);
+    let configurePropertiesSpy = spyOn(viewCompiler, '_configureProperties').and.callThrough();
 
-      return (configurePropertiesSpy.calls.count() === 1) ? configurePropertiesSpy.calls.argsFor(0)[0] : null;
-    }
+    viewCompiler._compileElement(div, viewCompiler.resources, template);
+
+    return (configurePropertiesSpy.calls.count() === 1) ? configurePropertiesSpy.calls.argsFor(0)[0] : null;
+  }
 
   beforeAll(() => {
     container = new Container();
@@ -113,75 +113,75 @@ describe('Custom Attribute', () => {
 
     /* use default binding of primary property */
     it('the default binding mode on the default option is used in absence of default binding mode on attribute', () => {
-        const attrName = 'options-attribute-twoway-default-1';
+      const attrName = 'options-attribute-twoway-default-1';
 
-        const behavior = new HtmlBehaviorResource();
-        behavior.attributeName = attrName;
-        behavior.properties.push(new BindableProperty({ name: 'foo', primaryProperty: true, defaultBindingMode: bindingMode.twoWay }));
+      const behavior = new HtmlBehaviorResource();
+      behavior.attributeName = attrName;
+      behavior.properties.push(new BindableProperty({ name: 'foo', primaryProperty: true, defaultBindingMode: bindingMode.twoWay }));
 
-        behavior.initialize(container, function() { return { foo: "viewModelValueForFoo" } });
+      behavior.initialize(container, function() { return { foo: "viewModelValueForFoo" } });
 
-        let instruction = setupSpecificCustomAttributeTest(behavior, attrName, attrName + ".bind", "initialValueForFoo");
+      let instruction = setupSpecificCustomAttributeTest(behavior, attrName, attrName + ".bind", "initialValueForFoo");
 
-        expect(instruction).not.toBeNull();
-        expect(instruction.attributes['foo'] instanceof BindingExpression).toBeTruthy();
-        expect(instruction.attributes['foo'].targetProperty).toBe('foo');
-        expect(instruction.attributes['foo'].mode).toBe(bindingMode.twoWay);
+      expect(instruction).not.toBeNull();
+      expect(instruction.attributes['foo'] instanceof BindingExpression).toBeTruthy();
+      expect(instruction.attributes['foo'].targetProperty).toBe('foo');
+      expect(instruction.attributes['foo'].mode).toBe(bindingMode.twoWay);
     });
 
     it('the default binding mode on the default option overrides the specified default binding mode on the attribute', () => {
-        const attrName = 'options-attribute-twoway-default-2';
+      const attrName = 'options-attribute-twoway-default-2';
 
-        const behavior = new HtmlBehaviorResource();
-        behavior.attributeName = attrName;
-        behavior.properties.push(new BindableProperty({ name: 'foo', primaryProperty: true, defaultBindingMode: bindingMode.twoWay }));
-        behavior.attributeDefaultBindingMode = bindingMode.oneWay;
+      const behavior = new HtmlBehaviorResource();
+      behavior.attributeName = attrName;
+      behavior.properties.push(new BindableProperty({ name: 'foo', primaryProperty: true, defaultBindingMode: bindingMode.twoWay }));
+      behavior.attributeDefaultBindingMode = bindingMode.oneWay;
 
-        behavior.initialize(container, function() { return { foo: "viewModelValueForFoo" } });
+      behavior.initialize(container, function() { return { foo: "viewModelValueForFoo" } });
 
-        let instruction = setupSpecificCustomAttributeTest(behavior, attrName, attrName + ".bind", "initialValueForFoo");
+      let instruction = setupSpecificCustomAttributeTest(behavior, attrName, attrName + ".bind", "initialValueForFoo");
 
-        expect(instruction).not.toBeNull();
-        expect(instruction.attributes['foo'] instanceof BindingExpression).toBeTruthy();
-        expect(instruction.attributes['foo'].targetProperty).toBe('foo');
-        expect(instruction.attributes['foo'].mode).toBe(bindingMode.twoWay);
+      expect(instruction).not.toBeNull();
+      expect(instruction.attributes['foo'] instanceof BindingExpression).toBeTruthy();
+      expect(instruction.attributes['foo'].targetProperty).toBe('foo');
+      expect(instruction.attributes['foo'].mode).toBe(bindingMode.twoWay);
     });
 
     it('the unspecified default binding mode on the default option does not take on the attribute-level default binding mode', () => {
-        const attrName = 'options-attribute-twoway-default-3';
+      const attrName = 'options-attribute-twoway-default-3';
 
-        const behavior = new HtmlBehaviorResource();
-        behavior.attributeName = attrName;
-        behavior.properties.push(new BindableProperty({ name: 'foo', primaryProperty: true }));
-        behavior.attributeDefaultBindingMode = bindingMode.twoWay;
+      const behavior = new HtmlBehaviorResource();
+      behavior.attributeName = attrName;
+      behavior.properties.push(new BindableProperty({ name: 'foo', primaryProperty: true }));
+      behavior.attributeDefaultBindingMode = bindingMode.twoWay;
 
-        behavior.initialize(container, function() { return { foo: "viewModelValueForFoo" } });
+      behavior.initialize(container, function() { return { foo: "viewModelValueForFoo" } });
 
-        let instruction = setupSpecificCustomAttributeTest(behavior, attrName, attrName + ".bind", "initialValueForFoo");
+      let instruction = setupSpecificCustomAttributeTest(behavior, attrName, attrName + ".bind", "initialValueForFoo");
 
-        expect(instruction).not.toBeNull();
-        expect(instruction.attributes['foo'] instanceof BindingExpression).toBeTruthy();
-        expect(instruction.attributes['foo'].targetProperty).toBe('foo');
-        expect(instruction.attributes['foo'].mode).toBe(bindingMode.oneWay);
+      expect(instruction).not.toBeNull();
+      expect(instruction.attributes['foo'] instanceof BindingExpression).toBeTruthy();
+      expect(instruction.attributes['foo'].targetProperty).toBe('foo');
+      expect(instruction.attributes['foo'].mode).toBe(bindingMode.oneWay);
     });
 
     /* named options */
     it('the unspecified default binding mode on the named default option does not take on the value of the default binding on the attribute', () => {
-        const attrName = 'options-attribute-twoway-default-4';
+      const attrName = 'options-attribute-twoway-default-4';
 
-        const behavior = new HtmlBehaviorResource();
-        behavior.attributeName = attrName;
-        behavior.properties.push(new BindableProperty({ name: 'foo', primaryProperty: true }));
-        behavior.attributeDefaultBindingMode = bindingMode.twoWay;
+      const behavior = new HtmlBehaviorResource();
+      behavior.attributeName = attrName;
+      behavior.properties.push(new BindableProperty({ name: 'foo', primaryProperty: true }));
+      behavior.attributeDefaultBindingMode = bindingMode.twoWay;
 
-        behavior.initialize(container, function() { return { foo: "viewModelValueForFoo" } });
+      behavior.initialize(container, function() { return { foo: "viewModelValueForFoo" } });
 
-        let instruction = setupSpecificCustomAttributeTest(behavior, attrName, attrName, "foo.bind:initialValueForFoo");
+      let instruction = setupSpecificCustomAttributeTest(behavior, attrName, attrName, "foo.bind:initialValueForFoo");
 
-        expect(instruction).not.toBeNull();
-        expect(instruction.attributes['foo'] instanceof BindingExpression).toBeTruthy();
-        expect(instruction.attributes['foo'].targetProperty).toBe('foo');
-        expect(instruction.attributes['foo'].mode).toBe(bindingMode.oneWay);
+      expect(instruction).not.toBeNull();
+      expect(instruction.attributes['foo'] instanceof BindingExpression).toBeTruthy();
+      expect(instruction.attributes['foo'].targetProperty).toBe('foo');
+      expect(instruction.attributes['foo'].mode).toBe(bindingMode.oneWay);
     });
 
     /* end: use default binding of primary property */

@@ -3,7 +3,6 @@ import {
   Parser
 } from 'aurelia-binding';
 import { Container } from 'aurelia-dependency-injection';
-import { TemplatingBindingLanguage } from '../src/binding-language';
 import {
   ChildInterpolationBinding,
   InterpolationBinding
@@ -26,13 +25,11 @@ declare module 'aurelia-binding' {
 describe('Let', () => {
   let observerLocator: ObserverLocator;
   let parser: Parser;
-  let language: TemplatingBindingLanguage;
   let LookupFunctions = {} as LookupFunctions;
   let checkDelay = 40;
 
   beforeEach(() => {
     let ct = new Container();
-    language = ct.get(TemplatingBindingLanguage);
     observerLocator = ct.get(ObserverLocator);
     parser = ct.get(Parser);
   });
@@ -109,24 +106,24 @@ describe('Let', () => {
       it('binds to overrideContext', done => {
         let vm = { foo: 'bar', baz: { foo: 'baz' } };
         let scope = createScopeForTest(vm);
-  
+
         let binding = new LetInterpolationBinding(observerLocator, 'bar', ['', parser.parse('baz.foo'), ''], LookupFunctions, false);
         binding.bind(scope);
-  
+
         expect(binding.target).toBe(scope.overrideContext);
         expect(binding.interpolationBinding instanceof ChildInterpolationBinding).toBe(true);
 
         expect(scope.overrideContext.bar).toBe('baz');
         vm.baz.foo = 'bar';
         expect(scope.overrideContext.bar).toBe('baz');
-  
+
         setTimeout(() => {
           expect(scope.overrideContext.bar).toBe('bar');
-  
+
           binding.unbind();
           expect(binding.interpolationBinding).toBe(null);
           expect(binding.target).toBe(null);
-  
+
           done();
         }, checkDelay * 2);
       });
@@ -134,10 +131,10 @@ describe('Let', () => {
       it('binds to bindingContext', done => {
         let vm = { foo: 'bar', baz: { foo: 'baz' } };
         let scope = createScopeForTest(vm);
-  
+
         let binding = new LetInterpolationBinding(observerLocator, 'bar', ['', parser.parse('baz.foo'), ''], LookupFunctions, true);
         binding.bind(scope);
-  
+
         expect(binding.target).toBe(scope.bindingContext);
         expect(binding.target).toBe(vm);
 
@@ -145,14 +142,14 @@ describe('Let', () => {
         expect(scope.bindingContext.bar).toBe('baz');
         vm.baz.foo = 'bar';
         expect(scope.bindingContext.bar).toBe('baz');
-  
+
         setTimeout(() => {
           expect(scope.bindingContext.bar).toBe('bar');
-  
+
           binding.unbind();
           expect(binding.interpolationBinding).toBe(null);
           expect(binding.target).toBe(null);
-  
+
           done();
         }, checkDelay * 2);
       });
