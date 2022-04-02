@@ -1,3 +1,21 @@
+# [1.6.0](https://github.com/aurelia/templating-binding/compare/1.5.3...1.6.0) (2022-04-02)
+
+
+### Bug Fixes
+
+* **dep:** resolve vulnerable dep issue ([#157](https://github.com/aurelia/templating-binding/issues/157)) ([1e27c02](https://github.com/aurelia/templating-binding/commit/1e27c02f3c6082569740e76d3e411420ab5a9ef6))
+
+
+
+# [1.6.0](https://github.com/aurelia/templating-binding/compare/1.5.3...1.6.0) (2022-04-02)
+
+
+### Bug Fixes
+
+* **dep:** resolve vulnerable dep issue ([#157](https://github.com/aurelia/templating-binding/issues/157)) ([1e27c02](https://github.com/aurelia/templating-binding/commit/1e27c02f3c6082569740e76d3e411420ab5a9ef6))
+
+
+
 <a name="1.5.4"></a>
 ## [1.5.4](https://github.com/aurelia/templating-binding/compare/1.5.2...1.5.4) (2019-03-27)
 

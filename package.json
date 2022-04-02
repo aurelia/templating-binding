@@ -1,6 +1,6 @@
 {
   "name": "aurelia-templating-binding",
-  "version": "1.5.4",
+  "version": "1.6.0",
   "description": "An implementation of the templating engine's Binding Language abstraction which uses a pluggable command syntax.",
   "keywords": [
     "aurelia",
@@ -34,7 +34,6 @@
     "test:watch": "karma start",
     "test:debugger": "karma start --browsers ChromeDebugging",
     "lint": "eslint .",
-    "prebuild": "rimraf dist",
     "build": "rollup -c",
     "build:dts": "dts-bundle-generator -o dist/types/aurelia-templating-binding.d.ts src/aurelia-templating-binding.ts",
     "postbuild": "npm run build:dts",
@@ -68,7 +67,6 @@
     "karma-coverage": "^2.2.0",
     "karma-jasmine": "^4.0.2",
     "karma-typescript": "^5.5.3",
-    "rimraf": "^3.0.2",
     "rollup": "^2.70.1",
     "typedoc": "^0.22.13",
     "typescript": "^4.6.3"

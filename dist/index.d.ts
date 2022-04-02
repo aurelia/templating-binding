@@ -1,1 +1,0 @@
-export * from 'aurelia-templating-binding/aurelia-templating-binding';
