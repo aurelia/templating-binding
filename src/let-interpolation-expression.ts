@@ -60,7 +60,7 @@ export class LetInterpolationBinding {
   private toBindingContext: boolean;
 
   /** @internal */
-  private target: any;
+  target: any;
 
   /** @internal */
   isBound: boolean;
@@ -69,7 +69,7 @@ export class LetInterpolationBinding {
   source: Scope;
 
   /** @internal */
-  private interpolationBinding: ChildInterpolationBinding | InterpolationBinding;
+  interpolationBinding: ChildInterpolationBinding | InterpolationBinding;
 
   /**
    * @param observerLocator

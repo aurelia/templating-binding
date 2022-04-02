@@ -1,27 +1,21 @@
-import './setup';
 import {
-  TemplatingBindingLanguage,
-  InterpolationBindingExpression
+  createScopeForTest, DirtyChecker, EventManager, ObserverLocator, Parser, SVGAnalyzer
+} from 'aurelia-binding';
+import { DOM } from 'aurelia-pal';
+import { TaskQueue } from 'aurelia-task-queue';
+import { ViewResources } from 'aurelia-templating';
+import { AttributeMap } from '../src/attribute-map';
+import {
+  TemplatingBindingLanguage
 } from '../src/binding-language';
-
-import {AttributeMap} from '../src/attribute-map';
-
 import {
   SyntaxInterpreter
 } from '../src/syntax-interpreter';
+import './setup';
 
-import {
-  ObserverLocator,
-  EventManager,
-  DirtyChecker,
-  Parser,
-  createScopeForTest,
-  SVGAnalyzer
-} from 'aurelia-binding';
-
-import {ViewResources} from 'aurelia-templating';
-import {TaskQueue} from 'aurelia-task-queue';
-import {DOM} from 'aurelia-pal';
+declare module 'aurelia-binding' {
+  export class DirtyChecker { }
+}
 
 function createElement(html) {
   var div = DOM.createElement('div');
@@ -38,7 +32,7 @@ describe('InterpolationBinding', () => {
     eventManager = new EventManager();
     dirtyChecker = new DirtyChecker();
     dirtyChecker.checkDelay = checkDelay / 2;
-    observerLocator = new ObserverLocator(new TaskQueue(), eventManager, dirtyChecker, []);
+    observerLocator = new (ObserverLocator as any)(new TaskQueue(), eventManager, dirtyChecker, []);
     parser = new Parser();
     let attributeMap = new AttributeMap(new SVGAnalyzer());
     syntaxInterpreter = new SyntaxInterpreter(parser, observerLocator, eventManager, attributeMap);

@@ -1,18 +1,14 @@
-import './setup';
-import {TemplatingBindingLanguage} from '../src/binding-language';
-import {Container} from 'aurelia-dependency-injection';
-import {NameExpression} from 'aurelia-binding';
-import {Logger} from 'aurelia-logging';
-
+import { NameExpression } from 'aurelia-binding';
+import { Container } from 'aurelia-dependency-injection';
+import { Logger } from 'aurelia-logging';
+import { TemplatingBindingLanguage } from '../src/binding-language';
 import {
-  LetExpression,
-  Let
+  LetExpression
 } from '../src/let-expression';
-
 import {
-  LetInterpolationBindingExpression,
-  LetInterpolationBinding
+  LetInterpolationBindingExpression
 } from '../src/let-interpolation-expression';
+import './setup';
 
 describe('BindingLanguage', () => {
   /**@type {TemplatingBindingLanguage} */

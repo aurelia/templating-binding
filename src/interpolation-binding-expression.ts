@@ -10,7 +10,7 @@ export class InterpolationBindingExpression {
   private targetProperty: string;
 
   /** @internal */
-  private parts: (string | Expression)[];
+  parts: (string | Expression)[];
 
   /** @internal */
   mode: bindingMode;

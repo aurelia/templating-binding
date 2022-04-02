@@ -41,6 +41,7 @@
     "aurelia-templating": "^1.11.1"
   },
   "devDependencies": {
+    "@types/jasmine": "^4.0.2",
     "aurelia-tools": "^0.2.4",
     "babel-dts-generator": "^0.6.1",
     "babel-eslint": "^6.1.2",
@@ -74,9 +75,7 @@
     "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^1.0.1",
     "karma-coverage": "^1.1.1",
-    "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.0.2",
-    "karma-jspm": "^2.2.0",
     "merge2": "^1.0.2",
     "object.assign": "^4.0.4",
     "require-dir": "^0.3.0",

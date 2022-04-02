@@ -1,5 +1,5 @@
-import {SVGAnalyzer} from 'aurelia-binding';
-import {AttributeMap} from '../src/attribute-map';
+import { SVGAnalyzer } from 'aurelia-binding';
+import { AttributeMap } from '../src/attribute-map';
 
 describe('AttributeMap', () => {
   it('maps attributes', () => {

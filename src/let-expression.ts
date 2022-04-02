@@ -65,7 +65,7 @@ export class LetBinding {
   source: Scope;
 
   /** @internal */
-  private target: any;
+  target: any;
 
   /** @internal */
   private toBindingContext: boolean;

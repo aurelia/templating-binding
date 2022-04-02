@@ -3,17 +3,26 @@ import {
   ViewCompiler,
   BindingLanguage,
   HtmlBehaviorResource,
-  BindableProperty
+  BindableProperty,
+  BehaviorInstruction
 } from 'aurelia-templating';
 import {BindingExpression, CallExpression, bindingMode} from 'aurelia-binding';
 import {Container} from 'aurelia-dependency-injection';
 import {TemplatingBindingLanguage} from '../src/binding-language';
 
+declare module 'aurelia-templating' {
+  interface HtmlBehaviorResource {
+    attributeName: string;
+    properties: BindableProperty[];
+    attributeDefaultBindingMode: bindingMode;
+  }
+}
+
 describe('Custom Attribute', () => {
   let viewCompiler;
   let container;
 
-  let setupCommonCustomAttributeTest = function(attrRootName, attrSpecification, attrValue ) {
+  let setupCommonCustomAttributeTest = function(attrRootName, attrSpecification, attrValue ): BehaviorInstruction & { attributes: Record<string, any> } {
       const behavior = new HtmlBehaviorResource();
       behavior.attributeName = attrRootName;
       behavior.properties.push(new BindableProperty({ name: 'foo' }));
@@ -24,7 +33,7 @@ describe('Custom Attribute', () => {
     }  
 
 
-  let setupSpecificCustomAttributeTest = function(behavior /* HtmlBehaviorResource */, attrRootName, attrSpecification, attrValue) {
+  let setupSpecificCustomAttributeTest = function(behavior /* HtmlBehaviorResource */, attrRootName, attrSpecification, attrValue): any {
 
       viewCompiler.resources.registerAttribute(attrRootName, behavior, attrRootName);
       
@@ -53,7 +62,6 @@ describe('Custom Attribute', () => {
     it('detects when unbound options are given', () => {
       const attrName = 'custom-options-attribute-1';
       const instruction = setupCommonCustomAttributeTest(attrName, attrName, 'foo:fooValue;bar:barValue');
-      expect().not.toBeNull();
       expect(instruction.attributes.foo).toBe('fooValue');
       expect(instruction.attributes.bar).toBe('barValue');
     });
@@ -61,7 +69,6 @@ describe('Custom Attribute', () => {
     it('detects when bound options are given', () => {
       const attrName = 'custom-options-attribute-2';
       const instruction = setupCommonCustomAttributeTest(attrName, attrName, 'foo.bind:fooProperty;bar:barValue');
-      expect().not.toBeNull();
       expect(instruction.attributes.bar).toBe('barValue');
       expect(instruction.attributes.foo instanceof BindingExpression).toBeTruthy();
       expect(instruction.attributes.foo.targetProperty).toBe('foo');
@@ -71,14 +78,12 @@ describe('Custom Attribute', () => {
     it('detects that unbound default but named option is given', () => {
       const attrName = 'custom-options-attribute-3';
       const instruction = setupCommonCustomAttributeTest(attrName, attrName, 'bar:barValue');
-      expect().not.toBeNull();
       expect(instruction.attributes.bar).toBe('barValue');
     });
 
     it('detects that bound default but named option is given', () => {
       const attrName = 'custom-options-attribute-4';
       const instruction = setupCommonCustomAttributeTest(attrName, attrName, 'bar.bind:barProperty');
-      expect().not.toBeNull();
       expect(instruction.attributes.bar instanceof BindingExpression).toBeTruthy();
       expect(instruction.attributes.bar.targetProperty).toBe('bar');
       expect(instruction.attributes.bar.sourceExpression.name).toBe('barProperty');
@@ -87,14 +92,12 @@ describe('Custom Attribute', () => {
     it('detects that unbound default option is given', () => {
       const attrName = 'custom-options-attribute-5';
       const instruction = setupCommonCustomAttributeTest(attrName, attrName, 'barValue');
-      expect().not.toBeNull();
       expect(instruction.attributes.bar).toBe('barValue');
     });
 
     it('detects that default option is given to bind', () => {
       const attrName = 'custom-options-attribute-6';
       const instruction = setupCommonCustomAttributeTest(attrName, attrName + '.bind', 'barProperty');
-      expect().not.toBeNull();
       expect(instruction.attributes.bar instanceof BindingExpression).toBeTruthy();
       expect(instruction.attributes.bar.targetProperty).toBe('bar');
       expect(instruction.attributes.bar.sourceExpression.name).toBe('barProperty');
@@ -103,7 +106,6 @@ describe('Custom Attribute', () => {
     it('detects that default option is given to call', () => {
       const attrName = 'custom-options-attribute-7';
       const instruction = setupCommonCustomAttributeTest(attrName, attrName + '.call', 'barCall()');
-      expect().not.toBeNull();
       expect(instruction.attributes.bar instanceof CallExpression).toBeTruthy();
       expect(instruction.attributes.bar.targetProperty).toBe('bar');
       expect(instruction.attributes.bar.sourceExpression.name).toBe('barCall');
@@ -183,6 +185,5 @@ describe('Custom Attribute', () => {
     });
 
     /* end: use default binding of primary property */
-    
   });
 });
